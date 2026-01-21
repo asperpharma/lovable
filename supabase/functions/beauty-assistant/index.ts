@@ -8,13 +8,17 @@ const corsHeaders = {
 
 // Helper function to search products based on query
 async function searchProducts(supabaseClient: any, query: string, limit = 5) {
-  // Sanitize query to prevent SQL injection
-  const sanitizedQuery = query.replace(/[%_]/g, '\\$&');
+  // Sanitize input by allowing only safe characters
+  const safeQuery = query.replace(/[^\w\s-]/g, '').trim();
+  
+  if (!safeQuery) {
+    return [];
+  }
   
   const { data, error } = await supabaseClient
     .from('products')
     .select('id, title, price, description, brand, category, subcategory, skin_concerns, image_url')
-    .or(`title.ilike.%${sanitizedQuery}%,brand.ilike.%${sanitizedQuery}%,description.ilike.%${sanitizedQuery}%,category.ilike.%${sanitizedQuery}%`)
+    .or(`title.ilike.%${safeQuery}%,brand.ilike.%${safeQuery}%,description.ilike.%${safeQuery}%,category.ilike.%${safeQuery}%`)
     .limit(limit);
   
   if (error) {
@@ -41,13 +45,17 @@ async function getProductsBySkinConcern(supabaseClient: any, concern: string, li
 
 // Helper function to get products by category
 async function getProductsByCategory(supabaseClient: any, category: string, limit = 5) {
-  // Sanitize category to prevent SQL injection
-  const sanitizedCategory = category.replace(/[%_]/g, '\\$&');
+  // Sanitize input by allowing only safe characters
+  const safeCategory = category.replace(/[^\w\s-]/g, '').trim();
+  
+  if (!safeCategory) {
+    return [];
+  }
   
   const { data, error } = await supabaseClient
     .from('products')
     .select('id, title, price, description, brand, category, subcategory, skin_concerns, image_url')
-    .ilike('category', `%${sanitizedCategory}%`)
+    .ilike('category', `%${safeCategory}%`)
     .limit(limit);
   
   if (error) {
