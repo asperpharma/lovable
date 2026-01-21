@@ -8,10 +8,13 @@ const corsHeaders = {
 
 // Helper function to search products based on query
 async function searchProducts(supabaseClient: any, query: string, limit = 5) {
+  // Sanitize query to prevent SQL injection
+  const sanitizedQuery = query.replace(/[%_]/g, '\\$&');
+  
   const { data, error } = await supabaseClient
     .from('products')
     .select('id, title, price, description, brand, category, subcategory, skin_concerns, image_url')
-    .or(`title.ilike.%${query}%,brand.ilike.%${query}%,description.ilike.%${query}%,category.ilike.%${query}%`)
+    .or(`title.ilike.%${sanitizedQuery}%,brand.ilike.%${sanitizedQuery}%,description.ilike.%${sanitizedQuery}%,category.ilike.%${sanitizedQuery}%`)
     .limit(limit);
   
   if (error) {
@@ -38,10 +41,13 @@ async function getProductsBySkinConcern(supabaseClient: any, concern: string, li
 
 // Helper function to get products by category
 async function getProductsByCategory(supabaseClient: any, category: string, limit = 5) {
+  // Sanitize category to prevent SQL injection
+  const sanitizedCategory = category.replace(/[%_]/g, '\\$&');
+  
   const { data, error } = await supabaseClient
     .from('products')
     .select('id, title, price, description, brand, category, subcategory, skin_concerns, image_url')
-    .ilike('category', `%${category}%`)
+    .ilike('category', `%${sanitizedCategory}%`)
     .limit(limit);
   
   if (error) {
@@ -132,11 +138,13 @@ serve(async (req) => {
     // Try to identify keywords for product search
     const lowerQuery = lastUserMessage.toLowerCase();
     
-    // Search by skin concerns
+    // Search by skin concerns (pre-compute lowercase versions)
     const skinConcerns = ['acne', 'aging', 'dark spots', 'dullness', 'dehydration', 'sensitivity', 'sun protection'];
-    for (const concern of skinConcerns) {
-      if (lowerQuery.includes(concern.toLowerCase())) {
-        const concernProducts = await getProductsBySkinConcern(supabaseClient, concern, 3);
+    const lowerSkinConcerns = skinConcerns.map(c => c.toLowerCase());
+    
+    for (let i = 0; i < skinConcerns.length; i++) {
+      if (lowerQuery.includes(lowerSkinConcerns[i])) {
+        const concernProducts = await getProductsBySkinConcern(supabaseClient, skinConcerns[i], 3);
         products.push(...concernProducts);
       }
     }
@@ -173,7 +181,10 @@ serve(async (req) => {
       uniqueProducts.forEach(p => {
         productContext += `- ${p.brand || ''} ${p.title} (${p.price ? `$${p.price}` : 'Price available'})\n`;
         if (p.description) {
-          productContext += `  Description: ${p.description.substring(0, 150)}...\n`;
+          const truncatedDesc = p.description.length > 150 
+            ? p.description.substring(0, 150) + '...'
+            : p.description;
+          productContext += `  Description: ${truncatedDesc}\n`;
         }
         if (p.skin_concerns && p.skin_concerns.length > 0) {
           productContext += `  Best for: ${p.skin_concerns.join(', ')}\n`;
