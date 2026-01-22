@@ -35,7 +35,7 @@ import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Upload, Loader2, Image as ImageIcon, ShieldCheck, Wand2, RefreshCw, Sparkles, Eraser } from "lucide-react";
 import { getProductImage } from "@/lib/productImageUtils";
 import { Badge } from "@/components/ui/badge";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 
 interface Product {
   id: string;

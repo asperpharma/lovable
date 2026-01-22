@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Mail, Phone, MapPin, Instagram, Facebook, MessageCircle, Loader2, CheckCircle } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { toast } from "sonner";
 import { contactFormSchema, type ContactFormData } from "@/lib/validationSchemas";
 

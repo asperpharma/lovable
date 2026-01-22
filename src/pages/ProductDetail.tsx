@@ -9,7 +9,7 @@ import { Loader2, Minus, Plus, Heart, Star, ShieldCheck, Droplets, Sparkles, Sho
 import { ShareButtons } from "@/components/ShareButtons";
 import { toast } from "sonner";
 import { getLocalizedDescription, getLocalizedCategory, translateTitle } from "@/lib/productUtils";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import {
   Accordion,
   AccordionContent,

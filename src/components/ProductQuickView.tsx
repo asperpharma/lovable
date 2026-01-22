@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { ShoppingBag, Minus, Plus, Star, Sparkles, X, Percent, Truck, Shield, Package } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { getProductImage, formatJOD } from "@/lib/productImageUtils";
 import { useCartStore } from "@/stores/cartStore";
 

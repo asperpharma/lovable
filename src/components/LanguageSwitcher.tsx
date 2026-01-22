@@ -1,4 +1,4 @@
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { Globe } from "lucide-react";
 
 export const LanguageSwitcher = ({ variant = "default" }: { variant?: "default" | "mobile" | "announcement" | "header" }) => {

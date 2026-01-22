@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { ShoppingBag, Star, Sparkles, Loader2, Eye, Percent, Grid3X3, LayoutList } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getProductImage, formatJOD } from "@/lib/productImageUtils";

@@ -14,7 +14,7 @@ import { CartDrawer } from "./CartDrawer";
 import { WishlistDrawer } from "./WishlistDrawer";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SearchDropdown } from "./SearchDropdown";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import asperLogoHorizontal from "@/assets/asper-logo-horizontal.jpg";
 import { PromotionBar } from "./PromotionBar";

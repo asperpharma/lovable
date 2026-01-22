@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useWishlistStore } from "@/stores/wishlistStore";
 import { useCartStore } from "@/stores/cartStore";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { translateTitle } from "@/lib/productUtils";
 import { Heart, ShoppingBag, Trash2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";

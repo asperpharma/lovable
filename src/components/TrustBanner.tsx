@@ -1,4 +1,4 @@
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { ShieldCheck, Stethoscope, Truck } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
 

@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LuxuryProductCard } from "@/components/LuxuryProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 
 export const BestSellersSection = () => {
   const { language } = useLanguage();

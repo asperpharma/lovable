@@ -3,7 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductGrid } from "@/components/ProductGrid";
 import { getCategoryInfo, normalizeCategorySlug } from "@/lib/categoryMapping";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 export default function CollectionDetail() {
   const {
     slug

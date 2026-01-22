@@ -3,7 +3,7 @@ import { ShoppingBag, Star, Sparkles, Loader2, TrendingUp, Award, Eye, Percent }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getProductImage, formatJOD } from "@/lib/productImageUtils";

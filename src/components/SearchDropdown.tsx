@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Loader2, Search, X } from "lucide-react";
 import { searchProducts, ShopifyProduct } from "@/lib/shopify";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { translateTitle } from "@/lib/productUtils";
 
 interface SearchDropdownProps {

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { Droplets, Flower2, Sparkle, Baby } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
 

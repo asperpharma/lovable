@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BeautyAssistant } from "@/components/BeautyAssistant";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { FlaskConical, Sparkles, Globe, Award } from "lucide-react";
 

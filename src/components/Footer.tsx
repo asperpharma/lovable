@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { Facebook, Instagram, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import asperLogo from "@/assets/asper-logo.jpg";

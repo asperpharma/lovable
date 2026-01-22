@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";

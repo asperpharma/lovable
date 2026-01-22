@@ -5,7 +5,7 @@ import { ProductFilters, FilterState } from "./ProductFilters";
 import { Loader2, ChevronDown } from "lucide-react";
 import { categorizeProduct } from "@/lib/categoryMapping";
 import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 
 interface ProductGridProps {
   showFilters?: boolean;

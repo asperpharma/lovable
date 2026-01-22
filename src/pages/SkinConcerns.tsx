@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { fetchProducts, type ShopifyProduct } from "@/lib/shopify";
 import { Loader2, Sparkles, Droplets, Shield, Sun, Heart, Umbrella, Eye } from "lucide-react";
 import antiAgingImage from "@/assets/concerns/anti-aging.jpg";

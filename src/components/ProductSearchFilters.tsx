@@ -18,7 +18,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { CATEGORIES, SKIN_CONCERNS, BRANDS, PRICE_RANGES } from "@/lib/categoryHierarchy";
 import { sanitizeInput } from "@/lib/validationSchemas";
 

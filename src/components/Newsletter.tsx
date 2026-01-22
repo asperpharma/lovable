@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AnimatedSection } from "./AnimatedSection";
 import { Mail, Sparkles } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 
 export const Newsletter = () => {
   const [email, setEmail] = useState("");

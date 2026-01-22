@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { Loader2, CheckCircle, MapPin, Phone, User, Mail, FileText, ShieldCheck } from "lucide-react";
 import { translateTitle } from "@/lib/productUtils";
 import { z } from "zod";

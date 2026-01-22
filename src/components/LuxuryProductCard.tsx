@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { ProductQuickViewModal } from "./ProductQuickViewModal";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 
 interface ProductProps {
   id: string;

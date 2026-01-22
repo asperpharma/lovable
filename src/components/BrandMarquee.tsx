@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { Award, ShieldCheck, Sparkles, Crown, Gem, ArrowRight } from "lucide-react";
 
 // Premium brand logos with elegant styling - High quality luxury logos

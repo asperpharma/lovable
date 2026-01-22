@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { Link } from "react-router-dom";
 import { Volume2, VolumeX, Sparkles } from "lucide-react";
 import { AnimatedTrustBadge } from "./AnimatedTrustBadge";

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Droplets, Sparkles, Heart, Sun } from "lucide-react";
 

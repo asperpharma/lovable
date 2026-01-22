@@ -6,7 +6,7 @@ import { useCartStore } from "@/stores/cartStore";
 import { useWishlistStore } from "@/stores/wishlistStore";
 import { toast } from "sonner";
 import { ShoppingBag, Eye, Heart, Star, Sparkles, Info } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { QuickViewModal } from "./QuickViewModal";
 import { getLocalizedDescription, translateTitle } from "@/lib/productUtils";
 import { OptimizedImage } from "./OptimizedImage";

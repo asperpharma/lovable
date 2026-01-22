@@ -9,7 +9,7 @@ import {
 import { Heart, Trash2, ShoppingBag, X } from "lucide-react";
 import { useWishlistStore } from "@/stores/wishlistStore";
 import { useCartStore } from "@/stores/cartStore";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { toast } from "sonner";
 import { translateTitle } from "@/lib/productUtils";
 

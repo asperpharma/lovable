@@ -9,7 +9,7 @@ import {
 import { Minus, Plus, Trash2, X, Lock, Loader2, ArrowLeft, Truck } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { translateTitle } from "@/lib/productUtils";
 import { CODCheckoutForm, OrderSuccess } from "./CODCheckoutForm";
 

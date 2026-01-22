@@ -24,7 +24,7 @@ import {
   LogIn
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 

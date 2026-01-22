@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 
 // Spotlight images - WebP for better compression
 import skinCareSpotlight from "@/assets/spotlights/skin-care-spotlight.webp";
