@@ -10,6 +10,10 @@
  *   node --loader ts-node/esm scripts/product-importer.ts
  */
 
+// Load environment variables
+import { config } from 'dotenv';
+config();
+
 // @ts-ignore - xlsx has ESM compatibility issues with TypeScript
 import pkg from 'xlsx';
 const XLSX = pkg;
@@ -397,43 +401,61 @@ async function uploadToSupabase(products: ProcessedProduct[]): Promise<void> {
     }
 
     console.log('\n📤 Uploading to Supabase...');
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    try {
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Upload in batches of 50
-    const BATCH_SIZE = 50;
-    let uploaded = 0;
+        // Upload in batches of 50
+        const BATCH_SIZE = 50;
+        let uploaded = 0;
+        let errorCount = 0;
 
-    for (let i = 0; i < products.length; i += BATCH_SIZE) {
-        const batch = products.slice(i, i + BATCH_SIZE);
+        for (let i = 0; i < products.length; i += BATCH_SIZE) {
+            const batch = products.slice(i, i + BATCH_SIZE);
 
-        const { error } = await supabase
-            .from('bulk_products')
-            .upsert(
-                batch.map(p => ({
-                    sku: p.sku,
-                    name: p.name,
-                    brand: p.brand,
-                    category: p.category,
-                    price: p.price,
-                    cost_price: p.costPrice,
-                    description: p.description,
-                    image_url: p.imageUrl,
-                    stock: p.stock,
-                    tags: p.tags,
-                    status: 'pending'
-                })),
-                { onConflict: 'sku' }
-            );
+            const { error } = await supabase
+                .from('bulk_products')
+                .upsert(
+                    batch.map(p => ({
+                        sku: p.sku,
+                        name: p.name,
+                        brand: p.brand,
+                        category: p.category,
+                        price: p.price,
+                        cost_price: p.costPrice,
+                        description: p.description,
+                        image_url: p.imageUrl,
+                        stock: p.stock,
+                        tags: p.tags,
+                        status: 'pending'
+                    })),
+                    { onConflict: 'sku' }
+                );
 
-        if (error) {
-            console.error(`❌ Error uploading batch ${i / BATCH_SIZE + 1}:`, error.message);
-        } else {
-            uploaded += batch.length;
-            console.log(`   Uploaded ${uploaded}/${products.length} products`);
+            if (error) {
+                errorCount++;
+                if (errorCount === 1) {
+                    // Only show detailed error once
+                    console.error(`   ❌ Error uploading to Supabase: ${error.message}`);
+                    console.log('   💡 Tip: Make sure the bulk_products table exists in Supabase');
+                }
+            } else {
+                uploaded += batch.length;
+                if (uploaded % 200 === 0 || uploaded === products.length) {
+                    console.log(`   Uploaded ${uploaded}/${products.length} products`);
+                }
+            }
         }
-    }
 
-    console.log(`✅ Upload complete: ${uploaded} products`);
+        if (errorCount > 0) {
+            console.log(`   ⚠️  ${errorCount} batch(es) failed to upload. Continuing...`);
+        } else {
+            console.log(`   ✅ Upload complete: ${uploaded} products`);
+        }
+    } catch (error: any) {
+        console.error(`   ❌ Supabase connection error: ${error.message}`);
+        console.log('   💡 Skipping Supabase upload. Products are still exported to CSV/JSON.');
+    }
 }
 
 /**

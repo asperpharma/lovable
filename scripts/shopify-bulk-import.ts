@@ -8,6 +8,10 @@
  *   bun run scripts/shopify-bulk-import.ts
  */
 
+// Load environment variables
+import { config } from 'dotenv';
+config();
+
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
