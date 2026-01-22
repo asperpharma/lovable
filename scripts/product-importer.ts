@@ -16,7 +16,7 @@ if (!process.env.VITE_SUPABASE_URL) {
     config();
 }
 
-import XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { createClient } from '@supabase/supabase-js';
 import { writeFileSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
@@ -217,7 +217,7 @@ function normalizeColumnName(name: string): string {
 /**
  * Read and parse Excel file
  */
-function readExcelFile(filePath: string): RawProduct[] {
+async function readExcelFile(filePath: string): Promise<RawProduct[]> {
     if (!existsSync(filePath)) {
         console.error(`❌ File not found: ${filePath}`);
         return [];
@@ -226,13 +226,40 @@ function readExcelFile(filePath: string): RawProduct[] {
     console.log(`📖 Reading Excel file: ${filePath}`);
 
     try {
-        const workbook = XLSX.readFile(filePath, { type: 'file' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(filePath);
+        
+        const worksheet = workbook.worksheets[0];
+        if (!worksheet) {
+            console.error('❌ No worksheet found in Excel file');
+            return [];
+        }
 
-        const rawData = XLSX.utils.sheet_to_json<any>(worksheet, { defval: '' });
+        const rawData: RawProduct[] = [];
+        const headers: string[] = [];
+        
+        // Get headers from first row
+        const headerRow = worksheet.getRow(1);
+        headerRow.eachCell((cell, colNumber) => {
+            headers[colNumber - 1] = String(cell.value || '').trim();
+        });
+
+        // Process data rows
+        worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber === 1) return; // Skip header row
+            
+            const rowData: RawProduct = {};
+            row.eachCell((cell, colNumber) => {
+                const header = headers[colNumber - 1];
+                if (header) {
+                    rowData[header] = cell.value;
+                }
+            });
+            
+            rawData.push(rowData);
+        });
+
         console.log(`✅ Found ${rawData.length} rows in Excel`);
-
         return rawData;
     } catch (error: any) {
         console.error(`❌ Error reading Excel file: ${error.message}`);
@@ -501,7 +528,7 @@ async function main() {
     console.log('━'.repeat(50));
 
     // Read Excel file
-    const rawProducts = readExcelFile(EXCEL_FILE_PATH);
+    const rawProducts = await readExcelFile(EXCEL_FILE_PATH);
 
     if (rawProducts.length === 0) {
         console.error('\n❌ No products found. Check your Excel file.');
