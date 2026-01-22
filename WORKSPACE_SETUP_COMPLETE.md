@@ -2,6 +2,14 @@
 
 Your Asper Beauty Shop workspace is now fully functional and ready to use!
 
+## 🛡️ Security Update
+
+**Important:** The xlsx dependency has been replaced with exceljs to address critical security vulnerabilities:
+- ✅ **Fixed:** Regular Expression Denial of Service (ReDoS)
+- ✅ **Fixed:** Prototype Pollution vulnerability
+- ✅ **New library:** Using exceljs v4.4.0 (secure, actively maintained)
+- ✅ **No breaking changes:** All functionality preserved
+
 ## 🎉 What's Been Fixed & Enhanced
 
 ### 1. Product Import Utility ✅
