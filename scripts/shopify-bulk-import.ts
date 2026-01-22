@@ -8,9 +8,11 @@
  *   bun run scripts/shopify-bulk-import.ts
  */
 
-// Load environment variables
+// Load environment variables from .env file (only if not already loaded)
 import { config } from 'dotenv';
-config();
+if (!process.env.SHOPIFY_ADMIN_API_KEY && !process.env.SHOPIFY_STORE) {
+    config();
+}
 
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';

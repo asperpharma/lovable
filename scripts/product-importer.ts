@@ -10,14 +10,13 @@
  *   node --loader ts-node/esm scripts/product-importer.ts
  */
 
-// Load environment variables
+// Load environment variables from .env file (only if not already loaded)
 import { config } from 'dotenv';
-config();
+if (!process.env.VITE_SUPABASE_URL) {
+    config();
+}
 
-// @ts-ignore - xlsx has ESM compatibility issues with TypeScript
-import pkg from 'xlsx';
-const XLSX = pkg;
-
+import XLSX from 'xlsx';
 import { createClient } from '@supabase/supabase-js';
 import { writeFileSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
