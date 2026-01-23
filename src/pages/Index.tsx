@@ -19,16 +19,25 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const handleLoad = () => setIsLoading(false);
+    let loadTimer: NodeJS.Timeout;
     
-    const timer = setTimeout(() => {
+    const handleLoad = () => {
+      loadTimer = setTimeout(() => setIsLoading(false), 300);
+    };
+    
+    const fallbackTimer = setTimeout(() => {
       setIsLoading(false);
-    }, 1200);
+    }, 1000);
 
-    window.addEventListener("load", handleLoad);
+    if (document.readyState === 'complete') {
+      handleLoad();
+    } else {
+      window.addEventListener("load", handleLoad);
+    }
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(fallbackTimer);
+      clearTimeout(loadTimer);
       window.removeEventListener("load", handleLoad);
     };
   }, []);
@@ -38,9 +47,9 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
+    <div className="min-h-screen bg-background animate-fade-in will-change-opacity">
       <GlobalHeader />
-      <main>
+      <main className="will-change-transform">
         {/* 1. EMOTIONAL LAYER: The Cinematic Hero */}
         <LuxuryHero />
 

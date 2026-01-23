@@ -252,7 +252,7 @@ serve(async (req) => {
 
     if (action === "generate-image") {
       // Generate image for a single product using Lovable AI
-      const { productName, category, imagePrompt } = requestData;
+      const { productName, category, imagePrompt, sku, brand } = requestData;
       
       console.log(`Generating image for: ${productName}`);
       
@@ -295,10 +295,17 @@ serve(async (req) => {
         throw new Error("No image returned from AI");
       }
 
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage with organized path
       const base64Data = imageUrl.replace(/^data:image\/\w+;base64,/, "");
       const imageBuffer = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-      const fileName = `products/${Date.now()}-${productName.replace(/[^a-zA-Z0-9]/g, "-").slice(0, 50)}.png`;
+      
+      // Get organized path: bulk-upload/{category}/{brand}/{sku}.png
+      const categorySlug = (category || "uncategorized").toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+      const brandSlug = (brand || "generic").toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "").replace(/'/g, "");
+      const skuSlug = (sku || Date.now().toString()).replace(/[^a-zA-Z0-9]/g, "-");
+      const fileName = `bulk-upload/${categorySlug}/${brandSlug}/${skuSlug}.png`;
+      
+      console.log(`📁 Saving image to organized path: ${fileName}`);
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from("product-images")

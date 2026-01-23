@@ -55,7 +55,7 @@ export const useWishlistStore = create<WishlistStore>()(
         set({ items: [] });
       },
 
-      setOpen: (isOpen) => set({ isOpen }),
+      setOpen: (open) => set({ isOpen: open }),
     }),
     {
       name: 'asper-wishlist',

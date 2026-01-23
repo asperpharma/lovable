@@ -260,6 +260,8 @@ class ImageGenerationQueue {
           productName: item.name,
           category: item.category,
           imagePrompt: item.imagePrompt,
+          sku: item.sku,
+          brand: (item as any).brand || undefined, // Include brand if available
         },
       });
 

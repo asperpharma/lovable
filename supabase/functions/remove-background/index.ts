@@ -106,11 +106,19 @@ serve(async (req) => {
       bytes[i] = binaryString.charCodeAt(i);
     }
 
-    // Generate unique filename with timestamp
-    const timestamp = Date.now();
-    const filename = `bg-removed/${productId}-${timestamp}.${imageFormat}`;
+    // Get product info for organized path
+    const { data: productData } = await supabase
+      .from("products")
+      .select("category, brand")
+      .eq("id", productId)
+      .single();
 
-    console.log(`📤 Uploading to storage: ${filename}`);
+    // Generate organized filename: bg-removed/{category}/{brand}/{productId}.{ext}
+    const categorySlug = (productData?.category || "uncategorized").toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+    const brandSlug = (productData?.brand || "generic").toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "").replace(/'/g, "");
+    const filename = `bg-removed/${categorySlug}/${brandSlug}/${productId}.${imageFormat}`;
+
+    console.log(`📤 Uploading to organized storage path: ${filename}`);
 
     // Upload to Supabase Storage
     const { error: uploadError } = await supabase.storage

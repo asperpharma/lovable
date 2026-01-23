@@ -1,101 +1,87 @@
-/**
- * Helper to generate Shopify CDN image URLs with size optimization
- */
-export const getOptimizedShopifyImageUrl = (
-  url: string,
-  width: number,
-  height?: number
-): string => {
-  if (!url || !url.includes('cdn.shopify.com')) {
-    return url;
-  }
-
-  // Shopify image URL transformation
-  // Format: {url}_WIDTHxHEIGHT.{format} or using query params
-  try {
-    const urlObj = new URL(url);
-    urlObj.searchParams.set('width', width.toString());
-    if (height) {
-      urlObj.searchParams.set('height', height.toString());
-    }
-    urlObj.searchParams.set('crop', 'center');
-    return urlObj.toString();
-  } catch {
-    return url;
-  }
-};
-
-/**
- * Generate srcset for responsive images
- */
-export const getShopifyImageSrcSet = (
-  url: string,
-  sizes: number[]
-): string => {
-  if (!url || !url.includes('cdn.shopify.com')) {
-    return '';
-  }
-
-  return sizes
-    .map((size) => `${getOptimizedShopifyImageUrl(url, size)} ${size}w`)
-    .join(', ');
-};
+import { useState, useRef, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 
 interface OptimizedImageProps {
   src: string;
   alt: string;
   className?: string;
-  width?: number;
-  height?: number;
+  priority?: boolean;
   sizes?: string;
-  loading?: 'lazy' | 'eager';
-  fetchPriority?: 'high' | 'low' | 'auto';
-  isShopify?: boolean;
+  quality?: number;
 }
 
 export const OptimizedImage = ({
   src,
   alt,
-  className = '',
-  width,
-  height,
-  sizes = '(max-width: 768px) 100vw, 50vw',
-  loading = 'lazy',
-  fetchPriority = 'auto',
-  isShopify = true,
+  className,
+  priority = false,
+  sizes = '100vw',
+  quality = 85
 }: OptimizedImageProps) => {
-  const isShopifyUrl = src?.includes('cdn.shopify.com');
-  
-  if (isShopify && isShopifyUrl) {
-    const srcSet = getShopifyImageSrcSet(src, [200, 400, 600, 800, 1200]);
-    const optimizedSrc = width 
-      ? getOptimizedShopifyImageUrl(src, width, height)
-      : src;
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [isInView, setIsInView] = useState(priority);
+  const imgRef = useRef<HTMLImageElement>(null);
 
-    return (
-      <img
-        src={optimizedSrc}
-        srcSet={srcSet || undefined}
-        sizes={srcSet ? sizes : undefined}
-        alt={alt}
-        className={className}
-        loading={loading}
-        fetchPriority={fetchPriority}
-        width={width}
-        height={height}
-      />
+  useEffect(() => {
+    if (priority) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '100px' }
     );
-  }
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [priority]);
+
+  const getOptimizedSrc = (originalSrc: string) => {
+    if (originalSrc.includes('.webp') || originalSrc.includes('.avif')) {
+      return originalSrc;
+    }
+    return originalSrc.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+  };
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      className={className}
-      loading={loading}
-      fetchPriority={fetchPriority}
-      width={width}
-      height={height}
-    />
+    <div ref={imgRef} className="relative overflow-hidden">
+      {!isLoaded && !isError && (
+        <div className={cn(
+          "absolute inset-0 bg-gradient-to-br from-cream/50 to-gold/20 animate-pulse",
+          className
+        )} />
+      )}
+      
+      {isInView && (
+        <img
+          src={getOptimizedSrc(src)}
+          alt={alt}
+          className={cn(
+            "transition-all duration-700 ease-out",
+            isLoaded 
+              ? "opacity-100 scale-100 blur-0" 
+              : "opacity-0 scale-105 blur-sm",
+            className
+          )}
+          onLoad={() => setIsLoaded(true)}
+          onError={() => {
+            setIsError(true);
+            if (imgRef.current) {
+              imgRef.current.src = src; // Fallback to original
+            }
+          }}
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+          sizes={sizes}
+        />
+      )}
+    </div>
   );
 };

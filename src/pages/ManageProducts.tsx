@@ -181,8 +181,18 @@ const ManageProducts = () => {
       setUploadingImage(true);
       
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-      const filePath = `products/${fileName}`;
+      
+      // Get organized path: manual-upload/{category}/{brand}/{timestamp}.{ext}
+      const categorySlug = (formData.category || "uncategorized").toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+      
+      // Try to get brand from editing product or use "generic"
+      const productBrand = editingProduct?.brand || "generic";
+      const brandSlug = productBrand.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "").replace(/'/g, "");
+      
+      const timestamp = Date.now();
+      const filePath = `manual-upload/${categorySlug}/${brandSlug}/${timestamp}.${fileExt}`;
+
+      console.log(`📁 Uploading image to organized path: ${filePath}`);
 
       const { error: uploadError } = await supabase.storage
         .from('product-images')

@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ExcelJS from "exceljs";
 import { useImageQueue, QueueItem } from "@/lib/imageGenerationQueue";
+import { useLanguage } from "@/components/contexts/LanguageContext";
 
 interface ProcessedProduct {
   sku: string;
@@ -361,6 +362,7 @@ export default function BulkUpload() {
       sku: p.sku,
       name: p.name,
       category: p.category,
+      brand: p.brand,
       imagePrompt: p.imagePrompt,
     }));
 
@@ -467,6 +469,7 @@ export default function BulkUpload() {
           sku: product.sku,
           name: product.name,
           category: product.category,
+          brand: product.brand,
           imagePrompt: product.imagePrompt,
         },
       ];
@@ -603,18 +606,18 @@ export default function BulkUpload() {
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="text-center mb-12">
-              <h1 className="text-4xl font-serif text-charcoal mb-4">Bulk Product Upload</h1>
-              <p className="text-taupe">Upload, categorize, and generate images for your products</p>
+              <h1 className="text-4xl font-serif text-charcoal mb-4">{t.bulkProductUpload}</h1>
+              <p className="text-taupe">{t.uploadProductData}</p>
             </div>
 
             {/* Progress Steps */}
             <div className="flex items-center justify-center gap-4 mb-12">
               {[
-                { id: "upload", icon: Upload, label: "Upload" },
-                { id: "categorize", icon: Sparkles, label: "Categorize" },
-                { id: "images", icon: Image, label: "Generate Images" },
-                { id: "review", icon: FileSpreadsheet, label: "Review" },
-                { id: "shopify", icon: ShoppingBag, label: "Upload to Shopify" },
+                { id: "upload", icon: Upload, label: t.upload },
+                { id: "categorize", icon: Sparkles, label: t.categorize },
+                { id: "images", icon: Image, label: t.generateImages },
+                { id: "review", icon: FileSpreadsheet, label: t.review },
+                { id: "shopify", icon: ShoppingBag, label: t.uploadToShopify },
               ].map((s, i) => (
                 <div key={s.id} className="flex items-center">
                   <div 
@@ -645,12 +648,6 @@ export default function BulkUpload() {
                   {step === "shopify" && "Upload to Shopify"}
                 </CardTitle>
                 <CardDescription>
-<<<<<<< Updated upstream
-                  {step === "upload" && "Upload an Excel or CSV file with your product data"}
-                  {step === "categorize" && "AI will automatically categorize products and extract brands"}
-                  {step === "images" && "Generate professional product images using AI"}
-                  {step === "review" && "Review categorized products before uploading"}
-=======
                   {step === "upload" &&
                     "Upload an Excel or CSV file with your product data"}
                   {step === "categorize" &&
@@ -659,7 +656,6 @@ export default function BulkUpload() {
                     "Generate professional product images using AI"}
                   {step === "review" &&
                     "Run and upload each product in the same place. Use Run to generate images, Upload to push to Shopify."}
->>>>>>> Stashed changes
                   {step === "shopify" && "Final upload to your Shopify store"}
                 </CardDescription>
               </CardHeader>
@@ -670,7 +666,7 @@ export default function BulkUpload() {
                     <div className="text-center py-8">
                       <div className="border-2 border-dashed border-taupe/30 rounded-xl p-12 hover:border-burgundy/50 transition-colors">
                         <Upload className="w-12 h-12 mx-auto mb-4 text-taupe" />
-                        <p className="text-charcoal mb-4">Drop your Excel or CSV file here</p>
+                        <p className="text-charcoal mb-4">{t.dropFileHere}</p>
                         <input
                           type="file"
                           accept=".xlsx,.xls,.csv"
@@ -684,19 +680,19 @@ export default function BulkUpload() {
                               {isProcessing ? (
                                 <>
                                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                  Processing...
+                                  {t.processing}
                                 </>
                               ) : (
                                 <>
                                   <FileSpreadsheet className="w-4 h-4 mr-2" />
-                                  Choose File
+                                  {t.chooseFile}
                                 </>
                               )}
                             </span>
                           </Button>
                         </label>
                         <p className="text-sm text-taupe mt-4">
-                          Supports Arabic columns: الرمز، اسم المادة، سعر البيع، الكلفة
+                          {t.supportsArabicColumns || "Supports Arabic columns: الرمز، اسم المادة، سعر البيع، الكلفة"}
                         </p>
                       </div>
                       

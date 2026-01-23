@@ -17,7 +17,7 @@ export const BestSellersSection = () => {
       const { data, error } = await supabase
         .from("products")
         .select("*")
-        .order("created_at", { ascending: true })
+        .order("created_at", { ascending: false })
         .limit(4);
 
       if (error) throw error;

@@ -18,8 +18,10 @@ if (!process.env.VITE_SUPABASE_URL) {
 
 import ExcelJS from 'exceljs';
 import { createClient } from '@supabase/supabase-js';
-import { writeFileSync, readFileSync, existsSync } from 'fs';
+import { writeFileSync, readFileSync, existsSync, createWriteStream } from 'fs';
 import { join } from 'path';
+import { pipeline } from 'stream/promises';
+import { Readable, Transform } from 'stream';
 
 // Configuration
 const EXCEL_FILE_PATH = join(process.cwd(), 'public/data/products-data.xlsx');
@@ -119,6 +121,20 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
     ]
 };
 
+// Pre-processed lowercase keywords for performance
+const CATEGORY_KEYWORDS_LOWER = Object.fromEntries(
+    Object.entries(CATEGORY_KEYWORDS).map(([cat, keywords]) => [
+        cat, keywords.map(k => k.toLowerCase())
+    ])
+);
+
+const KNOWN_BRANDS_LOWER = KNOWN_BRANDS.map(b => b.toLowerCase());
+
+// Log sanitization helper
+function sanitizeLog(input: string): string {
+    return input.replace(/[\r\n\t]/g, ' ').substring(0, 200);
+}
+
 // Known brand list
 const KNOWN_BRANDS = [
     "Palmer's", "Palmers", "Eucerin", "Vichy", "Bioderma", "Cetaphil", "La Roche-Posay",
@@ -135,36 +151,33 @@ const KNOWN_BRANDS = [
 function categorizeProduct(name: string, description: string = ''): string {
     const searchText = `${name} ${description}`.toLowerCase();
 
-    for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS_LOWER)) {
         for (const keyword of keywords) {
-            if (searchText.includes(keyword.toLowerCase())) {
+            if (searchText.includes(keyword)) {
                 return category;
             }
         }
     }
 
-    return "Personal Care"; // Default category
+    return "Personal Care";
 }
 
 /**
  * Extract brand from product name
  */
 function extractBrand(name: string, vendorField?: string): string {
-    // First check vendor field
     if (vendorField && vendorField.trim()) {
         return vendorField.trim();
     }
 
     const nameLower = name.toLowerCase();
 
-    // Check known brands
-    for (const brand of KNOWN_BRANDS) {
-        if (nameLower.includes(brand.toLowerCase())) {
-            return brand;
+    for (let i = 0; i < KNOWN_BRANDS.length; i++) {
+        if (nameLower.includes(KNOWN_BRANDS_LOWER[i])) {
+            return KNOWN_BRANDS[i];
         }
     }
 
-    // Try to extract first word as brand if it's capitalized
     const words = name.split(/[\s-]/);
     const firstWord = words[0];
     if (firstWord && firstWord.length > 2 && /^[A-Z]/.test(firstWord)) {
@@ -262,7 +275,7 @@ async function readExcelFile(filePath: string): Promise<RawProduct[]> {
         console.log(`✅ Found ${rawData.length} rows in Excel`);
         return rawData;
     } catch (error: any) {
-        console.error(`❌ Error reading Excel file: ${error.message}`);
+        console.error(`❌ Error reading Excel file: ${sanitizeLog(error.message)}`);
         console.log('Tip: Make sure the file is a valid Excel file (.xlsx or .xls)');
         return [];
     }
@@ -368,7 +381,7 @@ function processProducts(rawProducts: RawProduct[]): ProcessedProduct[] {
             processed.push(product);
 
         } catch (error) {
-            console.error(`❌ Error processing row ${index + 1}:`, error);
+            console.error(`❌ Error processing row ${index + 1}:`, sanitizeLog(String(error)));
             skipped++;
         }
     });
@@ -381,39 +394,88 @@ function processProducts(rawProducts: RawProduct[]): ProcessedProduct[] {
     return processed;
 }
 
+interface CSVExportOptions {
+    batchSize?: number;
+    encoding?: BufferEncoding;
+}
+
 /**
- * Export products to CSV
+ * Optimized CSV export with streaming for large datasets
  */
-function exportToCSV(products: ProcessedProduct[], outputPath: string): void {
-    const headers = ['SKU', 'Name', 'Brand', 'Category', 'Price', 'Cost Price', 'Description', 'Image URL', 'Stock', 'Tags'];
-    const rows = products.map(p => [
-        p.sku,
-        p.name,
-        p.brand,
-        p.category,
-        p.price,
-        p.costPrice,
-        p.description,
-        p.imageUrl || '',
-        p.stock,
-        p.tags.join(', ')
-    ]);
+async function exportToCSV(
+    products: ProcessedProduct[], 
+    outputPath: string, 
+    options: CSVExportOptions = {}
+): Promise<void> {
+    const { batchSize = 1000, encoding = 'utf-8' } = options;
+    
+    if (!products.length) throw new Error('No products to export');
+    if (!outputPath.endsWith('.csv')) throw new Error('Output must be .csv file');
 
-    const csvContent = [
-        headers.join(','),
-        ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-    ].join('\n');
+    try {
+        const writeStream = createWriteStream(outputPath, { encoding });
+        
+        let index = 0;
+        const productStream = new Readable({
+            objectMode: true,
+            read() {
+                if (index < products.length) {
+                    this.push(products[index++]);
+                } else {
+                    this.push(null);
+                }
+            }
+        });
 
-    writeFileSync(outputPath, csvContent, 'utf-8');
-    console.log(`\n✅ CSV exported to: ${outputPath}`);
+        const csvTransform = new Transform({
+            objectMode: true,
+            transform(product: ProcessedProduct, _encoding, callback) {
+                if (!(this as any).headerWritten) {
+                    this.push('SKU,Name,Brand,Category,Price,Cost Price,Description,Image URL,Stock,Tags\n');
+                    (this as any).headerWritten = true;
+                }
+                
+                const row = [
+                    escapeCSV(product.sku),
+                    escapeCSV(product.name),
+                    escapeCSV(product.brand),
+                    escapeCSV(product.category),
+                    product.price,
+                    product.costPrice,
+                    escapeCSV(product.description),
+                    escapeCSV(product.imageUrl || ''),
+                    product.stock,
+                    escapeCSV(product.tags.join(', '))
+                ];
+                
+                this.push(row.join(',') + '\n');
+                callback();
+            }
+        });
+
+        await pipeline(productStream, csvTransform, writeStream);
+        console.log(`\n✅ CSV exported to: ${outputPath}`);
+        
+    } catch (error) {
+        throw new Error(`CSV export failed: ${(error as Error).message}`);
+    }
+}
+
+function escapeCSV(value: string | number): string {
+    const str = String(value || '');
+    return /[",\n\r]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
 }
 
 /**
  * Export products to JSON
  */
-function exportToJSON(products: ProcessedProduct[], outputPath: string): void {
-    writeFileSync(outputPath, JSON.stringify(products, null, 2), 'utf-8');
-    console.log(`✅ JSON exported to: ${outputPath}`);
+async function exportToJSON(products: ProcessedProduct[], outputPath: string): Promise<void> {
+    try {
+        await require('fs').promises.writeFile(outputPath, JSON.stringify(products, null, 2), 'utf-8');
+        console.log(`✅ JSON exported to: ${sanitizeLog(outputPath)}`);
+    } catch (error) {
+        throw new Error(`JSON export failed: ${sanitizeLog((error as Error).message)}`);
+    }
 }
 
 /**
@@ -547,10 +609,10 @@ async function main() {
     displayStats(products);
 
     // Export to CSV
-    exportToCSV(products, CSV_OUTPUT_PATH);
+    await exportToCSV(products, CSV_OUTPUT_PATH);
 
     // Export to JSON
-    exportToJSON(products, JSON_OUTPUT_PATH);
+    await exportToJSON(products, JSON_OUTPUT_PATH);
 
     // Upload to Supabase (optional)
     await uploadToSupabase(products);

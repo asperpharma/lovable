@@ -46,11 +46,7 @@ export const LuxuryProductCard = ({ product }: { product: ProductProps }) => {
           edges: product.image_url ? [{ node: { url: product.image_url, altText: product.title } }] : []
         },
         priceRange: {
-          minVariantPrice: { amount: price.toString(), currencyCode: "JOD" },
-          maxVariantPrice: { amount: price.toString(), currencyCode: "JOD" }
-        },
-        compareAtPriceRange: {
-          minVariantPrice: { amount: (product.original_price || price).toString(), currencyCode: "JOD" }
+          minVariantPrice: { amount: price.toString(), currencyCode: "JOD" }
         },
         variants: {
           edges: [{
@@ -64,8 +60,7 @@ export const LuxuryProductCard = ({ product }: { product: ProductProps }) => {
             }
           }]
         },
-        options: [],
-        tags: []
+        options: []
       }
     };
 

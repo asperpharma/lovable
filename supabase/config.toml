@@ -1,10 +1,10 @@
 project_id = "rgehleqcubtmcwyipyvi"
 
 [functions.beauty-assistant]
-verify_jwt = false
+verify_jwt = true
 
 [functions.bulk-product-upload]
-verify_jwt = false
+verify_jwt = true
 
 [functions.create-cod-order]
 verify_jwt = false
@@ -13,16 +13,19 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.delete-account]
-verify_jwt = false
+verify_jwt = true
 
 [functions.enrich-products]
-verify_jwt = false
+verify_jwt = true
 
 [functions.scrape-product]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-product-images]
-verify_jwt = false
+verify_jwt = true
 
 [functions.remove-background]
+verify_jwt = true
+
+[functions.verify-captcha]
 verify_jwt = false

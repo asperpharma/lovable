@@ -18,8 +18,8 @@ import { translateTitle } from "@/lib/productUtils";
 import { z } from "zod";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 
-// hCaptcha site key (public - safe to include in code)
-const HCAPTCHA_SITE_KEY = "10000000-ffff-ffff-ffff-000000000001"; // Test key - replace with your real key
+// hCaptcha site key - Use environment variable for production
+const HCAPTCHA_SITE_KEY = import.meta.env.VITE_HCAPTCHA_SITE_KEY || "10000000-ffff-ffff-ffff-000000000001";
 
 // Validation schema
 const orderFormSchema = z.object({
@@ -133,7 +133,7 @@ export const CODCheckoutForm = ({ onSuccess, onCancel }: CODCheckoutFormProps) =
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
           },
           body: JSON.stringify({
             customerName: formData.customerName.trim(),

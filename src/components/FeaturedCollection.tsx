@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { LuxuryProductCard } from "@/components/LuxuryProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
+
+// Helper function to determine if product is new
+const isProductNew = (createdAt: string, isOnSale: boolean) => {
+  if (isOnSale) return false;
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  return new Date(createdAt) > sevenDaysAgo;
+};
 
 export const FeaturedCollection = () => {
   const { data: products, isLoading } = useQuery({
@@ -62,7 +69,7 @@ export const FeaturedCollection = () => {
                   image_url: product.image_url || "/placeholder.svg",
                   description: product.description || undefined,
                   volume_ml: product.volume_ml || undefined,
-                  is_new: !product.is_on_sale && new Date(product.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+                  is_new: isProductNew(product.created_at, product.is_on_sale || false),
                   is_on_sale: product.is_on_sale || false,
                 }}
               />

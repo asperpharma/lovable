@@ -135,8 +135,12 @@ serve(async (req) => {
           bytes[i] = binaryString.charCodeAt(i);
         }
 
-        // Generate unique filename
-        const filename = `ai-generated/${product.id}.${imageFormat}`;
+        // Generate organized filename: ai-generated/{category}/{brand}/{productId}.{ext}
+        const categorySlug = (product.category || "uncategorized").toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+        const brandSlug = (product.brand || "generic").toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "").replace(/'/g, "");
+        const filename = `ai-generated/${categorySlug}/${brandSlug}/${product.id}.${imageFormat}`;
+
+        console.log(`📁 Saving image to organized path: ${filename}`);
 
         // Upload to Supabase Storage
         const { error: uploadError } = await supabase.storage

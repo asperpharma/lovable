@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search, ShoppingBag, Heart, Menu, X } from "lucide-react";
@@ -9,6 +7,23 @@ import { useCartStore } from "@/stores/cartStore";
 import { useWishlistStore } from "@/stores/wishlistStore";
 import { LuxurySearch } from "./LuxurySearch";
 import { AccountDropdown } from "./AccountDropdown";
+// Navigation items - moved outside component to prevent recreation
+const NAV_ITEMS = [
+  { name: "Skin", nameAr: "البشرة", href: "/shop?category=Skin%20Care" },
+  { name: "Hair", nameAr: "الشعر", href: "/shop?category=Hair%20Care" },
+  { name: "Makeup", nameAr: "المكياج", href: "/shop?category=Makeup" },
+  { name: "Brands", nameAr: "العلامات", href: "/brands" },
+  { name: "Offers", nameAr: "العروض", href: "/offers" }
+];
+
+const MOBILE_NAV_ITEMS = [
+  { name: "Skin Care", nameAr: "العناية بالبشرة", href: "/shop?category=Skin%20Care" },
+  { name: "Hair Care", nameAr: "العناية بالشعر", href: "/shop?category=Hair%20Care" },
+  { name: "Makeup", nameAr: "المكياج", href: "/shop?category=Makeup" },
+  { name: "New Arrivals", nameAr: "وصل حديثاً", href: "/shop" },
+  { name: "Special Offers", nameAr: "عروض خاصة", href: "/offers" }
+];
+
 export const GlobalHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -41,48 +56,6 @@ export const GlobalHeader = () => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
-  const navItems = [{
-    name: "Skin",
-    nameAr: "البشرة",
-    href: "/shop?category=Skin%20Care"
-  }, {
-    name: "Hair",
-    nameAr: "الشعر",
-    href: "/shop?category=Hair%20Care"
-  }, {
-    name: "Makeup",
-    nameAr: "المكياج",
-    href: "/shop?category=Makeup"
-  }, {
-    name: "Brands",
-    nameAr: "العلامات",
-    href: "/brands"
-  }, {
-    name: "Offers",
-    nameAr: "العروض",
-    href: "/offers"
-  }];
-  const mobileNavItems = [{
-    name: "Skin Care",
-    nameAr: "العناية بالبشرة",
-    href: "/shop?category=Skin%20Care"
-  }, {
-    name: "Hair Care",
-    nameAr: "العناية بالشعر",
-    href: "/shop?category=Hair%20Care"
-  }, {
-    name: "Makeup",
-    nameAr: "المكياج",
-    href: "/shop?category=Makeup"
-  }, {
-    name: "New Arrivals",
-    nameAr: "وصل حديثاً",
-    href: "/shop"
-  }, {
-    name: "Special Offers",
-    nameAr: "عروض خاصة",
-    href: "/offers"
-  }];
   return <>
       <header className={cn("fixed top-0 left-0 right-0 z-50 transition-all duration-500", isScrolled ? "bg-background/95 backdrop-blur-lg shadow-sm border-b border-muted" : "bg-transparent")}>
         <div className="container mx-auto px-4 text-gold">
@@ -106,8 +79,8 @@ export const GlobalHeader = () => {
             </div>
 
             {/* MIDDLE: Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-              {navItems.map(item => <Link key={item.name} to={item.href} className="group flex items-center gap-1 font-sans text-sm font-medium uppercase tracking-widest transition-colors text-rose-50">
+            <nav className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2 z-10">
+              {NAV_ITEMS.map(item => <Link key={item.name} to={item.href} className="group flex items-center gap-1 font-sans text-sm font-medium uppercase tracking-widest transition-colors text-rose-50">
                   {isAr ? item.nameAr : item.name}
                 </Link>)}
             </nav>
@@ -163,7 +136,7 @@ export const GlobalHeader = () => {
           </button>
           
           <nav className="flex h-full flex-col items-center justify-center gap-8">
-            {mobileNavItems.map(item => <Link key={item.name} to={item.href} onClick={() => setIsMobileMenuOpen(false)} className="font-serif text-3xl font-light text-foreground transition-colors hover:text-primary">
+            {MOBILE_NAV_ITEMS.map(item => <Link key={item.name} to={item.href} onClick={() => setIsMobileMenuOpen(false)} className="font-serif text-3xl font-light text-foreground transition-colors hover:text-primary">
                 {isAr ? item.nameAr : item.name}
               </Link>)}
           </nav>

@@ -1,76 +1,68 @@
-# Product Import & Shopify Sync - Quick Reference
+# 🚀 Quick Start - Production Deployment
 
-## 🚀 Quick Commands
+## ✅ **3 Simple Steps to Launch**
 
+### **Step 1: Set Environment Variables**
 ```bash
-# 1. Process your Excel file
-npm run import:products
+# Copy template to .env
+cp .env.template .env
 
-# 2. Sync to Shopify (requires API key)
-npm run import:shopify
-
-# Or do both at once:
-npm run import:products && npm run import:shopify
+# Edit .env and fill in your values
+# Required: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
 ```
 
-## 📋 Setup Checklist
+### **Step 2: Configure Supabase Secrets**
+1. Go to: **Supabase Dashboard → Settings → Edge Functions → Secrets**
+2. Add all required secrets (see .env.template for list)
+3. Verify all secrets are set
 
-- [ ] Excel file at `/public/data/products-data.xlsx`
-- [ ] Run `npm run import:products` to process data
-- [ ] Get Shopify Admin API token (optional, for direct import)
-- [ ] Set `SHOPIFY_ADMIN_API_KEY` environment variable
-- [ ] Run `npm run import:shopify` to sync
+### **Step 3: Run Deployment**
+```bash
+# Make script executable (Linux/Mac)
+chmod +x deploy.sh
 
-## 📊 What Gets Processed
+# Run automated deployment
+./deploy.sh
 
-✅ **Automatic categorization** - Products sorted into 9 categories  
-✅ **Brand extraction** - Recognizes 40+ major beauty brands  
-✅ **SEO tags** - Auto-generated tags for better discoverability  
-✅ **Price validation** - Verifies pricing data  
-✅ **Stock management** - Inventory quantities included  
-✅ **Image handling** - Image URLs validated and included  
+# Or on Windows (Git Bash)
+bash deploy.sh
+```
 
-## 📁 Output Files
+---
 
-After running `npm run import:products`:
+## 📋 **What the Deploy Script Does**
 
-- `/public/data/products.csv` - Clean CSV format
-- `/public/data/products.json` - Structured JSON data
-- Console output with statistics and insights
+1. ✅ Checks environment configuration
+2. ✅ Verifies required variables
+3. ✅ Installs dependencies
+4. ✅ Builds frontend
+5. ✅ Deploys all edge functions
+6. ✅ Runs database migrations
+7. ✅ Verifies deployment
 
-## 🔑 Required Excel Columns
+---
 
-Your Excel file should have these columns (flexible naming):
+## 🔍 **Post-Deployment**
 
-| Column Type | Accepted Names |
-|-------------|----------------|
-| Product Name | `name`, `title`, `product_name` |
-| SKU | `sku`, `SKU`, `code` |
-| Price | `price`, `selling_price` |
-| Cost | `cost`, `cost_price` |
-| Brand | `brand`, `vendor` |
-| Stock | `stock`, `quantity` |
-| Image | `image`, `image_url` |
+### **Follow PRODUCTION_CHECKLIST.md**
+- Complete final verification
+- Test all features
+- Verify visual effects
+- Check image organization
 
-## 🎯 Categories Supported
+### **Monitor Logs and Metrics**
+- See `MONITORING_GUIDE.md` for details
+- Check Supabase Dashboard
+- Review function logs
+- Monitor performance
 
-1. **Skin Care** - Creams, serums, cleansers, sunscreens
-2. **Hair Care** - Shampoos, conditioners, treatments
-3. **Body Care** - Lotions, soaps, deodorants
-4. **Make Up** - Mascara, lipstick, foundation, etc.
-5. **Fragrances** - Perfumes, colognes
-6. **Health & Supplements** - Vitamins, supplements
-7. **Personal Care** - Toothpaste, hygiene products
-8. **Medical Supplies** - Medical equipment
-9. **Baby Care** - Baby products
+---
 
-## 🏷️ Recognized Brands
+## 🎉 **That's It!**
 
-Vichy • Eucerin • Cetaphil • La Roche-Posay • Bioderma • CeraVe  
-Neutrogena • Nivea • Dove • Garnier • L'Oréal • Maybelline  
-Revlon • Bourjois • Isadora • Essence • Bioten • Olaplex  
-And 25+ more...
+Your website is ready to launch! 🚀
 
-## 📞 Need Help?
-
-Check the full guide: [PRODUCT_IMPORT_GUIDE.md](./PRODUCT_IMPORT_GUIDE.md)
+**Need Help?**
+- See `DEPLOYMENT_GUIDE.md` for detailed steps
+- See `PRODUCTION_CHECKLIST.md` for verification
+- See `MONITORING_GUIDE.md` for post-launch monitoring
