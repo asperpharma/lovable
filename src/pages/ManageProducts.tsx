@@ -34,6 +34,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Upload, Loader2, Image as ImageIcon, ShieldCheck, Wand2, RefreshCw, Sparkles, Eraser } from "lucide-react";
 import { getProductImage } from "@/lib/productImageUtils";
+import { buildImagePath } from "@/lib/imagePathUtils";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/components/contexts/LanguageContext";
 
@@ -182,15 +183,15 @@ const ManageProducts = () => {
       
       const fileExt = file.name.split('.').pop();
       
-      // Get organized path: manual-upload/{category}/{brand}/{timestamp}.{ext}
-      const categorySlug = (formData.category || "uncategorized").toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
-      
-      // Try to get brand from editing product or use "generic"
-      const productBrand = editingProduct?.brand || "generic";
-      const brandSlug = productBrand.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "").replace(/'/g, "");
-      
-      const timestamp = Date.now();
-      const filePath = `manual-upload/${categorySlug}/${brandSlug}/${timestamp}.${fileExt}`;
+      // Use organized image path utility for consistency
+      const timestamp = Date.now().toString();
+      const filePath = buildImagePath(
+        "manual-upload",
+        formData.category,
+        editingProduct?.brand,
+        timestamp,
+        fileExt
+      );
 
       console.log(`📁 Uploading image to organized path: ${filePath}`);
 
