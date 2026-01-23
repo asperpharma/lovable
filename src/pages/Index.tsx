@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { LuxuryHero } from "@/components/LuxuryHero";
 import { BrandMarquee } from "@/components/BrandMarquee";
@@ -19,25 +19,16 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let loadTimer: NodeJS.Timeout;
-    
-    const handleLoad = () => {
-      loadTimer = setTimeout(() => setIsLoading(false), 300);
-    };
-    
-    const fallbackTimer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    const handleLoad = () => setIsLoading(false);
 
-    if (document.readyState === 'complete') {
-      handleLoad();
-    } else {
-      window.addEventListener("load", handleLoad);
-    }
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1200);
+
+    window.addEventListener("load", handleLoad);
 
     return () => {
-      clearTimeout(fallbackTimer);
-      clearTimeout(loadTimer);
+      clearTimeout(timer);
       window.removeEventListener("load", handleLoad);
     };
   }, []);
@@ -47,9 +38,9 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background animate-fade-in will-change-opacity">
+    <div className="min-h-screen bg-background animate-fade-in">
       <GlobalHeader />
-      <main className="will-change-transform">
+      <main>
         {/* 1. EMOTIONAL LAYER: The Cinematic Hero */}
         <LuxuryHero />
 
