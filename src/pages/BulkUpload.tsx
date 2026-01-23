@@ -391,6 +391,91 @@ export default function BulkUpload() {
   });
   const [shopifyErrors, setShopifyErrors] = useState<Array<{sku: string; name: string; error: string}>>([]);
   const [isShopifyUploading, setIsShopifyUploading] = useState(false);
+  const [uploadingSku, setUploadingSku] = useState<string | null>(null);
+
+  // Upload a single product to Shopify (run and upload each product in the same place)
+  const uploadSingleProductToShopify = useCallback(
+    async (product: ProcessedProduct) => {
+      if (product.status !== "completed" || !product.imageUrl) {
+        toast.error("Generate an image first");
+        return;
+      }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Please log in as an admin to upload to Shopify");
+        return;
+      }
+      setUploadingSku(product.sku);
+      try {
+        const { data, error } = await supabase.functions.invoke(
+          "bulk-product-upload",
+          {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+            body: {
+              action: "create-shopify-product",
+              product: {
+                title: product.name,
+                body: `${product.brand} - ${product.category}`,
+                vendor: product.brand,
+                product_type: product.category,
+                tags: `${product.category}, ${product.brand}, bulk-upload`,
+                price: product.price.toFixed(2),
+                sku: product.sku,
+                imageUrl: product.imageUrl,
+              },
+            },
+          },
+        );
+        if (error) throw new Error(error.message);
+        if (data?.error) throw new Error(data.error);
+        toast.success(`Uploaded: ${product.name}`);
+        setProducts((prev) =>
+          prev.map((p) =>
+            p.sku === product.sku ? { ...p, status: "completed" as const } : p
+          )
+        );
+        setShopifyProgress((prev) => ({
+          ...prev,
+          succeeded: prev.succeeded + 1,
+          total: prev.total + 1,
+        }));
+      } catch (e: any) {
+        toast.error(`Upload failed: ${product.name}`);
+        setShopifyErrors((prev) => [
+          ...prev,
+          {
+            sku: product.sku,
+            name: product.name,
+            error: e?.message || "Unknown",
+          },
+        ]);
+        setShopifyProgress((prev) => ({ ...prev, failed: prev.failed + 1 }));
+      } finally {
+        setUploadingSku(null);
+      }
+    },
+    [],
+  );
+
+  // Run (generate image) for a single product, then optionally upload — same place
+  const runSingleProduct = useCallback(
+    (product: ProcessedProduct) => {
+      if (product.status !== "pending" && product.status !== "failed") return;
+      const queueItems = [
+        {
+          id: product.sku,
+          sku: product.sku,
+          name: product.name,
+          category: product.category,
+          imagePrompt: product.imagePrompt,
+        },
+      ];
+      addToQueue(queueItems);
+      startQueue();
+      toast.info(`Generating image for: ${product.name}`);
+    },
+    [addToQueue, startQueue],
+  );
 
   // Upload to Shopify using the edge function
   const uploadToShopify = useCallback(async () => {
@@ -560,10 +645,21 @@ export default function BulkUpload() {
                   {step === "shopify" && "Upload to Shopify"}
                 </CardTitle>
                 <CardDescription>
+<<<<<<< Updated upstream
                   {step === "upload" && "Upload an Excel or CSV file with your product data"}
                   {step === "categorize" && "AI will automatically categorize products and extract brands"}
                   {step === "images" && "Generate professional product images using AI"}
                   {step === "review" && "Review categorized products before uploading"}
+=======
+                  {step === "upload" &&
+                    "Upload an Excel or CSV file with your product data"}
+                  {step === "categorize" &&
+                    "AI will automatically categorize products and extract brands"}
+                  {step === "images" &&
+                    "Generate professional product images using AI"}
+                  {step === "review" &&
+                    "Run and upload each product in the same place. Use Run to generate images, Upload to push to Shopify."}
+>>>>>>> Stashed changes
                   {step === "shopify" && "Final upload to your Shopify store"}
                 </CardDescription>
               </CardHeader>
@@ -965,8 +1061,42 @@ export default function BulkUpload() {
                                     <span className="text-sm text-gold font-medium">${product.price.toFixed(2)}</span>
                                   </div>
                                 </div>
-                                <div className="flex-shrink-0">
+                                <div className="flex-shrink-0 flex items-center gap-2">
                                   {getStatusIcon(product.status)}
+                                  {(product.status === "pending" ||
+                                    product.status === "failed") && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => runSingleProduct(product)}
+                                      disabled={queueStatus.isProcessing}
+                                    >
+                                      {product.status === "processing"
+                                        ? (
+                                          <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                                        )
+                                        : <Play className="w-3 h-3 mr-1" />}
+                                      Run
+                                    </Button>
+                                  )}
+                                  {product.status === "completed" &&
+                                    product.imageUrl && (
+                                    <Button
+                                      size="sm"
+                                      variant="default"
+                                      onClick={() =>
+                                        uploadSingleProductToShopify(product)}
+                                      disabled={uploadingSku !== null ||
+                                        isShopifyUploading}
+                                    >
+                                      {uploadingSku === product.sku
+                                        ? (
+                                          <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                                        )
+                                        : <Upload className="w-3 h-3 mr-1" />}
+                                      Upload
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                             ))}
