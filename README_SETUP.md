@@ -1,16 +1,20 @@
 # Setup Guide
 
-This document provides setup status, quick reference, and merge/use instructions for this repository.
+This document provides setup status, quick reference, and merge/use instructions
+for this repository.
 
 ## Setup Status
 
 ✅ **CodeQL Workflow**: Configured and ready
+
 - Location: `.github/workflows/codeql.yml`
 - Languages: Actions, JavaScript/TypeScript
 - Triggers: Push to `main`, PRs to `main`, Weekly schedule (Saturdays 17:20 UTC)
 
 ⚠️ **Action Required**: Disable default CodeQL in GitHub UI before merging
-- See [DISABLE_DEFAULT_CODEQL.md](./DISABLE_DEFAULT_CODEQL.md) for detailed instructions
+
+- See [DISABLE_DEFAULT_CODEQL.md](./DISABLE_DEFAULT_CODEQL.md) for detailed
+  instructions
 
 ## Quick Reference
 
@@ -30,7 +34,8 @@ This document provides setup status, quick reference, and merge/use instructions
 
 ### Documentation
 
-- [DISABLE_DEFAULT_CODEQL.md](./DISABLE_DEFAULT_CODEQL.md) - Instructions for disabling default CodeQL
+- [DISABLE_DEFAULT_CODEQL.md](./DISABLE_DEFAULT_CODEQL.md) - Instructions for
+  disabling default CodeQL
 - [SSH_SETUP.md](./SSH_SETUP.md) - SSH configuration guide
 
 ## Merge Instructions
@@ -40,7 +45,8 @@ This document provides setup status, quick reference, and merge/use instructions
 1. **Disable Default CodeQL** (Required)
    - Navigate to repository Settings → Security → Code scanning
    - Disable the default CodeQL workflow
-   - See [DISABLE_DEFAULT_CODEQL.md](./DISABLE_DEFAULT_CODEQL.md) for step-by-step instructions
+   - See [DISABLE_DEFAULT_CODEQL.md](./DISABLE_DEFAULT_CODEQL.md) for
+     step-by-step instructions
 
 2. **Verify SSH Setup** (If using SSH)
    - Ensure SSH keys are configured for GitHub
@@ -82,6 +88,7 @@ After merging:
 ## Testing
 
 Reviewers should verify:
+
 - ✅ Presence and content of `README_SETUP.md`
 - ✅ CodeQL workflow file exists at `.github/workflows/codeql.yml`
 - ✅ Related documentation files are present
@@ -89,4 +96,5 @@ Reviewers should verify:
 
 ---
 
-**Note**: This is a documentation-driven change with workflow configurations. No code runtime changes are introduced.
+**Note**: This is a documentation-driven change with workflow configurations. No
+code runtime changes are introduced.

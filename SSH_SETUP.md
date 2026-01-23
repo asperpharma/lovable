@@ -1,10 +1,12 @@
 # SSH Setup for GitHub
 
-This guide explains how to set up SSH keys for GitHub operations, which is recommended for secure git operations.
+This guide explains how to set up SSH keys for GitHub operations, which is
+recommended for secure git operations.
 
 ## Why Use SSH?
 
 SSH (Secure Shell) provides:
+
 - ✅ Secure authentication without passwords
 - ✅ No need to enter credentials repeatedly
 - ✅ Better security for automated workflows
@@ -26,6 +28,7 @@ ls -al ~/.ssh
 ```
 
 Look for files like:
+
 - `id_rsa.pub` or `id_ed25519.pub` (public key)
 - `id_rsa` or `id_ed25519` (private key)
 
@@ -42,6 +45,7 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 ```
 
 **When prompted:**
+
 - Press Enter to accept the default file location (`~/.ssh/id_ed25519`)
 - Optionally enter a passphrase for extra security
 - Confirm the passphrase if you set one
@@ -97,6 +101,7 @@ ssh -T git@github.com
 ```
 
 You should see:
+
 ```
 Hi username! You've successfully authenticated, but GitHub does not provide shell access.
 ```
@@ -128,7 +133,8 @@ chmod +x scripts/setup-ssh-github.sh
 ./scripts/setup-ssh-github.sh
 ```
 
-**Note**: The script will guide you through the process and prompt for your GitHub email.
+**Note**: The script will guide you through the process and prompt for your
+GitHub email.
 
 ## Windows Setup
 
@@ -175,6 +181,7 @@ ssh-add ~/.ssh/id_ed25519
 If you have multiple GitHub accounts or keys:
 
 1. Create a `~/.ssh/config` file:
+
 ```bash
 Host github.com
   HostName github.com
@@ -184,6 +191,7 @@ Host github.com
 ```
 
 2. For multiple accounts, use different host aliases:
+
 ```bash
 Host github-work
   HostName github.com
@@ -226,4 +234,5 @@ git pull
 
 ---
 
-**Need Help?** Check GitHub's official documentation: https://docs.github.com/en/authentication/connecting-to-github-with-ssh
+**Need Help?** Check GitHub's official documentation:
+https://docs.github.com/en/authentication/connecting-to-github-with-ssh

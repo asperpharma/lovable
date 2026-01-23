@@ -1,10 +1,14 @@
 # Disable Default CodeQL Workflow
 
-This guide explains how to disable GitHub's default CodeQL workflow before merging the custom CodeQL configuration.
+This guide explains how to disable GitHub's default CodeQL workflow before
+merging the custom CodeQL configuration.
 
 ## Why Disable Default CodeQL?
 
-GitHub automatically enables a default CodeQL workflow when code scanning is first set up. Since we're using a custom CodeQL workflow (`.github/workflows/codeql.yml`), we need to disable the default one to avoid duplicate scans and conflicts.
+GitHub automatically enables a default CodeQL workflow when code scanning is
+first set up. Since we're using a custom CodeQL workflow
+(`.github/workflows/codeql.yml`), we need to disable the default one to avoid
+duplicate scans and conflicts.
 
 ## Steps to Disable Default CodeQL
 
@@ -20,7 +24,8 @@ GitHub automatically enables a default CodeQL workflow when code scanning is fir
 
 3. **Disable Default Workflow**
    - Look for "Code scanning workflows" section
-   - Find the default CodeQL workflow (usually named "CodeQL" or "Default CodeQL")
+   - Find the default CodeQL workflow (usually named "CodeQL" or "Default
+     CodeQL")
    - Click the **⋮** (three dots) menu next to it
    - Select **Disable** or **Delete**
 
@@ -54,7 +59,8 @@ After disabling, verify:
 
 1. **Check Workflow Status**
    - Go to **Actions** tab in your repository
-   - The default CodeQL workflow should no longer appear or should show as disabled
+   - The default CodeQL workflow should no longer appear or should show as
+     disabled
 
 2. **Verify Custom Workflow**
    - Ensure `.github/workflows/codeql.yml` is present
@@ -78,7 +84,8 @@ After disabling, verify:
 
 - Review all workflows in `.github/workflows/`
 - Ensure only one CodeQL workflow is active
-- The custom workflow should be named "CodeQL Advanced" (as defined in the workflow file)
+- The custom workflow should be named "CodeQL Advanced" (as defined in the
+  workflow file)
 
 ## After Disabling
 
@@ -95,4 +102,5 @@ Once the default CodeQL is disabled:
 
 ---
 
-**Important**: Complete this step **before** merging the branch to avoid workflow conflicts.
+**Important**: Complete this step **before** merging the branch to avoid
+workflow conflicts.
