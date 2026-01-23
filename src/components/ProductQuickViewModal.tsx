@@ -54,11 +54,7 @@ export const ProductQuickViewModal = ({ product, isOpen, onClose }: ProductQuick
           edges: product.image_url ? [{ node: { url: product.image_url, altText: product.title } }] : []
         },
         priceRange: {
-          minVariantPrice: { amount: product.price.toString(), currencyCode: "JOD" },
-          maxVariantPrice: { amount: product.price.toString(), currencyCode: "JOD" }
-        },
-        compareAtPriceRange: {
-          minVariantPrice: { amount: (product.original_price || product.price).toString(), currencyCode: "JOD" }
+          minVariantPrice: { amount: product.price.toString(), currencyCode: "JOD" }
         },
         variants: {
           edges: [{
@@ -72,8 +68,7 @@ export const ProductQuickViewModal = ({ product, isOpen, onClose }: ProductQuick
             }
           }]
         },
-        options: [],
-        tags: []
+        options: []
       }
     };
 

@@ -17,36 +17,31 @@ import { Loader2, CheckCircle, MapPin, Phone, User, Mail, FileText, ShieldCheck 
 import { translateTitle } from "@/lib/productUtils";
 import { z } from "zod";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
+import { APP_CONFIG } from "@/lib/constants";
+import { handleApiError, logError } from "@/lib/errorHandling";
 
 // hCaptcha site key - Use environment variable for production
-const HCAPTCHA_SITE_KEY = import.meta.env.VITE_HCAPTCHA_SITE_KEY || "10000000-ffff-ffff-ffff-000000000001";
+const HCAPTCHA_SITE_KEY = APP_CONFIG.API.HCAPTCHA_SITE_KEY || "10000000-ffff-ffff-ffff-000000000001";
 
-// Validation schema
+// Validation schema using constants
 const orderFormSchema = z.object({
-  customerName: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
-  customerPhone: z.string().trim().regex(/^07[789]\d{7}$/, "Invalid phone number format (07XXXXXXXX)"),
+  customerName: z.string().trim()
+    .min(APP_CONFIG.VALIDATION.MIN_NAME_LENGTH, `Name must be at least ${APP_CONFIG.VALIDATION.MIN_NAME_LENGTH} characters`)
+    .max(APP_CONFIG.VALIDATION.MAX_NAME_LENGTH, "Name too long"),
+  customerPhone: z.string().trim()
+    .regex(APP_CONFIG.VALIDATION.PHONE_REGEX, "Invalid phone number format (07XXXXXXXX)"),
   customerEmail: z.string().email("Invalid email").max(255).optional().or(z.literal('')),
-  deliveryAddress: z.string().trim().min(10, "Address must be at least 10 characters").max(500, "Address too long"),
+  deliveryAddress: z.string().trim()
+    .min(APP_CONFIG.VALIDATION.MIN_ADDRESS_LENGTH, `Address must be at least ${APP_CONFIG.VALIDATION.MIN_ADDRESS_LENGTH} characters`)
+    .max(APP_CONFIG.VALIDATION.MAX_ADDRESS_LENGTH, "Address too long"),
   city: z.string().min(1, "Please select a city"),
-  notes: z.string().trim().max(500, "Notes too long").optional().or(z.literal('')),
+  notes: z.string().trim()
+    .max(APP_CONFIG.VALIDATION.MAX_NOTES_LENGTH, "Notes too long")
+    .optional().or(z.literal('')),
 });
-const JORDAN_CITIES = [
-  "Amman",
-  "Zarqa",
-  "Irbid",
-  "Aqaba",
-  "Salt",
-  "Mafraq",
-  "Jerash",
-  "Madaba",
-  "Karak",
-  "Ajloun",
-  "Ma'an",
-  "Tafilah",
-];
 
-const SHIPPING_COST = 3; // JOD
-const FREE_SHIPPING_THRESHOLD = 50; // JOD
+const SHIPPING_COST = APP_CONFIG.SHIPPING.COST;
+const FREE_SHIPPING_THRESHOLD = APP_CONFIG.SHIPPING.FREE_THRESHOLD;
 
 interface CODCheckoutFormProps {
   onSuccess: (orderNumber: string) => void;
@@ -128,12 +123,12 @@ export const CODCheckoutForm = ({ onSuccess, onCancel }: CODCheckoutFormProps) =
 
       // Call secure edge function with CAPTCHA token
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-cod-order`,
+        `${APP_CONFIG.API.SUPABASE_URL}/functions/v1/create-cod-order`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'apikey': APP_CONFIG.API.SUPABASE_ANON_KEY,
           },
           body: JSON.stringify({
             customerName: formData.customerName.trim(),
@@ -164,8 +159,9 @@ export const CODCheckoutForm = ({ onSuccess, onCancel }: CODCheckoutFormProps) =
       onSuccess(result.orderNumber);
       
     } catch (error) {
-      console.error('Failed to place COD order:', error);
-      toast.error(isArabic ? "فشل في إرسال الطلب. حاول مرة أخرى." : "Failed to place order. Please try again.");
+      const errorMessage = handleApiError(error);
+      logError(error, 'COD Order Creation');
+      toast.error(isArabic ? "فشل في إرسال الطلب. حاول مرة أخرى." : errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -268,7 +264,7 @@ export const CODCheckoutForm = ({ onSuccess, onCancel }: CODCheckoutFormProps) =
               <SelectValue placeholder={isArabic ? 'اختر المدينة' : 'Select city'} />
             </SelectTrigger>
             <SelectContent>
-              {JORDAN_CITIES.map((city) => (
+              {APP_CONFIG.CITIES.map((city) => (
                 <SelectItem key={city} value={city}>
                   {city}
                 </SelectItem>
