@@ -38,16 +38,16 @@ const BRANDS = [
 ];
 
 export const BrandMarquee = () => {
-  const { language } = useLanguage();
+  const { language, isRTL } = useLanguage();
   const isAr = language === "ar";
 
   return (
     <section className="w-full bg-gradient-to-b from-cream to-background py-16 md:py-24 overflow-hidden">
       <div className="container mx-auto px-4">
         {/* Elegant Header with Premium Icons */}
-        <div className="text-center mb-12 md:mb-16">
+        <div className={`text-center mb-12 md:mb-16 ${isRTL ? 'font-arabic' : ''}`}>
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="h-px w-12 md:w-20 bg-gradient-to-r from-transparent to-gold/60" />
+            <div className={`h-px w-12 md:w-20 ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-transparent to-gold/60`} />
             <div className="relative flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-gold/70 animate-pulse" />
               <div className="relative">
@@ -62,7 +62,7 @@ export const BrandMarquee = () => {
                 style={{ animationDelay: "0.5s" }}
               />
             </div>
-            <div className="h-px w-12 md:w-20 bg-gradient-to-l from-transparent to-gold/60" />
+            <div className={`h-px w-12 md:w-20 ${isRTL ? 'bg-gradient-to-r' : 'bg-gradient-to-l'} from-transparent to-gold/60`} />
           </div>
           <p className="font-serif text-xs md:text-sm uppercase tracking-[0.3em] text-muted-foreground">
             {isAr ? "موزع معتمد للعلامات الفاخرة" : "Authorized Luxury Retailer"}

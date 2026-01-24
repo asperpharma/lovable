@@ -11,6 +11,9 @@ export const Newsletter = () => {
   const { language } = useLanguage();
   const isArabic = language === "ar";
 
+  const { language, isRTL } = useLanguage();
+  const isArabic = language === 'ar';
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
@@ -66,9 +69,9 @@ export const Newsletter = () => {
 
           {/* Luxury Divider */}
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-12 h-px bg-gradient-to-r from-transparent to-gold/60" />
+            <div className={`w-12 h-px ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-transparent to-gold/60`} />
             <div className="w-2 h-2 rounded-full bg-gold shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
-            <div className="w-12 h-px bg-gradient-to-l from-transparent to-gold/60" />
+            <div className={`w-12 h-px ${isRTL ? 'bg-gradient-to-r' : 'bg-gradient-to-l'} from-transparent to-gold/60`} />
           </div>
 
           <p className="font-body text-charcoal/70 mb-10 leading-relaxed text-lg">
@@ -82,6 +85,7 @@ export const Newsletter = () => {
               onSubmit={handleSubmit}
               className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto"
             >
+            <form onSubmit={handleSubmit} className={`flex flex-col sm:flex-row gap-4 max-w-lg mx-auto ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
               {/* Premium Input with focus effects */}
               <div
                 className={`relative flex-1 transition-all duration-500 ${

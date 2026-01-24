@@ -1,9 +1,15 @@
-import React from "react";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowRight, ChevronDown, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
+
 export const LuxuryHero = () => {
+  const [bgImageError, setBgImageError] = useState(false);
+  const { language, isRTL } = useLanguage();
+  const isAr = language === "ar";
+  
   const scrollToCollection = () => {
     const element = document.getElementById("featured-collection");
     element?.scrollIntoView({
@@ -25,17 +31,17 @@ export const LuxuryHero = () => {
       </div>
 
       {/* 2. Hero Content */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-rose-50">
+      <div className={`relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-rose-50 ${isRTL ? 'font-arabic' : ''}`}>
         {/* Gold Pre-heading (The "Eyebrow") */}
-        <span className="mb-4 font-sans text-xs font-medium uppercase tracking-[0.3em] text-gold-300 animate-fade-in-up opacity-0 [animation-delay:0.2s] text-rose-800">
-          The New Collection
+        <span className="mb-4 font-sans text-xs font-medium uppercase tracking-[0.3em] text-gold-300 animate-fade-in-up opacity-0 [animation-delay:0.2s] text-soft-ivory">
+          {t.eyebrow}
         </span>
 
         {/* Main Headline - Playfair Display */}
         <h1 className="font-serif text-5xl font-light leading-tight tracking-tight text-soft-ivory md:text-7xl lg:text-8xl animate-fade-in-up opacity-0 [animation-delay:0.4s]">
-          Redefining{" "}
+          {t.title}{" "}
           <span className="block italic text-gold-300">
-            Eternal Beauty
+            {t.titleItalic}
           </span>
         </h1>
 
@@ -46,7 +52,7 @@ export const LuxuryHero = () => {
         </p>
 
         {/* Buttons */}
-        <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row animate-fade-in-up opacity-0 [animation-delay:0.8s] text-rose-800 bg-transparent">
+        <div className={`mt-10 flex flex-col items-center gap-4 sm:flex-row animate-fade-in-up opacity-0 [animation-delay:0.8s] ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
           {/* Primary CTA - Gold */}
           <Button
             asChild

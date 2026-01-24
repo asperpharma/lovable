@@ -1,14 +1,71 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Clock, Flame } from "lucide-react";
+import { Clock, Flame, ArrowRight, ArrowLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getProductImage } from "@/lib/productImageUtils";
+
+// Product card component for deals
+const DealProductCard = ({ product }: { product: any }) => {
+  const [imageError, setImageError] = useState(false);
+  const productImage = getProductImage(
+    product.image_url,
+    product.category || '',
+    product.title
+  );
+
+  return (
+    <Link
+      key={product.id}
+      to={`/product/${product.id}`}
+      className="group overflow-hidden rounded-lg border border-muted bg-card transition-all duration-300 hover:border-primary hover:shadow-lg"
+    >
+      {/* Image */}
+      <div className="relative aspect-square overflow-hidden bg-muted/30">
+        <img
+          src={imageError ? getProductImage(null, product.category || '', product.title) : productImage}
+          onError={() => setImageError(true)}
+          alt={product.title}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+        />
+        {/* Discount Badge */}
+        {product.discount_percent && (
+          <div className="absolute left-2 top-2 rounded-full bg-destructive px-2 py-1 text-xs font-bold text-destructive-foreground">
+            -{product.discount_percent}%
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="p-4">
+        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          {product.brand || product.category}
+        </span>
+        <h3 className="mt-1 line-clamp-2 font-sans text-sm font-medium text-foreground transition-colors group-hover:text-primary">
+          {product.title}
+        </h3>
+        <div className="mt-2 flex items-center gap-2">
+          <span className="font-serif text-lg font-semibold text-primary">
+            {product.price.toFixed(2)} JOD
+          </span>
+          {product.original_price && (
+            <span className="text-sm text-muted-foreground line-through">
+              {product.original_price.toFixed(2)} JOD
+            </span>
+          )}
+        </div>
+      </div>
+    </Link>
+  );
+};
 
 export const DealOfTheDay = () => {
-  const { language } = useLanguage();
+  const { language, isRTL } = useLanguage();
   const isAr = language === "ar";
 
   // Countdown Timer State
@@ -60,7 +117,7 @@ export const DealOfTheDay = () => {
     <section className="bg-background py-12 md:py-16">
       <div className="container mx-auto max-w-7xl px-4">
         {/* Header with Timer */}
-        <div className="mb-8 flex flex-col items-center justify-between gap-4 md:flex-row">
+        <div className={`mb-8 flex flex-col items-center justify-between gap-4 md:flex-row ${isRTL ? 'md:flex-row-reverse' : ''}`}>
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
               <Flame className="h-5 w-5 text-destructive" />
@@ -93,7 +150,7 @@ export const DealOfTheDay = () => {
               className="ml-4 flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80"
             >
               {isAr ? "عرض الكل" : "View All"}
-              <ArrowRight className="h-4 w-4" />
+              {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
             </Link>
           </div>
         </div>

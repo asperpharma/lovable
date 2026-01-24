@@ -3,8 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { LuxuryProductCard } from "@/components/LuxuryProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getProductImage } from "@/lib/productImageUtils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const FeaturedCollection = () => {
+  const { language, isRTL } = useLanguage();
+  const isAr = language === "ar";
+
   const { data: products, isLoading } = useQuery({
     queryKey: ["featured-products"],
     queryFn: async () => {
@@ -19,16 +24,29 @@ export const FeaturedCollection = () => {
     },
   });
 
+  const translations = {
+    en: {
+      eyebrow: "Selected For You",
+      title: "The Iconic Edit"
+    },
+    ar: {
+      eyebrow: "مختار لك",
+      title: "التحرير الأيقوني"
+    }
+  };
+
+  const t = translations[language];
+
   return (
     <section id="featured-collection" className="bg-cream py-20 md:py-28">
       <div className="container mx-auto max-w-7xl px-4">
         {/* Section Header */}
-        <div className="mb-12 text-center md:mb-16">
+        <div className={`mb-12 text-center md:mb-16 ${isRTL ? 'font-arabic' : ''}`}>
           <span className="mb-3 inline-block font-sans text-xs font-medium uppercase tracking-[0.3em] text-gold-500">
-            Selected For You
+            {t.eyebrow}
           </span>
           <h2 className="font-serif text-4xl font-light tracking-tight text-luxury-black md:text-5xl">
-            The Iconic Edit
+            {t.title}
           </h2>
           <div className="mx-auto mt-4 h-px w-16 bg-gold-300" />
         </div>
