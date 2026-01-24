@@ -228,6 +228,10 @@
     transform: translate(50%, 0);
   }
 
+  [dir="rtl"] .translate-x-1\/2 {
+    transform: translate(-50%, 0);
+  }
+
   /* RTL border radius adjustments for better visual flow */
   [dir="rtl"] .rounded-l {
     border-top-left-radius: 0;
