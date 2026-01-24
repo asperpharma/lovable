@@ -2,12 +2,7 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
-  ],
+  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
     container: {
@@ -19,9 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Playfair Display", "serif"],
-        body: ["Inter", "Lato", "sans-serif"],
-        script: ["Great Vibes", "cursive"],
+        display: ['Playfair Display', 'serif'],
+        body: ['Inter', 'Lato', 'sans-serif'],
+        script: ['Great Vibes', 'cursive'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -108,7 +103,7 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       transitionDuration: {
-        "400": "400ms",
+        '400': '400ms',
       },
       keyframes: {
         "accordion-down": {
