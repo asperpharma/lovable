@@ -11,8 +11,9 @@ import { z } from "zod";
 export function sanitizeInput(input: string): string {
   return input
     .trim()
-    .replace(/<[^>]*>/g, '') // Remove HTML tags
-    .replace(/[<>'"`;]/g, '') // Remove dangerous characters
+    // Allow only English letters, Arabic letters, digits, whitespace, and basic punctuation commonly used in names/queries.
+    // This avoids multi-character HTML/script sanitization issues by simply rejecting unsafe characters altogether.
+    .replace(/[^a-zA-Z0-9\u0600-\u06FF\s'-]/g, "")
     .slice(0, 1000); // Limit length
 }
 
@@ -61,7 +62,7 @@ export const checkoutFormSchema = z.object({
     .email("Invalid email")
     .max(255)
     .optional()
-    .or(z.literal('')),
+    .or(z.literal("")),
   deliveryAddress: z.string()
     .trim()
     .min(10, "Address must be at least 10 characters")
@@ -71,7 +72,7 @@ export const checkoutFormSchema = z.object({
     .trim()
     .max(500, "Notes too long")
     .optional()
-    .or(z.literal('')),
+    .or(z.literal("")),
 });
 
 export type CheckoutFormData = z.infer<typeof checkoutFormSchema>;
