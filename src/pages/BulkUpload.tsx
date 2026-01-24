@@ -37,7 +37,11 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ExcelJS from "exceljs";
+<<<<<<< Updated upstream
 import { QueueItem, useImageQueue } from "@/lib/imageGenerationQueue";
+=======
+import { useImageQueue, QueueItem } from "@/lib/imageGenerationQueue";
+>>>>>>> Stashed changes
 
 interface ProcessedProduct {
   sku: string;
@@ -488,6 +492,94 @@ export default function BulkUpload() {
     Array<{ sku: string; name: string; error: string }>
   >([]);
   const [isShopifyUploading, setIsShopifyUploading] = useState(false);
+<<<<<<< Updated upstream
+=======
+  const [uploadingSku, setUploadingSku] = useState<string | null>(null);
+
+  // Upload a single product to Shopify (run and upload each product in the same place)
+  const uploadSingleProductToShopify = useCallback(
+    async (product: ProcessedProduct) => {
+      if (product.status !== "completed" || !product.imageUrl) {
+        toast.error("Generate an image first");
+        return;
+      }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Please log in as an admin to upload to Shopify");
+        return;
+      }
+      setUploadingSku(product.sku);
+      try {
+        const { data, error } = await supabase.functions.invoke(
+          "bulk-product-upload",
+          {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+            body: {
+              action: "create-shopify-product",
+              product: {
+                title: product.name,
+                body: `${product.brand} - ${product.category}`,
+                vendor: product.brand,
+                product_type: product.category,
+                tags: `${product.category}, ${product.brand}, bulk-upload`,
+                price: product.price.toFixed(2),
+                sku: product.sku,
+                imageUrl: product.imageUrl,
+              },
+            },
+          },
+        );
+        if (error) throw new Error(error.message);
+        if (data?.error) throw new Error(data.error);
+        toast.success(`Uploaded: ${product.name}`);
+        setProducts((prev) =>
+          prev.map((p) =>
+            p.sku === product.sku ? { ...p, status: "completed" as const } : p
+          )
+        );
+        setShopifyProgress((prev) => ({
+          ...prev,
+          succeeded: prev.succeeded + 1,
+          total: prev.total + 1,
+        }));
+      } catch (e: any) {
+        toast.error(`Upload failed: ${product.name}`);
+        setShopifyErrors((prev) => [
+          ...prev,
+          {
+            sku: product.sku,
+            name: product.name,
+            error: e?.message || "Unknown",
+          },
+        ]);
+        setShopifyProgress((prev) => ({ ...prev, failed: prev.failed + 1 }));
+      } finally {
+        setUploadingSku(null);
+      }
+    },
+    [],
+  );
+
+  // Run (generate image) for a single product, then optionally upload — same place
+  const runSingleProduct = useCallback(
+    (product: ProcessedProduct) => {
+      if (product.status !== "pending" && product.status !== "failed") return;
+      const queueItems = [
+        {
+          id: product.sku,
+          sku: product.sku,
+          name: product.name,
+          category: product.category,
+          imagePrompt: product.imagePrompt,
+        },
+      ];
+      addToQueue(queueItems);
+      startQueue();
+      toast.info(`Generating image for: ${product.name}`);
+    },
+    [addToQueue, startQueue],
+  );
+>>>>>>> Stashed changes
 
   // Upload to Shopify using the edge function
   const uploadToShopify = useCallback(async () => {
@@ -628,12 +720,17 @@ export default function BulkUpload() {
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="text-center mb-12">
+<<<<<<< Updated upstream
               <h1 className="text-4xl font-serif text-charcoal mb-4">
                 Bulk Product Upload
               </h1>
               <p className="text-taupe">
                 Upload, categorize, and generate images for your products
               </p>
+=======
+              <h1 className="text-4xl font-serif text-charcoal mb-4">Bulk Product Upload</h1>
+              <p className="text-taupe">Upload, categorize, and generate images for your products</p>
+>>>>>>> Stashed changes
             </div>
 
             {/* Progress Steps */}
@@ -643,11 +740,15 @@ export default function BulkUpload() {
                 { id: "categorize", icon: Sparkles, label: "Categorize" },
                 { id: "images", icon: Image, label: "Generate Images" },
                 { id: "review", icon: FileSpreadsheet, label: "Review" },
+<<<<<<< Updated upstream
                 {
                   id: "shopify",
                   icon: ShoppingBag,
                   label: "Upload to Shopify",
                 },
+=======
+                { id: "shopify", icon: ShoppingBag, label: "Upload to Shopify" },
+>>>>>>> Stashed changes
               ].map((s, i) => (
                 <div key={s.id} className="flex items-center">
                   <div
@@ -679,6 +780,12 @@ export default function BulkUpload() {
                   {step === "shopify" && "Upload to Shopify"}
                 </CardTitle>
                 <CardDescription>
+<<<<<<< Updated upstream
+                  {step === "upload" && "Upload an Excel or CSV file with your product data"}
+                  {step === "categorize" && "AI will automatically categorize products and extract brands"}
+                  {step === "images" && "Generate professional product images using AI"}
+                  {step === "review" && "Review categorized products before uploading"}
+=======
                   {step === "upload" &&
                     "Upload an Excel or CSV file with your product data"}
                   {step === "categorize" &&
@@ -697,9 +804,13 @@ export default function BulkUpload() {
                     <div className="text-center py-8">
                       <div className="border-2 border-dashed border-taupe/30 rounded-xl p-12 hover:border-burgundy/50 transition-colors">
                         <Upload className="w-12 h-12 mx-auto mb-4 text-taupe" />
+<<<<<<< Updated upstream
                         <p className="text-charcoal mb-4">
                           Drop your Excel or CSV file here
                         </p>
+=======
+                        <p className="text-charcoal mb-4">Drop your Excel or CSV file here</p>
+>>>>>>> Stashed changes
                         <input
                           type="file"
                           accept=".xlsx,.xls,.csv"
@@ -710,6 +821,7 @@ export default function BulkUpload() {
                         <label htmlFor="file-upload">
                           <Button asChild disabled={isProcessing}>
                             <span>
+<<<<<<< Updated upstream
                               {isProcessing
                                 ? (
                                   <>
@@ -723,12 +835,29 @@ export default function BulkUpload() {
                                     Choose File
                                   </>
                                 )}
+=======
+                              {isProcessing ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                  Processing...
+                                </>
+                              ) : (
+                                <>
+                                  <FileSpreadsheet className="w-4 h-4 mr-2" />
+                                  Choose File
+                                </>
+                              )}
+>>>>>>> Stashed changes
                             </span>
                           </Button>
                         </label>
                         <p className="text-sm text-taupe mt-4">
+<<<<<<< Updated upstream
                           Supports Arabic columns: الرمز، اسم المادة، سعر البيع،
                           الكلفة
+=======
+                          Supports Arabic columns: الرمز، اسم المادة، سعر البيع، الكلفة
+>>>>>>> Stashed changes
                         </p>
                       </div>
 
@@ -1279,6 +1408,32 @@ export default function BulkUpload() {
                                 </div>
                                 <div className="flex-shrink-0">
                                   {getStatusIcon(product.status)}
+<<<<<<< Updated upstream
+=======
+                                  {(product.status === "pending" ||
+                                    product.status === "failed") && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => runSingleProduct(product)}
+                                      disabled={queueStatus.isProcessing}
+                                    >
+                                      {product.brand}
+                                    </Badge>
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-xs"
+                                    >
+                                      {product.category}
+                                    </Badge>
+                                    <span className="text-sm text-gold font-medium">
+                                      ${product.price.toFixed(2)}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex-shrink-0">
+                                  {getStatusIcon(product.status)}
+>>>>>>> Stashed changes
                                 </div>
                               </div>
                             ))}
