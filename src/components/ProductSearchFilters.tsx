@@ -1,5 +1,5 @@
-import { useCallback, useState } from "react";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { useState, useCallback } from "react";
+import { Search, X, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,12 +19,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useLanguage } from "@/contexts/LanguageContext";
-import {
-  BRANDS,
-  CATEGORIES,
-  PRICE_RANGES,
-  SKIN_CONCERNS,
-} from "@/lib/categoryHierarchy";
+import { CATEGORIES, SKIN_CONCERNS, BRANDS, PRICE_RANGES } from "@/lib/categoryHierarchy";
 import { sanitizeInput } from "@/lib/validationSchemas";
 
 export interface FilterState {
@@ -51,7 +46,8 @@ export const ProductSearchFilters = ({
   const { language } = useLanguage();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  const activeFilterCount = filters.categories.length +
+  const activeFilterCount =
+    filters.categories.length +
     filters.subcategories.length +
     filters.brands.length +
     filters.skinConcerns.length +
@@ -61,7 +57,7 @@ export const ProductSearchFilters = ({
   const updateFilters = useCallback((updates: Partial<FilterState>) => {
     onFiltersChange({ ...filters, ...updates });
   }, [filters, onFiltersChange]);
-
+  
   // Sanitize search input to prevent XSS
   const handleSearchChange = useCallback((value: string) => {
     // Limit length and sanitize
@@ -92,11 +88,7 @@ export const ProductSearchFilters = ({
   const FilterContent = () => (
     <div className="space-y-6">
       {/* Categories */}
-      <Accordion
-        type="multiple"
-        defaultValue={["categories", "brands", "concerns"]}
-        className="w-full"
-      >
+      <Accordion type="multiple" defaultValue={["categories", "brands", "concerns"]} className="w-full">
         <AccordionItem value="categories" className="border-b border-gray-100">
           <AccordionTrigger className="text-sm font-medium text-gray-900 hover:no-underline py-3">
             {language === "ar" ? "الفئات" : "Categories"}
@@ -108,8 +100,7 @@ export const ProductSearchFilters = ({
                   <label className="flex items-center gap-2 cursor-pointer">
                     <Checkbox
                       checked={filters.categories.includes(category.id)}
-                      onCheckedChange={() =>
-                        toggleArrayFilter("categories", category.id)}
+                      onCheckedChange={() => toggleArrayFilter("categories", category.id)}
                       className="border-gray-300"
                     />
                     <span className="text-sm font-medium text-gray-700">
@@ -119,14 +110,10 @@ export const ProductSearchFilters = ({
                   {filters.categories.includes(category.id) && (
                     <div className="ml-6 space-y-2">
                       {category.subcategories.map((sub) => (
-                        <label
-                          key={sub.id}
-                          className="flex items-center gap-2 cursor-pointer"
-                        >
+                        <label key={sub.id} className="flex items-center gap-2 cursor-pointer">
                           <Checkbox
                             checked={filters.subcategories.includes(sub.id)}
-                            onCheckedChange={() =>
-                              toggleArrayFilter("subcategories", sub.id)}
+                            onCheckedChange={() => toggleArrayFilter("subcategories", sub.id)}
                             className="border-gray-300 h-3.5 w-3.5"
                           />
                           <span className="text-xs text-gray-600">
@@ -150,14 +137,10 @@ export const ProductSearchFilters = ({
           <AccordionContent className="pb-4">
             <div className="grid grid-cols-2 gap-2">
               {BRANDS.map((brand) => (
-                <label
-                  key={brand.id}
-                  className="flex items-center gap-2 cursor-pointer"
-                >
+                <label key={brand.id} className="flex items-center gap-2 cursor-pointer">
                   <Checkbox
                     checked={filters.brands.includes(brand.name)}
-                    onCheckedChange={() =>
-                      toggleArrayFilter("brands", brand.name)}
+                    onCheckedChange={() => toggleArrayFilter("brands", brand.name)}
                     className="border-gray-300 h-3.5 w-3.5"
                   />
                   <span className="text-xs text-gray-600">{brand.name}</span>
@@ -200,8 +183,7 @@ export const ProductSearchFilters = ({
             <div className="space-y-4 px-1">
               <Slider
                 value={filters.priceRange}
-                onValueChange={(value) =>
-                  updateFilters({ priceRange: value as [number, number] })}
+                onValueChange={(value) => updateFilters({ priceRange: value as [number, number] })}
                 max={200}
                 min={0}
                 step={5}
@@ -215,10 +197,7 @@ export const ProductSearchFilters = ({
                 {PRICE_RANGES.map((range) => (
                   <button
                     key={range.id}
-                    onClick={() =>
-                      updateFilters({
-                        priceRange: [range.min, Math.min(range.max, 200)],
-                      })}
+                    onClick={() => updateFilters({ priceRange: [range.min, Math.min(range.max, 200)] })}
                     className="px-2 py-1 text-xs rounded border border-gray-200 hover:border-burgundy hover:text-burgundy transition-colors"
                   >
                     {language === "ar" ? range.labelAr : range.labelEn}
@@ -234,8 +213,7 @@ export const ProductSearchFilters = ({
       <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg bg-red-50 border border-red-100">
         <Checkbox
           checked={filters.onSaleOnly}
-          onCheckedChange={(checked) =>
-            updateFilters({ onSaleOnly: !!checked })}
+          onCheckedChange={(checked) => updateFilters({ onSaleOnly: !!checked })}
           className="border-red-300"
         />
         <span className="text-sm font-medium text-red-700">
@@ -253,9 +231,7 @@ export const ProductSearchFilters = ({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             type="text"
-            placeholder={language === "ar"
-              ? "ابحث عن منتجات..."
-              : "Search products..."}
+            placeholder={language === "ar" ? "ابحث عن منتجات..." : "Search products..."}
             value={filters.searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
             className="pl-10 pr-4 py-2.5 bg-white border-gray-200 rounded-lg focus:ring-2 focus:ring-burgundy/20 focus:border-burgundy"
@@ -287,10 +263,7 @@ export const ProductSearchFilters = ({
               )}
             </Button>
           </SheetTrigger>
-          <SheetContent
-            side="left"
-            className="w-80 bg-white p-0 overflow-y-auto"
-          >
+          <SheetContent side="left" className="w-80 bg-white p-0 overflow-y-auto">
             <SheetHeader className="p-4 border-b border-gray-100">
               <SheetTitle className="text-left">
                 {language === "ar" ? "تصفية المنتجات" : "Filter Products"}
@@ -304,9 +277,7 @@ export const ProductSearchFilters = ({
                 onClick={() => setIsSheetOpen(false)}
                 className="w-full bg-burgundy hover:bg-burgundy-light text-white"
               >
-                {language === "ar"
-                  ? `عرض ${productCount} منتج`
-                  : `Show ${productCount} Products`}
+                {language === "ar" ? `عرض ${productCount} منتج` : `Show ${productCount} Products`}
               </Button>
             </div>
           </SheetContent>
@@ -319,7 +290,7 @@ export const ProductSearchFilters = ({
           <span className="text-xs text-gray-500">
             {language === "ar" ? "الفلاتر النشطة:" : "Active filters:"}
           </span>
-
+          
           {filters.categories.map((catId) => {
             const cat = CATEGORIES.find((c) => c.id === catId);
             return (
@@ -334,7 +305,7 @@ export const ProductSearchFilters = ({
               </Badge>
             );
           })}
-
+          
           {filters.brands.map((brand) => (
             <Badge
               key={brand}
@@ -346,7 +317,7 @@ export const ProductSearchFilters = ({
               <X className="w-3 h-3" />
             </Badge>
           ))}
-
+          
           {filters.skinConcerns.map((concernId) => {
             const concern = SKIN_CONCERNS.find((c) => c.id === concernId);
             return (
@@ -360,7 +331,7 @@ export const ProductSearchFilters = ({
               </Badge>
             );
           })}
-
+          
           {filters.onSaleOnly && (
             <Badge
               className="bg-red-100 text-red-700 cursor-pointer gap-1"

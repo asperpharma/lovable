@@ -1,4 +1,4 @@
-import { ImgHTMLAttributes, useEffect, useState } from "react";
+import { useState, useEffect, ImgHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 import { ImageSkeleton } from "./ProductCardSkeleton";
 
@@ -25,11 +25,9 @@ export const LazyImage = ({
     <div className="relative w-full h-full">
       {/* Skeleton placeholder */}
       {!isLoaded && !isError && (
-        <ImageSkeleton
-          className={cn("absolute inset-0 w-full h-full", skeletonClassName)}
-        />
+        <ImageSkeleton className={cn("absolute inset-0 w-full h-full", skeletonClassName)} />
       )}
-
+      
       {/* Actual image */}
       <img
         src={src}
@@ -37,7 +35,7 @@ export const LazyImage = ({
         className={cn(
           "transition-opacity duration-500",
           isLoaded ? "opacity-100" : "opacity-0",
-          className,
+          className
         )}
         onLoad={() => setIsLoaded(true)}
         onError={() => setIsError(true)}

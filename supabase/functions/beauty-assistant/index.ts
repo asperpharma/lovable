@@ -3,96 +3,19 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Helper function to search products based on query
-async function searchProducts(supabaseClient: any, query: string, limit = 5) {
-  // Sanitize input by allowing only safe characters
-  const safeQuery = query.replace(/[^\w\s-]/g, "").trim();
+const systemPrompt = `You are a friendly and knowledgeable beauty consultant for Asper Beauty, a premium cosmetics and skincare store. Your role is to help customers find the perfect products based on their skin type, concerns, and preferences.
 
-  if (!safeQuery) {
-    return [];
-  }
+Key responsibilities:
+- Ask about skin type (oily, dry, combination, sensitive, normal)
+- Understand skin concerns (acne, aging, dark spots, dullness, dehydration, sensitivity, sun protection)
+- Recommend appropriate product categories and types
+- Provide skincare routine advice
+- Be warm, professional, and encouraging
 
-  const { data, error } = await supabaseClient
-    .from("products")
-    .select(
-      "id, title, price, description, brand, category, subcategory, skin_concerns, image_url",
-    )
-    .or(
-      `title.ilike.%${safeQuery}%,brand.ilike.%${safeQuery}%,description.ilike.%${safeQuery}%,category.ilike.%${safeQuery}%`,
-    )
-    .limit(limit);
-
-  if (error) {
-    console.error("Product search error:", error);
-    return [];
-  }
-  return data || [];
-}
-
-// Helper function to get products by skin concern
-async function getProductsBySkinConcern(
-  supabaseClient: any,
-  concern: string,
-  limit = 5,
-) {
-  const { data, error } = await supabaseClient
-    .from("products")
-    .select(
-      "id, title, price, description, brand, category, subcategory, skin_concerns, image_url",
-    )
-    .contains("skin_concerns", [concern])
-    .limit(limit);
-
-  if (error) {
-    console.error("Skin concern search error:", error);
-    return [];
-  }
-  return data || [];
-}
-
-// Helper function to get products by category
-async function getProductsByCategory(
-  supabaseClient: any,
-  category: string,
-  limit = 5,
-) {
-  // Sanitize input by allowing only safe characters
-  const safeCategory = category.replace(/[^\w\s-]/g, "").trim();
-
-  if (!safeCategory) {
-    return [];
-  }
-
-  const { data, error } = await supabaseClient
-    .from("products")
-    .select(
-      "id, title, price, description, brand, category, subcategory, skin_concerns, image_url",
-    )
-    .ilike("category", `%${safeCategory}%`)
-    .limit(limit);
-
-  if (error) {
-    console.error("Category search error:", error);
-    return [];
-  }
-  return data || [];
-}
-
-const systemPrompt =
-  `You are an intelligent beauty consultant AI for Asper Beauty, a premium cosmetics and skincare store. You have access to our product catalog and can search and recommend specific products.
-
-SMART CAPABILITIES:
-- You can search our product inventory and recommend specific products
-- You understand skin types: oily, dry, combination, sensitive, normal
-- You recognize skin concerns: acne, aging, dark spots, dullness, dehydration, sensitivity, sun protection
-- You provide personalized product recommendations with prices
-- You give comprehensive skincare routine advice
-
-PRODUCT CATEGORIES:
+Available product categories at Asper Beauty:
 - Skin Care: cleansers, toners, serums, moisturizers, masks, eye care
 - Body Care: lotions, creams, scrubs
 - Hair Care: shampoos, conditioners, treatments, oils
@@ -100,16 +23,9 @@ PRODUCT CATEGORIES:
 - Fragrances: perfumes, body mists
 - Tools & Devices: brushes, applicators, devices
 
-BRANDS: Vichy, Eucerin, Cetaphil, SVR, Bourjois, IsaDora, Essence, Bioten, Mavala
+Popular brands we carry: Vichy, Eucerin, Cetaphil, SVR, Bourjois, IsaDora, Essence, Bioten, Mavala
 
-RESPONSE STYLE:
-- Be warm, professional, and encouraging
-- Keep responses conversational but informative
-- When recommending products, mention brand, name, and price
-- Explain WHY a product is suitable for their needs
-- Provide step-by-step routines when asked
-
-Always prioritize customer needs and recommend products that truly match their skin type and concerns.`;
+Keep responses concise (2-3 sentences max) and helpful. Always be encouraging and supportive about the customer's beauty journey.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -130,18 +46,14 @@ serve(async (req) => {
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } },
+      { global: { headers: { Authorization: authHeader } } }
     );
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabaseClient.auth
-      .getClaims(token);
-
+    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
+    
     if (claimsError || !claimsData?.claims) {
-      console.error(
-        "JWT validation failed:",
-        claimsError?.message || "No claims",
-      );
+      console.error("JWT validation failed:", claimsError?.message || "No claims");
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -153,145 +65,39 @@ serve(async (req) => {
 
     const { messages } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-
+    
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Get the last user message to analyze for product recommendations
-    const lastUserMessage = messages.filter((m: any) =>
-      m.role === "user"
-    ).pop()?.content || "";
-
-    // Search for relevant products based on the user's query
-    let productContext = "";
-    const products: any[] = [];
-
-    // Try to identify keywords for product search
-    const lowerQuery = lastUserMessage.toLowerCase();
-
-    // Search by skin concerns (pre-compute lowercase versions)
-    const skinConcerns = [
-      "acne",
-      "aging",
-      "dark spots",
-      "dullness",
-      "dehydration",
-      "sensitivity",
-      "sun protection",
-    ];
-    const lowerSkinConcerns = skinConcerns.map((c) => c.toLowerCase());
-
-    for (let i = 0; i < skinConcerns.length; i++) {
-      if (lowerQuery.includes(lowerSkinConcerns[i])) {
-        const concernProducts = await getProductsBySkinConcern(
-          supabaseClient,
-          skinConcerns[i],
-          3,
-        );
-        products.push(...concernProducts);
-      }
-    }
-
-    // Search by category keywords
-    const categoryKeywords = [
-      { keywords: ["cleanser", "wash", "cleansing"], category: "cleanser" },
-      { keywords: ["serum"], category: "serum" },
-      { keywords: ["moisturizer", "cream", "hydrat"], category: "moisturizer" },
-      { keywords: ["toner"], category: "toner" },
-      { keywords: ["mask"], category: "mask" },
-      {
-        keywords: ["sunscreen", "spf", "sun protection"],
-        category: "sun care",
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
       },
-    ];
-
-    for (const { keywords, category } of categoryKeywords) {
-      if (keywords.some((kw) => lowerQuery.includes(kw))) {
-        const categoryProducts = await getProductsByCategory(
-          supabaseClient,
-          category,
-          3,
-        );
-        products.push(...categoryProducts);
-      }
-    }
-
-    // General search if no specific matches
-    if (products.length === 0 && lastUserMessage.length > 3) {
-      const searchResults = await searchProducts(
-        supabaseClient,
-        lastUserMessage,
-        5,
-      );
-      products.push(...searchResults);
-    }
-
-    // Remove duplicates and limit to 5 products
-    const uniqueProducts = Array.from(
-      new Map(products.map((p) => [p.id, p])).values(),
-    ).slice(0, 5);
-
-    // Build product context for AI
-    if (uniqueProducts.length > 0) {
-      productContext = "\n\nAVAILABLE PRODUCTS TO RECOMMEND:\n";
-      uniqueProducts.forEach((p) => {
-        productContext += `- ${p.brand || ""} ${p.title} (${
-          p.price ? `$${p.price}` : "Price available"
-        })\n`;
-        if (p.description) {
-          const truncatedDesc = p.description.length > 150
-            ? p.description.substring(0, 150) + "..."
-            : p.description;
-          productContext += `  Description: ${truncatedDesc}\n`;
-        }
-        if (p.skin_concerns && p.skin_concerns.length > 0) {
-          productContext += `  Best for: ${p.skin_concerns.join(", ")}\n`;
-        }
-      });
-      productContext +=
-        "\nYou can recommend these specific products in your response when relevant.\n";
-    }
-
-    const response = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
-            { role: "system", content: systemPrompt + productContext },
-            ...messages,
-          ],
-          stream: true,
-        }),
-      },
-    );
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...messages,
+        ],
+        stream: true,
+      }),
+    });
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({
-            error: "Rate limit exceeded. Please try again in a moment.",
-          }),
-          {
-            status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          },
-        );
+        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Service temporarily unavailable." }),
-          {
-            status: 402,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          },
-        );
+        return new Response(JSON.stringify({ error: "Service temporarily unavailable." }), {
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
       const errorText = await response.text();
       console.error("AI gateway error:", response.status, errorText);
@@ -306,14 +112,9 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error("Beauty assistant error:", error);
-    return new Response(
-      JSON.stringify({
-        error: error instanceof Error ? error.message : "Unknown error",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
