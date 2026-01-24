@@ -1,25 +1,4 @@
 /**
- * Helper to identify Shopify CDN image URLs
- */
-const isShopifyCdnUrl = (url: string | undefined | null): boolean => {
-  if (!url) {
-    return false;
-  }
-
-  try {
-    const urlObj = new URL(url);
-    const hostname = urlObj.hostname.toLowerCase();
-
-    // Allowlist of known Shopify CDN hostnames
-    const allowedHosts = new Set<string>(["cdn.shopify.com", "files.shopifycdn.com"]);
-
-    return allowedHosts.has(hostname);
-  } catch {
-    return false;
-  }
-};
-
-/**
  * Helper to generate Shopify CDN image URLs with size optimization
  */
 export const getOptimizedShopifyImageUrl = (
@@ -27,7 +6,7 @@ export const getOptimizedShopifyImageUrl = (
   width: number,
   height?: number,
 ): string => {
-  if (!isShopifyCdnUrl(url)) {
+  if (!url || !url.includes("cdn.shopify.com")) {
     return url;
   }
 
@@ -53,7 +32,7 @@ export const getShopifyImageSrcSet = (
   url: string,
   sizes: number[],
 ): string => {
-  if (!isShopifyCdnUrl(url)) {
+  if (!url || !url.includes("cdn.shopify.com")) {
     return "";
   }
 
@@ -85,7 +64,7 @@ export const OptimizedImage = ({
   fetchPriority = "auto",
   isShopify = true,
 }: OptimizedImageProps) => {
-  const isShopifyUrl = isShopifyCdnUrl(src);
+  const isShopifyUrl = src?.includes("cdn.shopify.com");
 
   if (isShopify && isShopifyUrl) {
     const srcSet = getShopifyImageSrcSet(src, [200, 400, 600, 800, 1200]);
