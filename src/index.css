@@ -161,6 +161,87 @@
   [dir="rtl"] h6 {
     font-family: 'Playfair Display', 'Tajawal', serif;
   }
+
+  /* Arabic font support */
+  .font-arabic {
+    font-family: 'Tajawal', 'Inter', sans-serif;
+  }
+
+  /* RTL spacing utilities - Auto-flip margins and padding */
+  [dir="rtl"] .ml-2 {
+    margin-left: 0;
+    margin-right: 0.5rem;
+  }
+
+  [dir="rtl"] .mr-2 {
+    margin-right: 0;
+    margin-left: 0.5rem;
+  }
+
+  [dir="rtl"] .ml-4 {
+    margin-left: 0;
+    margin-right: 1rem;
+  }
+
+  [dir="rtl"] .mr-4 {
+    margin-right: 0;
+    margin-left: 1rem;
+  }
+
+  [dir="rtl"] .pl-4 {
+    padding-left: 0;
+    padding-right: 1rem;
+  }
+
+  [dir="rtl"] .pr-4 {
+    padding-right: 0;
+    padding-left: 1rem;
+  }
+
+  /* RTL text alignment */
+  [dir="rtl"] .text-left {
+    text-align: right;
+  }
+
+  [dir="rtl"] .text-right {
+    text-align: left;
+  }
+
+  /* RTL flex direction */
+  [dir="rtl"] .flex-row {
+    flex-direction: row-reverse;
+  }
+
+  /* RTL positioning */
+  [dir="rtl"] .left-1\/2 {
+    left: auto;
+    right: 50%;
+  }
+
+  [dir="rtl"] .right-1\/2 {
+    right: auto;
+    left: 50%;
+  }
+
+  /* RTL transform adjustments */
+  [dir="rtl"] .-translate-x-1\/2 {
+    transform: translate(50%, 0);
+  }
+
+  /* RTL border radius adjustments for better visual flow */
+  [dir="rtl"] .rounded-l {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0.25rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0.25rem;
+  }
+
+  [dir="rtl"] .rounded-r {
+    border-top-right-radius: 0;
+    border-top-left-radius: 0.25rem;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0.25rem;
+  }
 }
 
 @layer components {
@@ -458,6 +539,10 @@
 
   .animate-slide-up {
     animation: slideUp 700ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 800ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
   .animate-gold-pulse {

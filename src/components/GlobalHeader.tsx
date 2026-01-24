@@ -14,7 +14,8 @@ export const GlobalHeader = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const {
-    language
+    language,
+    isRTL
   } = useLanguage();
   const isAr = language === "ar";
   const cartItems = useCartStore(state => state.items);
@@ -96,24 +97,24 @@ export const GlobalHeader = () => {
             </div>
 
             {/* CENTER: The Luxury Logo */}
-            <div className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0">
+            <div className={`absolute ${isRTL ? 'right-1/2 translate-x-1/2' : 'left-1/2 -translate-x-1/2'} lg:static lg:translate-x-0`}>
               <Link to="/" className="block">
                 <h1 className="font-serif text-2xl font-light tracking-wider text-foreground md:text-3xl">
                   <span className="font-normal text-gold">ASPER</span>
-                  <span className="text-primary ml-1 text-sm font-sans tracking-widest uppercase">Beauty</span>
+                  <span className={`text-primary ${isRTL ? 'mr-1' : 'ml-1'} text-sm font-sans tracking-widest uppercase`}>Beauty</span>
                 </h1>
               </Link>
             </div>
 
             {/* MIDDLE: Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+            <nav className={`hidden lg:flex items-center gap-8 absolute ${isRTL ? 'right-1/2 translate-x-1/2' : 'left-1/2 -translate-x-1/2'}`}>
               {navItems.map(item => <Link key={item.name} to={item.href} className="group flex items-center gap-1 font-sans text-sm font-medium uppercase tracking-widest transition-colors text-rose-50">
                   {isAr ? item.nameAr : item.name}
                 </Link>)}
             </nav>
 
             {/* RIGHT: Tools (Search, Account, Wishlist, Cart) */}
-            <div className="flex items-center gap-3 md:gap-4 text-gold">
+            <div className={`flex items-center gap-3 md:gap-4 text-gold ${isRTL ? 'order-1' : ''}`}>
               
               {/* Desktop Search Trigger */}
               <div onClick={() => setSearchOpen(true)} className="hidden md:flex items-center cursor-pointer group">

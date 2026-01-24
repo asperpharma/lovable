@@ -4,11 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { LuxuryProductCard } from "@/components/LuxuryProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getProductImage } from "@/lib/productImageUtils";
 
 export const BestSellersSection = () => {
-  const { language } = useLanguage();
+  const { language, isRTL } = useLanguage();
   const isAr = language === "ar";
 
   const { data: products, isLoading } = useQuery({
@@ -29,8 +30,8 @@ export const BestSellersSection = () => {
     <section className="bg-cream py-20 md:py-28">
       <div className="container mx-auto max-w-7xl px-4">
         {/* Section Header */}
-        <div className="mb-12 flex flex-col items-center justify-between gap-4 md:flex-row md:mb-16">
-          <div className="text-center md:text-left">
+        <div className={`mb-12 flex flex-col items-center justify-between gap-4 md:flex-row md:mb-16 ${isRTL ? 'md:flex-row-reverse' : ''}`}>
+          <div className={`text-center ${isRTL ? 'md:text-right' : 'md:text-left'}`}>
             <span className="mb-3 inline-block font-sans text-xs font-medium uppercase tracking-[0.3em] text-gold-500">
               {isAr ? "مفضلات عالمية" : "World-Class Favorites"}
             </span>
@@ -43,7 +44,11 @@ export const BestSellersSection = () => {
             className="group flex items-center gap-2 font-sans text-sm font-medium uppercase tracking-widest text-luxury-black transition-colors hover:text-gold-500"
           >
             {isAr ? "عرض الكل" : "View All"}
-            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            {isRTL ? (
+              <ArrowLeft className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-1" />
+            ) : (
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            )}
           </Link>
         </div>
 
@@ -72,7 +77,11 @@ export const BestSellersSection = () => {
                   price: product.price,
                   original_price: product.original_price,
                   discount_percent: product.discount_percent,
-                  image_url: product.image_url || "/placeholder.svg",
+                  image_url: getProductImage(
+                    product.image_url,
+                    product.category || '',
+                    product.title
+                  ),
                   description: product.description || undefined,
                   volume_ml: product.volume_ml || undefined,
                   is_new: false,
