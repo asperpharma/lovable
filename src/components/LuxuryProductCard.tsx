@@ -5,6 +5,7 @@ import { ProductQuickViewModal } from "./ProductQuickViewModal";
 import { useCartStore } from "@/stores/cartStore";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getProductImage } from "@/lib/productImageUtils";
 
 interface ProductProps {
   id: string;
@@ -134,8 +135,13 @@ export const LuxuryProductCard = ({ product }: { product: ProductProps }) => {
 
           <img
             src={product.image_url}
+          
+          <img 
+            src={imageError ? getProductImage(null, product.category || '', product.title) : productImage}
+            onError={handleImageError}
             className="h-full w-full object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-105"
             alt={product.title}
+            loading="lazy"
           />
 
           {/* Hover Actions - Quick View & Add to Cart */}

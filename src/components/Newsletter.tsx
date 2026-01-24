@@ -66,9 +66,9 @@ export const Newsletter = () => {
 
           {/* Luxury Divider */}
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-12 h-px bg-gradient-to-r from-transparent to-gold/60" />
+            <div className={`w-12 h-px ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-transparent to-gold/60`} />
             <div className="w-2 h-2 rounded-full bg-gold shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
-            <div className="w-12 h-px bg-gradient-to-l from-transparent to-gold/60" />
+            <div className={`w-12 h-px ${isRTL ? 'bg-gradient-to-r' : 'bg-gradient-to-l'} from-transparent to-gold/60`} />
           </div>
 
           <p className="font-body text-charcoal/70 mb-10 leading-relaxed text-lg">

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -19,7 +19,7 @@ export const LuxuryPromoBanner = ({
   position = "left",
   variant = "primary",
 }: LuxuryPromoBannerProps) => {
-  const { language } = useLanguage();
+  const { language, isRTL } = useLanguage();
   const isAr = language === "ar";
 
   // Default content based on variant
@@ -48,6 +48,10 @@ export const LuxuryPromoBanner = ({
   const displayImage = image || content.image;
 
   const isImageLeft = position === "left";
+
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
+  const textAlignClass = isRTL ? "md:text-right" : "md:text-left";
+  const itemsAlignClass = isRTL ? "md:items-end" : "md:items-start";
 
   return (
     <section className="relative grid min-h-[500px] overflow-hidden bg-muted md:grid-cols-2 md:min-h-[600px]">
@@ -78,9 +82,9 @@ export const LuxuryPromoBanner = ({
           size="lg"
           className="group mt-8 bg-primary px-8 py-6 font-sans text-sm font-medium uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:shadow-lg"
         >
-          <Link to="/offers">
+          <Link to="/offers" className="flex items-center gap-2">
             {isAr ? "اكتشف الآن" : "Discover Now"}
-            <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            <ArrowIcon className={`h-4 w-4 transition-transform duration-300 ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
           </Link>
         </Button>
       </div>
@@ -97,7 +101,7 @@ export const LuxuryPromoBanner = ({
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 hover:scale-105"
         />
         {/* Subtle Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-muted/20 to-transparent" />
+        <div className={`absolute inset-0 ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-muted/20 to-transparent`} />
       </div>
     </section>
   );

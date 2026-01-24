@@ -106,7 +106,7 @@ export const GlobalHeader = () => {
             </div>
 
             {/* CENTER: The Luxury Logo */}
-            <div className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0">
+            <div className={`absolute ${isRTL ? 'right-1/2 translate-x-1/2' : 'left-1/2 -translate-x-1/2'} lg:static lg:translate-x-0`}>
               <Link to="/" className="block">
                 <h1 className="font-serif text-2xl font-light tracking-wider text-foreground md:text-3xl">
                   <span className="font-normal text-gold">ASPER</span>
