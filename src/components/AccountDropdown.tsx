@@ -194,16 +194,16 @@ export const AccountDropdown = ({ isScrolled }: { isScrolled: boolean }) => {
             /* Guest State - Not Logged In */
             <div className="p-6">
               <div className="text-center mb-4">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
-                  <User className="h-8 w-8 text-muted-foreground" />
+                <div className="w-16 h-16 rounded-full bg-cream flex items-center justify-center mx-auto mb-3 border border-gold/20 shadow-sm">
+                  <User className="h-8 w-8 text-gold" />
                 </div>
                 <h3 className="font-serif text-lg">
-                  {isAr ? "مرحباً بك" : "Welcome"}
+                  {isAr ? "مرحباً بك" : "Welcome to Asper"}
                 </h3>
                 <p className="text-sm text-muted-foreground mt-1">
                   {isAr
-                    ? "سجلي الدخول للوصول إلى حسابك"
-                    : "Sign in to access your account"}
+                    ? "سجلي الدخول للوصول إلى عالم الدلال"
+                    : "Sign in to access your world of indulgence"}
                 </p>
               </div>
 

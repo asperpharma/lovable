@@ -145,12 +145,12 @@ export const Footer = () => {
               ))}
             </ul>
 
-            <h4 className="font-display text-sm text-white mb-3">
-              {isArabic ? "زورونا" : "Visit Us"}
+            <h4 className="font-display text-sm text-gold mb-3">
+              {isArabic ? "المقر الرئيسي" : "The Atelier"}
             </h4>
             <div className="space-y-2">
               <p className="font-body text-sm text-cream">
-                {isArabic ? "عمّان، الأردن" : "Amman, Jordan"}
+                {isArabic ? "شارع الدلال، عمّان، الأردن" : "The Boulevard, Amman, Jordan"}
               </p>
               <a
                 href="tel:+962790656666"
@@ -159,10 +159,10 @@ export const Footer = () => {
                 +962 79 065 6666
               </a>
               <a
-                href="mailto:asperpharma@gmail.com"
+                href="mailto:concierge@asperbeautyshop.com"
                 className="font-body text-sm text-cream hover:text-gold transition-colors duration-400 block"
               >
-                asperpharma@gmail.com
+                concierge@asperbeautyshop.com
               </a>
             </div>
           </div>
@@ -170,21 +170,21 @@ export const Footer = () => {
           {/* Column 4 - VIP Club */}
           <div>
             <h3 className="font-display text-lg text-white mb-6">
-              {isArabic ? "اكتشف الحصريات" : "Unlock Exclusives"}
+              {isArabic ? "نادي كبار الشخصيات" : "The VIP Registry"}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-3">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={isArabic ? "بريدك الإلكتروني" : "Your email"}
+                placeholder={isArabic ? "عنوان بريدك الموقر" : "Your distinguished email"}
                 className="w-full px-4 py-3 bg-transparent border border-white text-white font-body text-sm placeholder:text-white/50 focus:outline-none focus:border-gold transition-colors duration-400 rounded"
               />
               <button
                 type="submit"
                 className="w-full px-6 py-3 bg-gold text-burgundy font-display text-sm tracking-wider hover:bg-gold-light transition-colors duration-400 rounded"
               >
-                {isArabic ? "اشترك" : "Subscribe"}
+                {isArabic ? "انضم لآسبر" : "Join Asper"}
               </button>
             </form>
           </div>
@@ -194,9 +194,14 @@ export const Footer = () => {
       {/* Copyright Bar */}
       <div className="border-t border-gold/30">
         <div className="luxury-container py-6">
+          <p className="font-body text-[10px] text-cream/70 text-center mb-2 tracking-widest uppercase">
+            {isArabic
+              ? "ضمان الأصالة: كل منتج في آسبر منسق بعناية ومضمون 100%"
+              : "Authenticity Guaranteed: Every item at Asper is meticulously curated and 100% genuine."}
+          </p>
           <p className="font-body text-xs text-cream/50 text-center">
             © 2026 Asper Beauty Shop.{" "}
-            {isArabic ? "جميع الحقوق محفوظة." : "All Rights Reserved."}
+            {isArabic ? "الجمال يكمن في التفاصيل." : "Beauty resides in the details."}
           </p>
         </div>
       </div>

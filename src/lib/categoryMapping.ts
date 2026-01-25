@@ -10,6 +10,7 @@ export interface CategoryInfo {
   editorialTagline: string;
   editorialTaglineAr: string;
   keywords: string[];
+  bannerImage?: string;
 }
 
 // The six primary product categories
@@ -45,6 +46,7 @@ export const CATEGORIES: Record<string, CategoryInfo> = {
       "bioten",
       "bio balance",
     ],
+    bannerImage: "/src/assets/campaign/hero-1.jpg",
   },
   "hair-care": {
     slug: "hair-care",
@@ -68,6 +70,7 @@ export const CATEGORIES: Record<string, CategoryInfo> = {
       "amino",
       "raghad",
     ],
+    bannerImage: "/src/assets/campaign/hero-3.jpg",
   },
   "make-up": {
     slug: "make-up",
@@ -96,6 +99,7 @@ export const CATEGORIES: Record<string, CategoryInfo> = {
       "isadora",
       "lash",
     ],
+    bannerImage: "/src/assets/campaign/hero-2.jpg",
   },
   "body-care": {
     slug: "body-care",
@@ -121,6 +125,7 @@ export const CATEGORIES: Record<string, CategoryInfo> = {
       "sun",
       "spf",
     ],
+    bannerImage: "/src/assets/campaign/hero-3.jpg",
   },
   "fragrances": {
     slug: "fragrances",
@@ -142,6 +147,7 @@ export const CATEGORIES: Record<string, CategoryInfo> = {
       "scent",
       "aroma",
     ],
+    bannerImage: "/src/assets/campaign/hero-2.jpg",
   },
   "tools-devices": {
     slug: "tools-devices",
@@ -166,6 +172,7 @@ export const CATEGORIES: Record<string, CategoryInfo> = {
       "mavala",
       "double lash",
     ],
+    bannerImage: "/src/assets/campaign/hero-1.jpg",
   },
 };
 

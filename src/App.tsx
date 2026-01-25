@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { LanguageProvider } from "./contexts/LanguageContext.tsx";
 import { useCartSync } from "./hooks/useCartSync.ts";
+import { useAmmanAura } from "./hooks/useAmmanAura.ts";
 import { lazy, Suspense } from "react";
 import { Loader2 } from "lucide-react";
 
@@ -29,7 +30,7 @@ const Account = lazy(() => import("./pages/Account.tsx"));
 const Philosophy = lazy(() => import("./pages/Philosophy.tsx"));
 const TrackOrder = lazy(() => import("./pages/TrackOrder.tsx"));
 
-// Admin pages - lazy load (rarely accessed by most users)
+// Admin pages
 const BulkUpload = lazy(() => import("./pages/BulkUpload.tsx"));
 const AdminOrders = lazy(() => import("./pages/AdminOrders.tsx"));
 const ManageProducts = lazy(() => import("./pages/ManageProducts.tsx"));
@@ -45,52 +46,51 @@ const PageLoader = () => (
 
 const queryClient = new QueryClient();
 
-// Cart sync wrapper component
-function CartSyncProvider({ children }: { children: React.ReactNode }) {
+// App content that uses hooks
+const AppContent = () => {
   useCartSync();
-  return <>{children}</>;
-}
+  useAmmanAura();
+
+  return (
+    <BrowserRouter>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/product/:handle" element={<ProductDetail />} />
+          <Route path="/collections" element={<Collections />} />
+          <Route path="/collections/:slug" element={<CollectionDetail />} />
+          <Route path="/brands" element={<Brands />} />
+          <Route path="/brands/vichy" element={<BrandVichy />} />
+          <Route path="/best-sellers" element={<BestSellers />} />
+          <Route path="/offers" element={<Offers />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/skin-concerns" element={<SkinConcerns />} />
+          <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/philosophy" element={<Philosophy />} />
+          <Route path="/admin/bulk-upload" element={<BulkUpload />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/products" element={<ManageProducts />} />
+          <Route path="/track-order" element={<TrackOrder />} />
+          <Route path="/driver" element={<DriverDashboard />} />
+          <Route path="/admin/audit-logs" element={<AdminAuditLogs />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
-      <CartSyncProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner position="top-center" />
-          <BrowserRouter>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/product/:handle" element={<ProductDetail />} />
-                <Route path="/collections" element={<Collections />} />
-                <Route
-                  path="/collections/:slug"
-                  element={<CollectionDetail />}
-                />
-                <Route path="/brands" element={<Brands />} />
-                <Route path="/brands/vichy" element={<BrandVichy />} />
-                <Route path="/best-sellers" element={<BestSellers />} />
-                <Route path="/offers" element={<Offers />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/skin-concerns" element={<SkinConcerns />} />
-                <Route path="/wishlist" element={<Wishlist />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/account" element={<Account />} />
-                <Route path="/philosophy" element={<Philosophy />} />
-                <Route path="/admin/bulk-upload" element={<BulkUpload />} />
-                <Route path="/admin/orders" element={<AdminOrders />} />
-                <Route path="/admin/products" element={<ManageProducts />} />
-                <Route path="/track-order" element={<TrackOrder />} />
-                <Route path="/driver" element={<DriverDashboard />} />
-                <Route path="/admin/audit-logs" element={<AdminAuditLogs />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </BrowserRouter>
-        </TooltipProvider>
-      </CartSyncProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner position="top-center" />
+        <AppContent />
+      </TooltipProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );

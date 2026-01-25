@@ -4,6 +4,8 @@ import { Footer } from "../components/Footer.tsx";
 import { ProductGrid } from "../components/ProductGrid.tsx";
 import { getCategoryInfo, normalizeCategorySlug } from "../lib/categoryMapping.ts";
 import { useLanguage } from "../contexts/LanguageContext.tsx";
+import defaultCampaignHeader from "@/assets/campaign/hero-3.jpg";
+
 export default function CollectionDetail() {
   const {
     slug,
@@ -51,12 +53,21 @@ export default function CollectionDetail() {
       <main className="pt-40 pb-20">
         <div className="luxury-container">
           {/* Editorial Collection Banner */}
-          <div className="relative mb-16 overflow-hidden">
+          <div className="relative mb-16 overflow-hidden rounded-xl">
+            {/* Background Image with Overlay */}
+            <div
+              className="absolute inset-0 bg-cover bg-center transition-all duration-700 hover:scale-105"
+              style={{
+                backgroundImage: `url(${category.bannerImage || defaultCampaignHeader})`,
+              }}
+            />
+            <div className="absolute inset-0 bg-luxury-black/60 shadow-[inset_0_0_100px_rgba(0,0,0,0.5)]" />
+
             {/* Decorative gold lines */}
             <div className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
             <div className="absolute left-0 right-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
 
-            <div className="py-12 px-6 md:px-12 text-center bg-rose-950">
+            <div className="relative py-16 px-6 md:px-12 text-center">
               {/* Category Icon/Flourish */}
               <div className="flex justify-center mb-6 text-rose-900">
                 <div className="w-12 h-12 rounded-full border border-gold/40 flex items-center justify-center">
