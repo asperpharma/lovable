@@ -316,8 +316,8 @@ serve(async (req) => {
 
     // Shopify Admin API configuration
     const SHOPIFY_ACCESS_TOKEN = Deno.env.get("SHOPIFY_ACCESS_TOKEN");
-    const SHOPIFY_STORE_DOMAIN = "lovable-project-milns.myshopify.com";
-    const SHOPIFY_API_VERSION = "2025-01";
+    const SHOPIFY_STORE_DOMAIN = Deno.env.get("SHOPIFY_STORE_DOMAIN") || "lovable-project-milns.myshopify.com";
+    const SHOPIFY_API_VERSION = Deno.env.get("SHOPIFY_API_VERSION") || "2025-01";
 
     if (action === "categorize") {
       // Categorize and prepare products from Excel data
@@ -464,33 +464,112 @@ serve(async (req) => {
 
       console.log(`Creating Shopify product: ${product.title}`);
 
-      // Prepare the product data for Shopify Admin API
+      // Helper function to download image and convert to base64 for Shopify
+      async function prepareImageForShopify(imageUrl: string): Promise<string | null> {
+        try {
+          // If it's already a data URL, return it
+          if (imageUrl.startsWith("data:")) {
+            return imageUrl;
+          }
+
+          // Download the image
+          const imageResponse = await fetch(imageUrl);
+          if (!imageResponse.ok) {
+            console.warn(`Failed to download image from ${imageUrl}`);
+            return null;
+          }
+
+          const imageBlob = await imageResponse.blob();
+          const arrayBuffer = await imageBlob.arrayBuffer();
+          const base64 = btoa(
+            String.fromCharCode(...new Uint8Array(arrayBuffer))
+          );
+          const mimeType = imageBlob.type || "image/png";
+          
+          return `data:${mimeType};base64,${base64}`;
+        } catch (error) {
+          console.error(`Error preparing image: ${error}`);
+          return null;
+        }
+      }
+
+      // Prepare images array
+      const images: Array<{ src: string; alt?: string }> = [];
+      if (product.imageUrl) {
+        const preparedImage = await prepareImageForShopify(product.imageUrl);
+        if (preparedImage) {
+          images.push({
+            src: preparedImage,
+            alt: product.title || "Product image",
+          });
+        }
+      }
+
+      // Generate SEO-friendly handle from title
+      function generateHandle(title: string): string {
+        return title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .slice(0, 255);
+      }
+
+      // Create rich description
+      const description = product.description || 
+        (product.body ? `<p>${product.body}</p>` : "") ||
+        `<p>Premium ${product.product_type || "product"} from ${product.vendor || "Asper Beauty Box"}. High-quality beauty and personal care product.</p>`;
+
+      // Prepare the product data for Shopify Admin API with all best practices
       const shopifyProduct = {
         product: {
           title: product.title,
-          body_html: `<p>${product.body || ""}</p>`,
-          vendor: product.vendor || "Asper",
+          body_html: description,
+          vendor: product.vendor || "Asper Beauty Box",
           product_type: product.product_type || "General",
-          tags: product.tags || "",
+          tags: product.tags ? product.tags.split(",").map((t: string) => t.trim()).join(",") : `${product.product_type || "General"}, ${product.vendor || "Asper"}, bulk-upload`,
           status: "active",
+          published: true,
+          published_scope: "web",
+          handle: product.handle || generateHandle(product.title),
           variants: [
             {
               price: product.price,
-              sku: product.sku,
-              inventory_management: "shopify",
+              sku: product.sku || undefined,
+              barcode: product.barcode || undefined,
+              inventory_management: product.inventory_quantity !== undefined ? "shopify" : null,
               inventory_policy: "continue",
+              inventory_quantity: product.inventory_quantity || null,
+              weight: product.weight || null,
+              weight_unit: product.weight_unit || "kg",
+              requires_shipping: true,
+              taxable: true,
             },
           ],
-          images: product.imageUrl
-            ? [
-              {
-                src: product.imageUrl,
-                alt: product.title,
-              },
-            ]
-            : [],
+          images: images,
+          // SEO fields
+          metafields_global_title_tag: product.seo_title || product.title,
+          metafields_global_description_tag: product.seo_description || 
+            `${product.title} - ${product.vendor || "Asper Beauty Box"}. ${product.product_type || "Premium beauty product"}.`,
         },
       };
+
+      // Remove null/undefined fields to avoid API errors
+      function cleanObject(obj: any): any {
+        if (Array.isArray(obj)) {
+          return obj.map(cleanObject).filter(item => item !== null && item !== undefined);
+        } else if (obj !== null && typeof obj === "object") {
+          const cleaned: any = {};
+          for (const [key, value] of Object.entries(obj)) {
+            if (value !== null && value !== undefined) {
+              cleaned[key] = cleanObject(value);
+            }
+          }
+          return cleaned;
+        }
+        return obj;
+      }
+
+      const cleanedProduct = cleanObject(shopifyProduct);
 
       const shopifyResponse = await fetch(
         `https://${SHOPIFY_STORE_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/products.json`,
@@ -500,7 +579,7 @@ serve(async (req) => {
             "X-Shopify-Access-Token": SHOPIFY_ACCESS_TOKEN,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(shopifyProduct),
+          body: JSON.stringify(cleanedProduct),
         },
       );
 
@@ -508,11 +587,23 @@ serve(async (req) => {
         const errorData = await shopifyResponse.text();
         console.error("Shopify API error:", shopifyResponse.status, errorData);
 
+        // Try to parse error for better messaging
+        let errorMessage = `Shopify API error: ${shopifyResponse.status}`;
+        try {
+          const errorJson = JSON.parse(errorData);
+          if (errorJson.errors) {
+            errorMessage = `Shopify error: ${JSON.stringify(errorJson.errors)}`;
+          }
+        } catch {
+          errorMessage = `${errorMessage} - ${errorData.slice(0, 200)}`;
+        }
+
         if (shopifyResponse.status === 429) {
+          const retryAfter = shopifyResponse.headers.get("Retry-After") || "60";
           return new Response(
             JSON.stringify({
               error: "Rate limited by Shopify. Please wait.",
-              retryAfter: 60,
+              retryAfter: parseInt(retryAfter),
             }),
             {
               status: 429,
@@ -521,20 +612,38 @@ serve(async (req) => {
           );
         }
 
-        throw new Error(
-          `Shopify API error: ${shopifyResponse.status} - ${errorData}`,
-        );
+        if (shopifyResponse.status === 422) {
+          // Validation error - product might already exist or have invalid data
+          return new Response(
+            JSON.stringify({
+              error: errorMessage,
+              details: errorData,
+            }),
+            {
+              status: 422,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            },
+          );
+        }
+
+        throw new Error(errorMessage);
       }
 
       const shopifyData = await shopifyResponse.json();
 
-      console.log(`Successfully created product: ${shopifyData.product?.id}`);
+      if (!shopifyData.product) {
+        throw new Error("No product data returned from Shopify");
+      }
+
+      console.log(`Successfully created product: ${shopifyData.product.id} (${shopifyData.product.handle})`);
 
       return new Response(
         JSON.stringify({
           success: true,
-          productId: shopifyData.product?.id,
-          handle: shopifyData.product?.handle,
+          productId: shopifyData.product.id,
+          handle: shopifyData.product.handle,
+          title: shopifyData.product.title,
+          status: shopifyData.product.status,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );

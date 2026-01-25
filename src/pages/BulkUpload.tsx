@@ -534,7 +534,7 @@ export default function BulkUpload() {
         }));
 
         try {
-          // Call edge function to create Shopify product
+          // Call edge function to create Shopify product with complete data
           const { data, error } = await supabase.functions.invoke(
             "bulk-product-upload",
             {
@@ -545,13 +545,22 @@ export default function BulkUpload() {
                 action: "create-shopify-product",
                 product: {
                   title: product.name,
-                  body: `${product.brand} - ${product.category}`,
-                  vendor: product.brand,
-                  product_type: product.category,
-                  tags: `${product.category}, ${product.brand}, bulk-upload`,
-                  price: product.price.toFixed(2),
+                  body: product.description || `${product.brand} - ${product.category}. Premium quality product from Asper Beauty Box.`,
+                  description: product.description || `${product.brand} - ${product.category}. Premium quality product from Asper Beauty Box.`,
+                  vendor: product.brand || "Asper Beauty Box",
+                  product_type: product.category || "General",
+                  tags: [
+                    product.category,
+                    product.brand,
+                    "bulk-upload",
+                    "asper-beauty-box",
+                  ].filter(Boolean).join(", "),
+                  price: parseFloat(product.price.toFixed(2)),
                   sku: product.sku,
                   imageUrl: product.imageUrl,
+                  // SEO fields
+                  seo_title: `${product.name} | ${product.brand || "Asper Beauty Box"}`,
+                  seo_description: `${product.name} - ${product.category} from ${product.brand || "Asper Beauty Box"}. Premium quality beauty and personal care products.`,
                 },
               },
             },
@@ -1386,7 +1395,33 @@ export default function BulkUpload() {
                               {shopifyProgress.failed > 0 &&
                                 `, ${shopifyProgress.failed} failed`}
                             </p>
+                            {shopifyProgress.succeeded > 0 && (
+                              <p className="text-xs text-taupe mt-2">
+                                Products are now live in your Shopify store
+                              </p>
+                            )}
                           </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Shopify Configuration Warning */}
+                    {shopifyErrors.length > 0 && 
+                     shopifyErrors.some(e => e.error?.includes("SHOPIFY_ACCESS_TOKEN") || e.error?.includes("not configured")) && (
+                      <Card className="border-amber-200 bg-amber-50/50">
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4" />
+                            Shopify Not Configured
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-amber-700 mb-3">
+                            Please configure your Shopify Admin API access token to upload products.
+                          </p>
+                          <p className="text-xs text-amber-600">
+                            See <code className="bg-amber-100 px-1 rounded">SHOPIFY_SETUP.md</code> for setup instructions.
+                          </p>
                         </CardContent>
                       </Card>
                     )}
