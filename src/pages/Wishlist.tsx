@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { useWishlistStore } from "@/stores/wishlistStore";
-import { useCartStore } from "@/stores/cartStore";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { translateTitle } from "@/lib/productUtils";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { useWishlistStore } from "../stores/wishlistStore.ts";
+import { useCartStore } from "../stores/cartStore.ts";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { translateTitle } from "../lib/productUtils.ts";
 import { ArrowRight, Heart, ShoppingBag, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 

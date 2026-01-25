@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useCartStore } from "@/stores/cartStore";
+import { useCartStore } from "../stores/cartStore.ts";
 
 /**
  * Hook to sync cart with Shopify when user returns from checkout

@@ -1,18 +1,18 @@
 import { useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "./ui/button.tsx";
+import { Input } from "./ui/input.tsx";
+import { Label } from "./ui/label.tsx";
+import { Textarea } from "./ui/textarea.tsx";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useCartStore } from "@/stores/cartStore";
+} from "./ui/select.tsx";
+import { useCartStore } from "../stores/cartStore.ts";
 import { toast } from "sonner";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import {
   CheckCircle,
   FileText,
@@ -23,7 +23,7 @@ import {
   ShieldCheck,
   User,
 } from "lucide-react";
-import { translateTitle } from "@/lib/productUtils";
+import { translateTitle } from "../lib/productUtils.ts";
 import { z } from "zod";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 

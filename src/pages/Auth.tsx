@@ -2,25 +2,25 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "../hooks/useAuth.ts";
+import { supabase } from "../integrations/supabase/client.ts";
 import {
   useLoginRateLimiter,
   useMFARateLimiter,
   usePasswordResetRateLimiter,
   useSignupRateLimiter,
-} from "@/hooks/useRateLimiter";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "../hooks/useRateLimiter.ts";
+import { Button } from "../components/ui/button.tsx";
+import { Input } from "../components/ui/input.tsx";
+import { Label } from "../components/ui/label.tsx";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "../components/ui/card.tsx";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs.tsx";
 import { toast } from "sonner";
 import {
   AlertTriangle,
@@ -33,13 +33,13 @@ import {
   ShieldCheck,
   User,
 } from "lucide-react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
+import { Alert, AlertDescription } from "../components/ui/alert.tsx";
 import {
   isStrongPassword,
   PasswordStrengthIndicator,
-} from "@/components/PasswordStrengthIndicator";
+} from "../components/PasswordStrengthIndicator.tsx";
 
 // hCaptcha site key from environment
 const HCAPTCHA_SITE_KEY = import.meta.env.VITE_HCAPTCHA_SITE_KEY || "";
@@ -312,7 +312,7 @@ export default function Auth() {
     setIsSubmitting(true);
     passwordResetRateLimiter.recordAttempt();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth?reset=true`,
+      redirectTo: `${globalThis.location.origin}/auth?reset=true`,
     });
     setIsSubmitting(false);
 

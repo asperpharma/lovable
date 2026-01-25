@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Eye, ShoppingBag, Star } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ProductQuickViewModal } from "./ProductQuickViewModal";
-import { useCartStore } from "@/stores/cartStore";
+import { ProductQuickViewModal } from "./ProductQuickViewModal.tsx";
+import { useCartStore } from "../stores/cartStore.ts";
 import { toast } from "sonner";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { getProductImage } from "@/lib/productImageUtils";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { getProductImage } from "../lib/productImageUtils.ts";
 
 interface ProductProps {
   id: string;

@@ -4,14 +4,14 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/stores/cartStore";
+} from "./ui/dialog.tsx";
+import { Button } from "./ui/button.tsx";
+import { useCartStore } from "../stores/cartStore.ts";
 import { toast } from "sonner";
 import { Eye, Heart, Minus, Plus, ShoppingBag, X } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { Link } from "react-router-dom";
-import { useWishlistStore } from "@/stores/wishlistStore";
+import { useWishlistStore } from "../stores/wishlistStore.ts";
 
 interface ProductData {
   id: string;

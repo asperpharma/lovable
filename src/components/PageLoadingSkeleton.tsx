@@ -1,9 +1,9 @@
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils.ts";
 import {
   BrandCardSkeleton,
   ProductCardSkeleton,
   TestimonialCardSkeleton,
-} from "./ProductCardSkeleton";
+} from "./ProductCardSkeleton.tsx";
 
 export const PageLoadingSkeleton = () => {
   return (

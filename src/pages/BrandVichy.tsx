@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { ProductCard } from "@/components/ProductCard";
-import { fetchProducts, ShopifyProduct } from "@/lib/shopify";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
+import { ProductCard } from "../components/ProductCard.tsx";
+import { fetchProducts, ShopifyProduct } from "../lib/shopify.ts";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { Skeleton } from "../components/ui/skeleton.tsx";
+import { Badge } from "../components/ui/badge.tsx";
+import { Button } from "../components/ui/button.tsx";
 import { Droplets, FlaskConical, Leaf, Sparkles } from "lucide-react";
 import vichyHeroImage from "@/assets/brands/vichy-hero.jpg";
 

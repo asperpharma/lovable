@@ -1,10 +1,10 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { LuxuryProductCard } from "@/components/LuxuryProductCard";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getProductImage } from "@/lib/productImageUtils";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "../integrations/supabase/client.ts";
+import { LuxuryProductCard } from "./LuxuryProductCard.tsx";
+import { Skeleton } from "./ui/skeleton.tsx";
+import { getProductImage } from "../lib/productImageUtils.ts";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 
 export const FeaturedCollection = () => {
   const { language, isRTL } = useLanguage();

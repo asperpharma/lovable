@@ -1,7 +1,7 @@
 import { Quote, Star } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { AnimatedSection } from "./AnimatedSection";
-import { LazyImage } from "./LazyImage";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { AnimatedSection } from "./AnimatedSection.tsx";
+import { LazyImage } from "./LazyImage.tsx";
 
 const testimonials = [
   {

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { AnimatedSection } from "./AnimatedSection";
-import { LazyImage } from "./LazyImage";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { AnimatedSection } from "./AnimatedSection.tsx";
+import { LazyImage } from "./LazyImage.tsx";
 
 // Product images
 import anthelios from "@/assets/products/anthelios-uvmune.webp";

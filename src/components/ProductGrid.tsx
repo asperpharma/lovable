@@ -3,13 +3,13 @@ import {
   fetchProductsPaginated,
   PaginatedProductsResponse,
   ShopifyProduct,
-} from "@/lib/shopify";
-import { ProductCard } from "./ProductCard";
-import { FilterState, ProductFilters } from "./ProductFilters";
+} from "../lib/shopify.ts";
+import { ProductCard } from "./ProductCard.tsx";
+import { FilterState, ProductFilters } from "./ProductFilters.tsx";
 import { ChevronDown, Loader2 } from "lucide-react";
-import { categorizeProduct } from "@/lib/categoryMapping";
-import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { categorizeProduct } from "../lib/categoryMapping.ts";
+import { Button } from "./ui/button.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 
 interface ProductGridProps {
   showFilters?: boolean;

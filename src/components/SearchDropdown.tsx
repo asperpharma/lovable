@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Loader2, Search, X } from "lucide-react";
-import { searchProducts, ShopifyProduct } from "@/lib/shopify";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { translateTitle } from "@/lib/productUtils";
+import { searchProducts, ShopifyProduct } from "../lib/shopify.ts";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { translateTitle } from "../lib/productUtils.ts";
 
 interface SearchDropdownProps {
   isOpen: boolean;

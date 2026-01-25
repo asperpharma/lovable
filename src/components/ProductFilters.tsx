@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "./ui/button.tsx";
+import { Slider } from "./ui/slider.tsx";
+import { Checkbox } from "./ui/checkbox.tsx";
 import { ChevronDown, ChevronUp, Filter, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils.ts";
 
 export interface FilterState {
   categories: string[];

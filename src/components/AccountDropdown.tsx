@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "./ui/dropdown-menu.tsx";
 import {
   ChevronDown,
   ChevronRight,
@@ -23,9 +23,9 @@ import {
   Sparkles,
   User,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/hooks/useAuth";
+import { cn } from "../lib/utils.ts";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { useAuth } from "../hooks/useAuth.ts";
 import { toast } from "sonner";
 
 export const AccountDropdown = ({ isScrolled }: { isScrolled: boolean }) => {

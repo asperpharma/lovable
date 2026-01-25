@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { Progress } from "../components/ui/progress.tsx";
+import { Badge } from "../components/ui/badge.tsx";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Slider } from "@/components/ui/slider";
+} from "../components/ui/card.tsx";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs.tsx";
+import { ScrollArea } from "../components/ui/scroll-area.tsx";
+import { Slider } from "../components/ui/slider.tsx";
 import {
   AlertCircle,
   CheckCircle2,
@@ -34,10 +34,10 @@ import {
   Upload,
   Zap,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "../integrations/supabase/client.ts";
 import { toast } from "sonner";
 import ExcelJS from "exceljs";
-import { QueueItem, useImageQueue } from "@/lib/imageGenerationQueue";
+import { QueueItem, useImageQueue } from "../lib/imageGenerationQueue.ts";
 
 interface ProcessedProduct {
   sku: string;

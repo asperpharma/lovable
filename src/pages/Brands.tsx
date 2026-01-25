@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { Badge } from "@/components/ui/badge";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { Badge } from "../components/ui/badge.tsx";
 import { ArrowRight, Droplets, Heart, Sparkles, Sun } from "lucide-react";
 
 const FEATURED_BRANDS = [

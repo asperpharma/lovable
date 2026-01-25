@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
-import { AnimatedSection } from "./AnimatedSection";
-import { LazyImage } from "./LazyImage";
+import { AnimatedSection } from "./AnimatedSection.tsx";
+import { LazyImage } from "./LazyImage.tsx";
 
 // Brand logos
 import vichyLogo from "@/assets/brands/vichy-logo.webp";

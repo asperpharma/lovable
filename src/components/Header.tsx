@@ -22,16 +22,16 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 );
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useCartStore } from "@/stores/cartStore";
-import { useWishlistStore } from "@/stores/wishlistStore";
-import { CartDrawer } from "./CartDrawer";
-import { WishlistDrawer } from "./WishlistDrawer";
-import { LanguageSwitcher } from "./LanguageSwitcher";
-import { SearchDropdown } from "./SearchDropdown";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/hooks/useAuth";
+import { useCartStore } from "../stores/cartStore.ts";
+import { useWishlistStore } from "../stores/wishlistStore.ts";
+import { CartDrawer } from "./CartDrawer.tsx";
+import { WishlistDrawer } from "./WishlistDrawer.tsx";
+import { LanguageSwitcher } from "./LanguageSwitcher.tsx";
+import { SearchDropdown } from "./SearchDropdown.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { useAuth } from "../hooks/useAuth.ts";
 import asperLogoHorizontal from "@/assets/asper-logo-horizontal.jpg";
-import { PromotionBar } from "./PromotionBar";
+import { PromotionBar } from "./PromotionBar.tsx";
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

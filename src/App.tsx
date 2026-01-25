@@ -1,40 +1,40 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "./components/ui/toaster.tsx";
+import { Toaster as Sonner } from "./components/ui/sonner.tsx";
+import { TooltipProvider } from "./components/ui/tooltip.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { LanguageProvider } from "@/contexts/LanguageContext";
-import { useCartSync } from "@/hooks/useCartSync";
+import { LanguageProvider } from "./contexts/LanguageContext.tsx";
+import { useCartSync } from "./hooks/useCartSync.ts";
 import { lazy, Suspense } from "react";
 import { Loader2 } from "lucide-react";
 
 // Critical pages - load immediately
-import Index from "./pages/Index";
-import Shop from "./pages/Shop";
-import ProductDetail from "./pages/ProductDetail";
+import Index from "./pages/Index.tsx";
+import Shop from "./pages/Shop.tsx";
+import ProductDetail from "./pages/ProductDetail.tsx";
 
 // Secondary pages - lazy load for better performance
-const Collections = lazy(() => import("./pages/Collections"));
-const CollectionDetail = lazy(() => import("./pages/CollectionDetail"));
-const Brands = lazy(() => import("./pages/Brands"));
-const BrandVichy = lazy(() => import("./pages/BrandVichy"));
-const BestSellers = lazy(() => import("./pages/BestSellers"));
-const Offers = lazy(() => import("./pages/Offers"));
-const Contact = lazy(() => import("./pages/Contact"));
-const SkinConcerns = lazy(() => import("./pages/SkinConcerns"));
-const Wishlist = lazy(() => import("./pages/Wishlist"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const Auth = lazy(() => import("./pages/Auth"));
-const Account = lazy(() => import("./pages/Account"));
-const Philosophy = lazy(() => import("./pages/Philosophy"));
-const TrackOrder = lazy(() => import("./pages/TrackOrder"));
+const Collections = lazy(() => import("./pages/Collections.tsx"));
+const CollectionDetail = lazy(() => import("./pages/CollectionDetail.tsx"));
+const Brands = lazy(() => import("./pages/Brands.tsx"));
+const BrandVichy = lazy(() => import("./pages/BrandVichy.tsx"));
+const BestSellers = lazy(() => import("./pages/BestSellers.tsx"));
+const Offers = lazy(() => import("./pages/Offers.tsx"));
+const Contact = lazy(() => import("./pages/Contact.tsx"));
+const SkinConcerns = lazy(() => import("./pages/SkinConcerns.tsx"));
+const Wishlist = lazy(() => import("./pages/Wishlist.tsx"));
+const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const Auth = lazy(() => import("./pages/Auth.tsx"));
+const Account = lazy(() => import("./pages/Account.tsx"));
+const Philosophy = lazy(() => import("./pages/Philosophy.tsx"));
+const TrackOrder = lazy(() => import("./pages/TrackOrder.tsx"));
 
 // Admin pages - lazy load (rarely accessed by most users)
-const BulkUpload = lazy(() => import("./pages/BulkUpload"));
-const AdminOrders = lazy(() => import("./pages/AdminOrders"));
-const ManageProducts = lazy(() => import("./pages/ManageProducts"));
-const DriverDashboard = lazy(() => import("./pages/DriverDashboard"));
-const AdminAuditLogs = lazy(() => import("./pages/AdminAuditLogs"));
+const BulkUpload = lazy(() => import("./pages/BulkUpload.tsx"));
+const AdminOrders = lazy(() => import("./pages/AdminOrders.tsx"));
+const ManageProducts = lazy(() => import("./pages/ManageProducts.tsx"));
+const DriverDashboard = lazy(() => import("./pages/DriverDashboard.tsx"));
+const AdminAuditLogs = lazy(() => import("./pages/AdminAuditLogs.tsx"));
 
 // Loading fallback component
 const PageLoader = () => (

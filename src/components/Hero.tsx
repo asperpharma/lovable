@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "./ui/button.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { Link } from "react-router-dom";
 import { Sparkles, Volume2, VolumeX } from "lucide-react";
-import { AnimatedTrustBadge } from "./AnimatedTrustBadge";
+import { AnimatedTrustBadge } from "./AnimatedTrustBadge.tsx";
 
 // Hero assets
 import heroLifestyle from "@/assets/hero/hero-lifestyle.webp";
@@ -32,7 +32,7 @@ export const Hero = () => {
   // Enhanced parallax effect with multiple layers
   useEffect(() => {
     const handleScroll = () => {
-      const scrolled = window.scrollY;
+      const scrolled = globalThis.scrollY;
       setScrollY(scrolled);
 
       // Background moves slower (parallax depth effect)
@@ -60,8 +60,8 @@ export const Hero = () => {
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    globalThis.addEventListener("scroll", handleScroll, { passive: true });
+    return () => globalThis.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (

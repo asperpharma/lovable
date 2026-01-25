@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { AuthError, Factor, Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "../integrations/supabase/client.ts";
 
 interface AuthState {
   user: User | null;
@@ -99,7 +99,7 @@ export function useAuth() {
 
   const signUp = useCallback(
     async (email: string, password: string, fullName?: string) => {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${globalThis.location.origin}/`;
 
       const { data, error } = await supabase.auth.signUp({
         email,

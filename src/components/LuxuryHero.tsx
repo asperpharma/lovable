@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "./ui/button.tsx";
+import { cn } from "../lib/utils.ts";
 import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 
 export const LuxuryHero = () => {
   const [bgImageError, setBgImageError] = useState(false);

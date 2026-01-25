@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { Baby, Droplets, Flower2, Sparkle } from "lucide-react";
-import { AnimatedSection } from "./AnimatedSection";
+import { AnimatedSection } from "./AnimatedSection.tsx";
 
 const categories = [
   {

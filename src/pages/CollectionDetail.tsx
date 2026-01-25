@@ -1,9 +1,9 @@
 import { useParams } from "react-router-dom";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { ProductGrid } from "@/components/ProductGrid";
-import { getCategoryInfo, normalizeCategorySlug } from "@/lib/categoryMapping";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
+import { ProductGrid } from "../components/ProductGrid.tsx";
+import { getCategoryInfo, normalizeCategorySlug } from "../lib/categoryMapping.ts";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 export default function CollectionDetail() {
   const {
     slug,

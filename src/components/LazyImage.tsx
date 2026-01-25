@@ -1,6 +1,6 @@
 import { ImgHTMLAttributes, useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import { ImageSkeleton } from "./ProductCardSkeleton";
+import { cn } from "../lib/utils.ts";
+import { ImageSkeleton } from "./ProductCardSkeleton.tsx";
 
 interface LazyImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   skeletonClassName?: string;

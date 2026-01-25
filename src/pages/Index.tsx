@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
-import { GlobalHeader } from "@/components/GlobalHeader";
-import { LuxuryHero } from "@/components/LuxuryHero";
-import { BrandMarquee } from "@/components/BrandMarquee";
-import { LuxuryCategories } from "@/components/LuxuryCategories";
-import { DealOfTheDay } from "@/components/DealOfTheDay";
-import { LuxuryPromoBanner } from "@/components/LuxuryPromoBanner";
-import { FeaturedCollection } from "@/components/FeaturedCollection";
-import { BestSellersSection } from "@/components/BestSellersSection";
-import { Newsletter } from "@/components/Newsletter";
-import { Footer } from "@/components/Footer";
-import { BeautyAssistant } from "@/components/BeautyAssistant";
-import { ScrollToTop } from "@/components/ScrollToTop";
-import { FloatingSocials } from "@/components/FloatingSocials";
-import { PageLoadingSkeleton } from "@/components/PageLoadingSkeleton";
-import { MobileNav } from "@/components/MobileNav";
+import { GlobalHeader } from "../components/GlobalHeader.tsx";
+import { LuxuryHero } from "../components/LuxuryHero.tsx";
+import { BrandMarquee } from "../components/BrandMarquee.tsx";
+import { LuxuryCategories } from "../components/LuxuryCategories.tsx";
+import { DealOfTheDay } from "../components/DealOfTheDay.tsx";
+import { LuxuryPromoBanner } from "../components/LuxuryPromoBanner.tsx";
+import { FeaturedCollection } from "../components/FeaturedCollection.tsx";
+import { BestSellersSection } from "../components/BestSellersSection.tsx";
+import { Newsletter } from "../components/Newsletter.tsx";
+import { Footer } from "../components/Footer.tsx";
+import { BeautyAssistant } from "../components/BeautyAssistant.tsx";
+import { ScrollToTop } from "../components/ScrollToTop.tsx";
+import { FloatingSocials } from "../components/FloatingSocials.tsx";
+import { PageLoadingSkeleton } from "../components/PageLoadingSkeleton.tsx";
+import { MobileNav } from "../components/MobileNav.tsx";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -25,11 +25,11 @@ const Index = () => {
       setIsLoading(false);
     }, 1200);
 
-    window.addEventListener("load", handleLoad);
+    globalThis.addEventListener("load", handleLoad);
 
     return () => {
       clearTimeout(timer);
-      window.removeEventListener("load", handleLoad);
+      globalThis.removeEventListener("load", handleLoad);
     };
   }, []);
 

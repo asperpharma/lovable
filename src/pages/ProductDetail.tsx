@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useCartStore } from "@/stores/cartStore";
-import { useWishlistStore } from "@/stores/wishlistStore";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { supabase } from "../integrations/supabase/client.ts";
+import { useCartStore } from "../stores/cartStore.ts";
+import { useWishlistStore } from "../stores/wishlistStore.ts";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
 import {
   Droplets,
   Heart,
@@ -16,21 +16,21 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
-import { ShareButtons } from "@/components/ShareButtons";
+import { ShareButtons } from "../components/ShareButtons.tsx";
 import { toast } from "sonner";
 import {
   getLocalizedCategory,
   getLocalizedDescription,
   translateTitle,
-} from "@/lib/productUtils";
-import { useLanguage } from "@/contexts/LanguageContext";
+} from "../lib/productUtils.ts";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
+} from "../components/ui/accordion.tsx";
+import { Button } from "../components/ui/button.tsx";
 
 interface SupabaseProduct {
   id: string;
@@ -402,7 +402,7 @@ const ProductDetail = () => {
               </div>
 
               <ShareButtons
-                url={window.location.href}
+                url={globalThis.location.href}
                 title={`${isArabic ? "اكتشف" : "Check out"} ${product.title} ${
                   isArabic ? "من آسبر بيوتي" : "from Asper Beauty"
                 }`}

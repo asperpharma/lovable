@@ -9,7 +9,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command";
+} from "./ui/command.tsx";
 import {
   ArrowRight,
   History,
@@ -17,7 +17,7 @@ import {
   Sparkles,
   TrendingUp,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "../integrations/supabase/client.ts";
 import { useNavigate } from "react-router-dom";
 
 interface SearchResult {

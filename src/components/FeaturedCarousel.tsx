@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { Button } from "@/components/ui/button";
-import { fetchProducts, ShopifyProduct } from "@/lib/shopify";
-import { useCartStore } from "@/stores/cartStore";
-import { translateTitle } from "@/lib/productUtils";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { Button } from "./ui/button.tsx";
+import { fetchProducts, ShopifyProduct } from "../lib/shopify.ts";
+import { useCartStore } from "../stores/cartStore.ts";
+import { translateTitle } from "../lib/productUtils.ts";
 import { toast } from "sonner";
-import { OptimizedImage } from "./OptimizedImage";
+import { OptimizedImage } from "./OptimizedImage.tsx";
 
 export const FeaturedCarousel = () => {
   const { language, isRTL } = useLanguage();

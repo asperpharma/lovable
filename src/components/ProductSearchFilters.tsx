@@ -1,31 +1,31 @@
 import { useCallback, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "./ui/input.tsx";
+import { Button } from "./ui/button.tsx";
+import { Badge } from "./ui/badge.tsx";
+import { Slider } from "./ui/slider.tsx";
+import { Checkbox } from "./ui/checkbox.tsx";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "./ui/accordion.tsx";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { useLanguage } from "@/contexts/LanguageContext";
+} from "./ui/sheet.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import {
   BRANDS,
   CATEGORIES,
   PRICE_RANGES,
   SKIN_CONCERNS,
-} from "@/lib/categoryHierarchy";
-import { sanitizeInput } from "@/lib/validationSchemas";
+} from "../lib/categoryHierarchy.ts";
+import { sanitizeInput } from "../lib/validationSchemas.ts";
 
 export interface FilterState {
   searchQuery: string;

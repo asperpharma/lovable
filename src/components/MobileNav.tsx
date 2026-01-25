@@ -1,7 +1,7 @@
 import { Heart, Home, Search, ShoppingBag, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { useCartStore } from "@/stores/cartStore";
-import { useWishlistStore } from "@/stores/wishlistStore";
+import { useCartStore } from "../stores/cartStore.ts";
+import { useWishlistStore } from "../stores/wishlistStore.ts";
 
 export const MobileNav = () => {
   const location = useLocation();

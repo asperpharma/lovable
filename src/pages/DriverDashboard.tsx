@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { useDriverAuditLog } from "@/hooks/useDriverAuditLog";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "../integrations/supabase/client.ts";
+import { useAuth } from "../hooks/useAuth.ts";
+import { useDriverAuditLog } from "../hooks/useDriverAuditLog.ts";
+import { Button } from "../components/ui/button.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
+import { Badge } from "../components/ui/badge.tsx";
+import { Textarea } from "../components/ui/textarea.tsx";
 import { toast } from "sonner";
 import {
   CheckCircle2,
@@ -28,7 +28,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "../components/ui/dialog.tsx";
 
 interface OrderItem {
   title: string;
@@ -243,13 +243,13 @@ export default function DriverDashboard() {
     // Check if coordinates are available
     if (hasCoordinates) {
       // Use coordinates for more accurate navigation
-      window.open(
+      globalThis.open(
         `https://www.google.com/maps/dir/?api=1&destination=${order.customer_lat},${order.customer_lng}`,
         "_blank",
       );
     } else {
       // Fall back to address-based navigation
-      window.open(
+      globalThis.open(
         `https://www.google.com/maps/dir/?api=1&destination=${address}`,
         "_blank",
       );
@@ -263,7 +263,7 @@ export default function DriverDashboard() {
     logNavigationAccess(order.id, order.order_number, hasCoordinates, "waze");
 
     if (hasCoordinates) {
-      window.open(
+      globalThis.open(
         `https://waze.com/ul?ll=${order.customer_lat},${order.customer_lng}&navigate=yes`,
         "_blank",
       );
@@ -271,14 +271,14 @@ export default function DriverDashboard() {
       const address = encodeURIComponent(
         `${order.delivery_address}, ${order.city}, Jordan`,
       );
-      window.open(`https://waze.com/ul?q=${address}&navigate=yes`, "_blank");
+      globalThis.open(`https://waze.com/ul?q=${address}&navigate=yes`, "_blank");
     }
   };
 
   const callCustomer = (phone: string, order: DriverOrder) => {
     // Log phone access for audit
     logPhoneAccess(order.id, order.order_number, "initiate_call");
-    window.open(`tel:${phone}`, "_self");
+    globalThis.open(`tel:${phone}`, "_self");
   };
 
   const whatsappCustomer = (phone: string, order: DriverOrder) => {
@@ -288,7 +288,7 @@ export default function DriverDashboard() {
       `مرحباً، أنا سائق التوصيل من Asper Beauty. طلبك رقم ${order.order_number} في الطريق إليك.`,
     );
     const formattedPhone = phone.replace(/\D/g, "");
-    window.open(`https://wa.me/${formattedPhone}?text=${message}`, "_blank");
+    globalThis.open(`https://wa.me/${formattedPhone}?text=${message}`, "_blank");
   };
 
   const handleOrderSelect = (order: DriverOrder) => {

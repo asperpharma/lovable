@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "./ui/button.tsx";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
+} from "./ui/sheet.tsx";
 import {
   ArrowLeft,
   Loader2,
@@ -16,11 +16,11 @@ import {
   Truck,
   X,
 } from "lucide-react";
-import { useCartStore } from "@/stores/cartStore";
+import { useCartStore } from "../stores/cartStore.ts";
 import { toast } from "sonner";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { translateTitle } from "@/lib/productUtils";
-import { CODCheckoutForm, OrderSuccess } from "./CODCheckoutForm";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { translateTitle } from "../lib/productUtils.ts";
+import { CODCheckoutForm, OrderSuccess } from "./CODCheckoutForm.tsx";
 
 const FREE_SHIPPING_THRESHOLD = 50; // JOD
 
@@ -60,7 +60,7 @@ export const CartDrawer = () => {
   const handleCheckout = () => {
     const checkoutUrl = getCheckoutUrl();
     if (checkoutUrl) {
-      window.open(checkoutUrl, "_blank");
+      globalThis.open(checkoutUrl, "_blank");
       setOpen(false);
     } else {
       toast.error("Checkout not available. Please try again.");

@@ -1,6 +1,6 @@
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { Heart, Instagram } from "lucide-react";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useScrollAnimation } from "../hooks/useScrollAnimation.ts";
 
 export const InstagramFeed = () => {
   const { language } = useLanguage();

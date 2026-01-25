@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts, ShopifyProduct } from "@/lib/shopify";
-import { ProductCard } from "./ProductCard";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { fetchProducts, ShopifyProduct } from "../lib/shopify.ts";
+import { ProductCard } from "./ProductCard.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "./ui/checkbox.tsx";
+import { Slider } from "./ui/slider.tsx";
 
 // Filter data
 const filterData = {

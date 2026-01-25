@@ -3,12 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, Menu, Search, ShoppingBag, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useCartStore } from "@/stores/cartStore";
-import { useWishlistStore } from "@/stores/wishlistStore";
-import { LuxurySearch } from "./LuxurySearch";
-import { AccountDropdown } from "./AccountDropdown";
+import { cn } from "../lib/utils.ts";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { useCartStore } from "../stores/cartStore.ts";
+import { useWishlistStore } from "../stores/wishlistStore.ts";
+import { LuxurySearch } from "./LuxurySearch.tsx";
+import { AccountDropdown } from "./AccountDropdown.tsx";
 export const GlobalHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -26,9 +26,9 @@ export const GlobalHeader = () => {
 
   // Effect to handle scroll-driven glass transparency
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const handleScroll = () => setIsScrolled(globalThis.scrollY > 50);
+    globalThis.addEventListener("scroll", handleScroll);
+    return () => globalThis.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Keyboard shortcut for search (Cmd+K / Ctrl+K)
@@ -39,8 +39,8 @@ export const GlobalHeader = () => {
         setSearchOpen(true);
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    globalThis.addEventListener("keydown", handleKeyDown);
+    return () => globalThis.removeEventListener("keydown", handleKeyDown);
   }, []);
   const navItems = [{
     name: "Skin",

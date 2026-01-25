@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { Button } from "@/components/ui/button";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { Button } from "./ui/button.tsx";
 
 const brands = [
   { id: "vichy", name: "Vichy", nameAr: "فيشي" },

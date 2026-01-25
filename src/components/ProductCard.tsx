@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ShopifyProduct } from "@/lib/shopify";
-import { useCartStore } from "@/stores/cartStore";
-import { useWishlistStore } from "@/stores/wishlistStore";
+import { Button } from "./ui/button.tsx";
+import { ShopifyProduct } from "../lib/shopify.ts";
+import { useCartStore } from "../stores/cartStore.ts";
+import { useWishlistStore } from "../stores/wishlistStore.ts";
 import { toast } from "sonner";
 import { Eye, Heart, Info, ShoppingBag, Sparkles, Star } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { QuickViewModal } from "./QuickViewModal";
-import { getLocalizedDescription, translateTitle } from "@/lib/productUtils";
-import { OptimizedImage } from "./OptimizedImage";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { QuickViewModal } from "./QuickViewModal.tsx";
+import { getLocalizedDescription, translateTitle } from "../lib/productUtils.ts";
+import { OptimizedImage } from "./OptimizedImage.tsx";
 
 interface ProductCardProps {
   product: ShopifyProduct;

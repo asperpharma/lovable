@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { Badge } from "../components/ui/badge.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
+import { Input } from "../components/ui/input.tsx";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "../components/ui/select.tsx";
 import {
   Table,
   TableBody,
@@ -20,16 +20,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "../components/ui/table.tsx";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "../components/ui/dialog.tsx";
+import { ScrollArea } from "../components/ui/scroll-area.tsx";
+import { Skeleton } from "../components/ui/skeleton.tsx";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs.tsx";
 import {
   AlertCircle,
   Calendar,
@@ -50,8 +50,8 @@ import {
   Truck,
   XCircle,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "../integrations/supabase/client.ts";
+import { useAuth } from "../hooks/useAuth.ts";
 import { toast } from "sonner";
 import {
   endOfDay,
@@ -60,7 +60,7 @@ import {
   startOfDay,
   subDays,
 } from "date-fns";
-import { DriverAssignment } from "@/components/DriverAssignment";
+import { DriverAssignment } from "../components/DriverAssignment.tsx";
 
 interface OrderItem {
   productId: string;
@@ -381,7 +381,7 @@ export default function AdminOrders() {
 
   // Print invoice
   const printInvoice = (order: CODOrder) => {
-    const printWindow = window.open("", "_blank");
+    const printWindow = globalThis.open("", "_blank");
     if (!printWindow) {
       toast.error("Please allow popups to print invoices");
       return;

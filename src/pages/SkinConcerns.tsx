@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { ProductCard } from "@/components/ProductCard";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { fetchProducts, type ShopifyProduct } from "@/lib/shopify";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
+import { ProductCard } from "../components/ProductCard.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { fetchProducts, type ShopifyProduct } from "../lib/shopify.ts";
 import {
   Droplets,
   Eye,

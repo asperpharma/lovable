@@ -1,6 +1,6 @@
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { ShieldCheck, Stethoscope, Truck } from "lucide-react";
-import { AnimatedSection } from "./AnimatedSection";
+import { AnimatedSection } from "./AnimatedSection.tsx";
 
 const trustItems = [
   {

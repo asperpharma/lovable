@@ -1,17 +1,17 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "./ui/button.tsx";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
+} from "./ui/sheet.tsx";
 import { Heart, ShoppingBag, Trash2, X } from "lucide-react";
-import { useWishlistStore } from "@/stores/wishlistStore";
-import { useCartStore } from "@/stores/cartStore";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useWishlistStore } from "../stores/wishlistStore.ts";
+import { useCartStore } from "../stores/cartStore.ts";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { toast } from "sonner";
-import { translateTitle } from "@/lib/productUtils";
+import { translateTitle } from "../lib/productUtils.ts";
 
 export const WishlistDrawer = () => {
   const { items, isOpen, setOpen, removeItem } = useWishlistStore();

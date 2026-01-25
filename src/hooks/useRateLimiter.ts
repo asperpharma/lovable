@@ -68,7 +68,7 @@ export function useRateLimiter(
     const isLocked = state.lockedUntil && state.lockedUntil > now;
 
     if (isLocked) {
-      intervalRef.current = window.setInterval(() => {
+      intervalRef.current = globalThis.setInterval(() => {
         const currentNow = Date.now();
         if (!state.lockedUntil || currentNow >= state.lockedUntil) {
           if (intervalRef.current) {

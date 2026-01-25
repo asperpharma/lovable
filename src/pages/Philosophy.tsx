@@ -1,7 +1,7 @@
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { BeautyAssistant } from "@/components/BeautyAssistant";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
+import { BeautyAssistant } from "../components/BeautyAssistant.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Award, FlaskConical, Globe, Sparkles } from "lucide-react";
 
@@ -21,16 +21,16 @@ const useParallax = (speed: number = 0.1) => {
     const handleScroll = () => {
       if (ref.current) {
         const rect = ref.current.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
+        const windowHeight = globalThis.innerHeight;
         const elementCenter = rect.top + rect.height / 2;
         const distanceFromCenter = elementCenter - windowHeight / 2;
         setOffset(distanceFromCenter * speed);
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    globalThis.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => globalThis.removeEventListener("scroll", handleScroll);
   }, [speed]);
 
   return { ref, offset };
@@ -289,13 +289,13 @@ const Philosophy = () => {
   useEffect(() => {
     const handleScroll = () => {
       const scrollHeight = document.documentElement.scrollHeight -
-        window.innerHeight;
-      const progress = window.scrollY / scrollHeight;
+        globalThis.innerHeight;
+      const progress = globalThis.scrollY / scrollHeight;
       setScrollProgress(progress);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    globalThis.addEventListener("scroll", handleScroll, { passive: true });
+    return () => globalThis.removeEventListener("scroll", handleScroll);
   }, []);
 
   const content = {

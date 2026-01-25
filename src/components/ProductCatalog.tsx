@@ -9,15 +9,15 @@ import {
   Star,
   TrendingUp,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Badge } from "./ui/badge.tsx";
+import { Button } from "./ui/button.tsx";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { formatJOD, getProductImage } from "@/lib/productImageUtils";
-import { ProductQuickView } from "./ProductQuickView";
-import { useCartStore } from "@/stores/cartStore";
+import { supabase } from "../integrations/supabase/client.ts";
+import { formatJOD, getProductImage } from "../lib/productImageUtils.ts";
+import { ProductQuickView } from "./ProductQuickView.tsx";
+import { useCartStore } from "../stores/cartStore.ts";
 
 // Product type from Supabase with new columns
 interface Product {

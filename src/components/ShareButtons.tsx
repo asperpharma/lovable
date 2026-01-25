@@ -8,7 +8,7 @@ interface ShareButtonsProps {
 }
 
 export const ShareButtons = ({
-  url = window.location.href,
+  url = globalThis.location.href,
   title = "Check out this amazing product!",
   className = "",
 }: ShareButtonsProps) => {

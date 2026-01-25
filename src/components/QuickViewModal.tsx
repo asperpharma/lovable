@@ -4,10 +4,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ShopifyProduct } from "@/lib/shopify";
-import { useCartStore } from "@/stores/cartStore";
+} from "./ui/dialog.tsx";
+import { Button } from "./ui/button.tsx";
+import { ShopifyProduct } from "../lib/shopify.ts";
+import { useCartStore } from "../stores/cartStore.ts";
 import { toast } from "sonner";
 import {
   ChevronLeft,
@@ -17,9 +17,9 @@ import {
   Plus,
   ShoppingBag,
 } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { Link } from "react-router-dom";
-import { getLocalizedDescription, translateTitle } from "@/lib/productUtils";
+import { getLocalizedDescription, translateTitle } from "../lib/productUtils.ts";
 
 interface QuickViewModalProps {
   product: ShopifyProduct;

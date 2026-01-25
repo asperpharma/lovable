@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { ShopifyProduct } from "@/lib/shopify";
+import { ShopifyProduct } from "../lib/shopify.ts";
 
 interface WishlistStore {
   items: ShopifyProduct[];

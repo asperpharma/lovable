@@ -9,20 +9,20 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Badge } from "../components/ui/badge.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { formatJOD, getProductImage } from "@/lib/productImageUtils";
-import { ProductQuickView } from "@/components/ProductQuickView";
+import { supabase } from "../integrations/supabase/client.ts";
+import { formatJOD, getProductImage } from "../lib/productImageUtils.ts";
+import { ProductQuickView } from "../components/ProductQuickView.tsx";
 import {
   FilterState,
   ProductSearchFilters,
-} from "@/components/ProductSearchFilters";
-import { useCartStore } from "@/stores/cartStore";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+} from "../components/ProductSearchFilters.tsx";
+import { useCartStore } from "../stores/cartStore.ts";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
 
 // Extended Product type with new columns
 interface Product {

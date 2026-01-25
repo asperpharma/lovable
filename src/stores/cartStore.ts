@@ -7,7 +7,7 @@ import {
   removeLineFromShopifyCart,
   ShopifyProduct,
   updateShopifyCartLine,
-} from "@/lib/shopify";
+} from "../lib/shopify.ts";
 
 export interface CartItem {
   lineId: string | null;

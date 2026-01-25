@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Clock, Flame } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getProductImage } from "@/lib/productImageUtils";
+import { supabase } from "../integrations/supabase/client.ts";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { Button } from "./ui/button.tsx";
+import { Skeleton } from "./ui/skeleton.tsx";
+import { getProductImage } from "../lib/productImageUtils.ts";
 
 // Product card component for deals
 const DealProductCard = ({ product }: { product: any }) => {

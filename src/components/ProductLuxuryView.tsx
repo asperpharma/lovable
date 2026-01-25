@@ -8,15 +8,15 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "./ui/button.tsx";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useCartStore } from "@/stores/cartStore";
+} from "./ui/accordion.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { useCartStore } from "../stores/cartStore.ts";
 import { toast } from "sonner";
 
 interface ProductLuxuryViewProps {

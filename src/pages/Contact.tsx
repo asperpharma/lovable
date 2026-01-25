@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
 import {
   CheckCircle,
   Facebook,
@@ -11,12 +11,12 @@ import {
   MessageCircle,
   Phone,
 } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { toast } from "sonner";
 import {
   type ContactFormData,
   contactFormSchema,
-} from "@/lib/validationSchemas";
+} from "../lib/validationSchemas.ts";
 
 // TikTok icon component
 const TikTokIcon = ({ className }: { className?: string }) => (

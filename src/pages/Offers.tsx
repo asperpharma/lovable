@@ -1,7 +1,7 @@
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { ProductGrid } from "@/components/ProductGrid";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Header } from "../components/Header.tsx";
+import { Footer } from "../components/Footer.tsx";
+import { ProductGrid } from "../components/ProductGrid.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 
 export default function Offers() {
   const { language } = useLanguage();

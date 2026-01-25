@@ -1,6 +1,6 @@
 import { ReactNode, useRef } from "react";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { cn } from "@/lib/utils";
+import { useScrollAnimation } from "../hooks/useScrollAnimation.ts";
+import { cn } from "../lib/utils.ts";
 
 interface AnimatedSectionProps {
   children: ReactNode;

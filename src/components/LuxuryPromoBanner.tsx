@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "./ui/button.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 
 interface LuxuryPromoBannerProps {
   title?: string;

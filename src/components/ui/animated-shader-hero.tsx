@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils.ts";
 
 interface HeroProps {
   trustBadge?: {
@@ -393,10 +393,10 @@ const useShaderBackground = () => {
     if (!canvasRef.current) return;
 
     const canvas = canvasRef.current;
-    const dpr = Math.max(1, 0.5 * window.devicePixelRatio);
+    const dpr = Math.max(1, 0.5 * globalThis.devicePixelRatio);
 
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
+    canvas.width = globalThis.innerWidth * dpr;
+    canvas.height = globalThis.innerHeight * dpr;
 
     if (rendererRef.current) {
       rendererRef.current.updateScale(dpr);
@@ -418,7 +418,7 @@ const useShaderBackground = () => {
     if (!canvasRef.current) return;
 
     const canvas = canvasRef.current;
-    const dpr = Math.max(1, 0.5 * window.devicePixelRatio);
+    const dpr = Math.max(1, 0.5 * globalThis.devicePixelRatio);
 
     rendererRef.current = new WebGLRenderer(canvas, dpr);
     pointersRef.current = new PointerHandler(canvas, dpr);
@@ -434,10 +434,10 @@ const useShaderBackground = () => {
 
     loop(0);
 
-    window.addEventListener("resize", resize);
+    globalThis.addEventListener("resize", resize);
 
     return () => {
-      window.removeEventListener("resize", resize);
+      globalThis.removeEventListener("resize", resize);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
@@ -464,7 +464,7 @@ const AnimatedShaderHero: React.FC<HeroProps> = ({
   useEffect(() => {
     const handleScroll = () => {
       if (portraitRef.current) {
-        const scrollY = window.scrollY;
+        const scrollY = globalThis.scrollY;
         const parallaxSpeed = 0.15;
         portraitRef.current.style.transform = `translateY(${
           scrollY * parallaxSpeed
@@ -472,8 +472,8 @@ const AnimatedShaderHero: React.FC<HeroProps> = ({
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    globalThis.addEventListener("scroll", handleScroll, { passive: true });
+    return () => globalThis.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (

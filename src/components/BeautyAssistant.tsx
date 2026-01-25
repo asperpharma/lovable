@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Loader2, Send, Stethoscope, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
+import { Button } from "./ui/button.tsx";
+import { Input } from "./ui/input.tsx";
+import { ScrollArea } from "./ui/scroll-area.tsx";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { supabase } from "../integrations/supabase/client.ts";
 
 type Message = { role: "user" | "assistant"; content: string };
 

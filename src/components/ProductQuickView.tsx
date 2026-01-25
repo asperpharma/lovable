@@ -4,9 +4,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+} from "./ui/dialog.tsx";
+import { Button } from "./ui/button.tsx";
+import { Badge } from "./ui/badge.tsx";
 import { toast } from "sonner";
 import {
   Minus,
@@ -20,9 +20,9 @@ import {
   Truck,
   X,
 } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { formatJOD, getProductImage } from "@/lib/productImageUtils";
-import { useCartStore } from "@/stores/cartStore";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { formatJOD, getProductImage } from "../lib/productImageUtils.ts";
+import { useCartStore } from "../stores/cartStore.ts";
 
 interface Product {
   id: string;

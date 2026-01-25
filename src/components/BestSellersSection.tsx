@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { LuxuryProductCard } from "@/components/LuxuryProductCard";
-import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "../integrations/supabase/client.ts";
+import { LuxuryProductCard } from "./LuxuryProductCard.tsx";
+import { Skeleton } from "./ui/skeleton.tsx";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { getProductImage } from "@/lib/productImageUtils";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
+import { getProductImage } from "../lib/productImageUtils.ts";
 
 export const BestSellersSection = () => {
   const { language, isRTL } = useLanguage();
