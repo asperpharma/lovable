@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { LuxuryHero } from "@/components/LuxuryHero";
 import { BrandMarquee } from "@/components/BrandMarquee";
@@ -20,7 +20,7 @@ const Index = () => {
 
   useEffect(() => {
     const handleLoad = () => setIsLoading(false);
-    
+
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1200);
