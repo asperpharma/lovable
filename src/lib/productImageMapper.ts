@@ -3,6 +3,11 @@
  * Maps product names/SKUs to their corresponding image files in the assets folder
  */
 
+// Constants for matching logic
+const MIN_SIGNIFICANT_WORD_LENGTH = 3;
+const MIN_WORD_MATCHES = 2;
+const MIN_WORDS_FOR_SINGLE_MATCH = 1;
+
 // Import all product images from assets
 const productImages = import.meta.glob('@/assets/products/*.(jpg|jpeg|png|webp)', { 
   eager: true, 
@@ -59,7 +64,7 @@ export function findProductImage(productName: string, sku?: string): string | nu
   }
   
   // Try partial match - find image name that contains product name words
-  const productWords = normalizedProduct.split(' ').filter(w => w.length > 3);
+  const productWords = normalizedProduct.split(' ').filter(w => w.length > MIN_SIGNIFICANT_WORD_LENGTH);
   
   for (const [imageName] of imageMap) {
     const imageWords = imageName.split(' ');
@@ -69,8 +74,8 @@ export function findProductImage(productName: string, sku?: string): string | nu
       imageWords.some(imgWord => imgWord.includes(word) || word.includes(imgWord))
     ).length;
     
-    // If at least 2 significant words match, consider it a match
-    if (matchCount >= 2 || (matchCount >= 1 && productWords.length === 1)) {
+    // If at least MIN_WORD_MATCHES significant words match, consider it a match
+    if (matchCount >= MIN_WORD_MATCHES || (matchCount >= MIN_WORDS_FOR_SINGLE_MATCH && productWords.length === 1)) {
       return imageMap.get(imageName) || null;
     }
   }
@@ -84,29 +89,6 @@ export function findProductImage(productName: string, sku?: string): string | nu
  */
 export function getAllProductImages(): Map<string, string> {
   return new Map(imageMap);
-}
-
-/**
- * Get product image with fallback to placeholder
- * @param productName - The product name or title
- * @param sku - Optional SKU/barcode
- * @param category - Product category for placeholder
- * @returns Image URL (existing or placeholder)
- */
-export function getProductImageWithFallback(
-  productName: string,
-  sku?: string,
-  category?: string
-): string {
-  // First try to find existing image
-  const existingImage = findProductImage(productName, sku);
-  if (existingImage) {
-    return existingImage;
-  }
-  
-  // Fall back to placeholder logic
-  const { getPlaceholderImage } = require('./productImageUtils');
-  return getPlaceholderImage(category || 'Featured', productName);
 }
 
 /**

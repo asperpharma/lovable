@@ -1,6 +1,8 @@
 // Placeholder image generator based on category and title keywords
 // Returns relevant Unsplash URLs to ensure every product looks unique and matches BeautyBox/iHerb aesthetic
 
+import { findProductImage } from './productImageMapper';
+
 // Enhanced keyword-based image mapping for specific product types
 const keywordImageMap: Record<string, string> = {
   // Skincare
@@ -101,15 +103,9 @@ export const getProductImage = (
   }
   
   // Try to find existing image from assets
-  try {
-    const { findProductImage } = require('./productImageMapper');
-    const existingImage = findProductImage(title, sku);
-    if (existingImage) {
-      return existingImage;
-    }
-  } catch (error) {
-    // productImageMapper might not be available in all contexts
-    console.debug('Product image mapper not available:', error);
+  const existingImage = findProductImage(title, sku);
+  if (existingImage) {
+    return existingImage;
   }
   
   return getPlaceholderImage(category, title);
