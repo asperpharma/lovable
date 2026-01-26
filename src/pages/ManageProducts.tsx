@@ -79,6 +79,7 @@ const ManageProducts = () => {
   const [enrichResults, setEnrichResults] = useState<
     { id: string; title: string; status: string; image_url?: string }[] | null
   >(null);
+  const [productsWithoutImages, setProductsWithoutImages] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
@@ -139,6 +140,12 @@ const ManageProducts = () => {
 
         if (error) throw error;
         setProducts(data || []);
+        
+        // Count products without images
+        const withoutImages = (data || []).filter(
+          (p) => !p.image_url || p.image_url.trim() === ""
+        ).length;
+        setProductsWithoutImages(withoutImages);
       } catch (err: any) {
         console.error("Error fetching products:", err);
         toast.error("Failed to load products");
@@ -247,11 +254,17 @@ const ManageProducts = () => {
 
         if (error) throw error;
 
-        setProducts((prev) =>
-          prev.map((p) =>
+        setProducts((prev) => {
+          const updated = prev.map((p) =>
             p.id === editingProduct.id ? { ...p, ...productData } : p
-          )
-        );
+          );
+          // Update count of products without images
+          const withoutImages = updated.filter(
+            (p) => !p.image_url || p.image_url.trim() === ""
+          ).length;
+          setProductsWithoutImages(withoutImages);
+          return updated;
+        });
         toast.success("Product updated successfully");
       } else {
         const { data, error } = await supabase
@@ -262,8 +275,38 @@ const ManageProducts = () => {
 
         if (error) throw error;
 
-        setProducts((prev) => [data, ...prev]);
-        toast.success("Product created successfully");
+        // Auto-generate image if none provided
+        if (!productData.image_url && data) {
+          toast.info("Generating product image...", { duration: 3000 });
+          try {
+            const { data: imageData, error: imageError } = await supabase.functions.invoke(
+              "generate-product-images",
+              {
+                body: { productIds: [data.id] },
+              },
+            );
+
+            if (!imageError && imageData?.results?.[0]?.status === "success") {
+              // Refresh the product list to get the updated image
+              const { data: refreshedProducts } = await supabase
+                .from("products")
+                .select("*")
+                .order("created_at", { ascending: false });
+              if (refreshedProducts) setProducts(refreshedProducts);
+              toast.success("Product created with AI-generated image!");
+            } else {
+              setProducts((prev) => [data, ...prev]);
+              toast.warning("Product created, but image generation failed. You can generate it manually.");
+            }
+          } catch (imgError) {
+            console.error("Image generation error:", imgError);
+            setProducts((prev) => [data, ...prev]);
+            toast.warning("Product created, but image generation failed. You can generate it manually.");
+          }
+        } else {
+          setProducts((prev) => [data, ...prev]);
+          toast.success("Product created successfully");
+        }
       }
 
       setIsDialogOpen(false);
@@ -287,7 +330,15 @@ const ManageProducts = () => {
 
       if (error) throw error;
 
-      setProducts((prev) => prev.filter((p) => p.id !== id));
+      setProducts((prev) => {
+        const updated = prev.filter((p) => p.id !== id);
+        // Update count of products without images
+        const withoutImages = updated.filter(
+          (p) => !p.image_url || p.image_url.trim() === ""
+        ).length;
+        setProductsWithoutImages(withoutImages);
+        return updated;
+      });
       toast.success("Product deleted successfully");
     } catch (error: any) {
       console.error("Delete error:", error);
@@ -319,7 +370,13 @@ const ManageProducts = () => {
           .from("products")
           .select("*")
           .order("created_at", { ascending: false });
-        if (refreshedProducts) setProducts(refreshedProducts);
+        if (refreshedProducts) {
+          setProducts(refreshedProducts);
+          const withoutImages = refreshedProducts.filter(
+            (p) => !p.image_url || p.image_url.trim() === ""
+          ).length;
+          setProductsWithoutImages(withoutImages);
+        }
       } else {
         toast.info("No new images found. Try adding source URLs to products.");
       }
@@ -336,22 +393,74 @@ const ManageProducts = () => {
       setIsGeneratingAI(true);
       setEnrichResults(null);
 
-      toast.info("Generating AI images for products without images...");
-
-      const { data, error } = await supabase.functions.invoke(
-        "generate-product-images",
-        {
-          body: { limit: 5 },
-        },
+      // Get all product IDs without images
+      const productsNeedingImages = products.filter(
+        (p) => !p.image_url || p.image_url.trim() === ""
       );
 
-      if (error) throw error;
+      if (productsNeedingImages.length === 0) {
+        toast.info("All products already have images!");
+        return;
+      }
 
-      setEnrichResults(data.results || []);
+      toast.info(
+        `Generating AI images for ${productsNeedingImages.length} products...`,
+        { duration: 3000 }
+      );
 
-      const successCount = data.results?.filter((r: any) =>
+      // Process in batches to avoid rate limits
+      const batchSize = 5;
+      const allResults: any[] = [];
+
+      for (let i = 0; i < productsNeedingImages.length; i += batchSize) {
+        const batch = productsNeedingImages.slice(i, i + batchSize);
+        const productIds = batch.map((p) => p.id);
+
+        try {
+          const { data, error } = await supabase.functions.invoke(
+            "generate-product-images",
+            {
+              body: { productIds },
+            },
+          );
+
+          if (error) {
+            console.error(`Batch ${i / batchSize + 1} error:`, error);
+            allResults.push(
+              ...batch.map((p) => ({
+                id: p.id,
+                title: p.title,
+                status: "error",
+              }))
+            );
+            continue;
+          }
+
+          if (data?.results) {
+            allResults.push(...data.results);
+          }
+
+          // Wait between batches to respect rate limits
+          if (i + batchSize < productsNeedingImages.length) {
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+          }
+        } catch (batchError) {
+          console.error(`Batch ${i / batchSize + 1} error:`, batchError);
+          allResults.push(
+            ...batch.map((p) => ({
+              id: p.id,
+              title: p.title,
+              status: "error",
+            }))
+          );
+        }
+      }
+
+      setEnrichResults(allResults);
+
+      const successCount = allResults.filter((r: any) =>
         r.status === "success"
-      ).length || 0;
+      ).length;
 
       if (successCount > 0) {
         toast.success(`Generated ${successCount} AI product images`);
@@ -360,9 +469,13 @@ const ManageProducts = () => {
           .from("products")
           .select("*")
           .order("created_at", { ascending: false });
-        if (refreshedProducts) setProducts(refreshedProducts);
-      } else if (data.total === 0) {
-        toast.info("All products already have images!");
+        if (refreshedProducts) {
+          setProducts(refreshedProducts);
+          const withoutImages = refreshedProducts.filter(
+            (p) => !p.image_url || p.image_url.trim() === ""
+          ).length;
+          setProductsWithoutImages(withoutImages);
+        }
       } else {
         toast.warning(
           "AI image generation had issues. Check console for details.",
@@ -405,7 +518,13 @@ const ManageProducts = () => {
           .from("products")
           .select("*")
           .order("created_at", { ascending: false });
-        if (refreshedProducts) setProducts(refreshedProducts);
+        if (refreshedProducts) {
+          setProducts(refreshedProducts);
+          const withoutImages = refreshedProducts.filter(
+            (p) => !p.image_url || p.image_url.trim() === ""
+          ).length;
+          setProductsWithoutImages(withoutImages);
+        }
       } else {
         throw new Error(data.error || "Background removal failed");
       }
@@ -453,14 +572,16 @@ const ManageProducts = () => {
             <div className="flex items-center gap-3">
               <Button
                 onClick={handleGenerateAIImages}
-                disabled={isGeneratingAI || isEnriching}
+                disabled={isGeneratingAI || isEnriching || productsWithoutImages === 0}
                 variant="outline"
                 className="border-primary/30 text-primary hover:bg-primary/10"
               >
                 {isGeneratingAI
                   ? <RefreshCw className="w-4 h-4 me-2 animate-spin" />
                   : <Sparkles className="w-4 h-4 me-2" />}
-                {isGeneratingAI ? "Generating..." : "Generate AI Images"}
+                {isGeneratingAI
+                  ? "Generating..."
+                  : `Generate AI Images${productsWithoutImages > 0 ? ` (${productsWithoutImages})` : ""}`}
               </Button>
 
               <Button
