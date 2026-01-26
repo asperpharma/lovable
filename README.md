@@ -1,7 +1,6 @@
 # Asper Beauty Shop
 
-A luxury e-commerce storefront for premium skincare and beauty products, built
-with modern web technologies.
+A luxury e-commerce storefront for premium skincare and beauty products, built with modern web technologies.
 
 🔗 **Live Site**: [asperbeauty.lovable.app](https://asperbeautyshop.lovable.app)
 
@@ -14,8 +13,7 @@ with modern web technologies.
 - **Search** - Find products by name, brand, or category
 - **Responsive Design** - Optimized for desktop, tablet, and mobile
 - **RTL Support** - Full Arabic language support with right-to-left layout
-- **Shopify Integration** - Connected to Shopify for product management and
-  checkout
+- **Shopify Integration** - Connected to Shopify for product management and checkout
 
 ## 🛠️ Tech Stack
 
@@ -33,15 +31,14 @@ with modern web technologies.
 
 The project uses a custom design system with:
 
-| Token             | Color     | Usage               |
-| ----------------- | --------- | ------------------- |
-| `--maroon`        | `#800020` | Primary brand color |
-| `--soft-ivory`    | `#F8F8FF` | Background          |
-| `--shiny-gold`    | `#C5A028` | Accent color        |
-| `--dark-charcoal` | `#333333` | Text color          |
+| Token | Color | Usage |
+|-------|-------|-------|
+| `--maroon` | `#800020` | Primary brand color |
+| `--soft-ivory` | `#F8F8FF` | Background |
+| `--shiny-gold` | `#C5A028` | Accent color |
+| `--dark-charcoal` | `#333333` | Text color |
 
 Typography:
-
 - **Display**: Playfair Display (headings)
 - **Body**: Montserrat (body text)
 - **RTL**: Tajawal (Arabic text)
@@ -97,23 +94,22 @@ npm run preview
 
 ## 📱 Pages
 
-| Route                  | Description                                            |
-| ---------------------- | ------------------------------------------------------ |
-| `/`                    | Home page with hero, featured products, and categories |
-| `/brands`              | Browse all available brands                            |
-| `/brands/vichy`        | Vichy brand showcase page                              |
-| `/collections`         | Product collections                                    |
-| `/collections/:handle` | Individual collection page                             |
-| `/products/:handle`    | Product detail page                                    |
-| `/skin-concerns`       | Shop by skin concern                                   |
-| `/offers`              | Special offers and promotions                          |
-| `/best-sellers`        | Best selling products                                  |
-| `/contact`             | Contact information                                    |
+| Route | Description |
+|-------|-------------|
+| `/` | Home page with hero, featured products, and categories |
+| `/brands` | Browse all available brands |
+| `/brands/vichy` | Vichy brand showcase page |
+| `/collections` | Product collections |
+| `/collections/:handle` | Individual collection page |
+| `/products/:handle` | Product detail page |
+| `/skin-concerns` | Shop by skin concern |
+| `/offers` | Special offers and promotions |
+| `/best-sellers` | Best selling products |
+| `/contact` | Contact information |
 
 ## 🌐 Internationalization
 
 The app supports:
-
 - **English** (LTR)
 - **Arabic** (RTL)
 
