@@ -55,6 +55,15 @@ Your Supabase Edge Functions use **LOVABLE_API_KEY** (and optionally **SITE_URL*
 
 See [Lovable Security & API keys](https://docs.lovable.dev/features/security) for more.
 
+**Detailed steps (where to click):**
+
+- **Project name** (top left of the editor) → **Settings**. ([FAQ](https://docs.lovable.dev/introduction/faq#how-do-i-find-the-project-settings))
+- **Settings → Connectors → Shared connectors → Lovable AI** — manage permissions; check for an API key or “Use externally” / programmatic access.
+- Or **Settings → Integrations** / **API** / **API Keys** — look for a key for the Lovable AI gateway (`ai.gateway.lovable.dev`).
+- Create or copy the key, then add it as `LOVABLE_API_KEY` in Supabase (Step B below).
+
+**Docs:** [Lovable AI](https://docs.lovable.dev/integrations/ai) · [Integrations](https://docs.lovable.dev/integrations/introduction)
+
 ### B. Set Secrets in Supabase
 
 #### Method 1: Supabase Dashboard (recommended)
