@@ -429,14 +429,47 @@ const ProductDetail = () => {
 
               <AccordionItem value="ingredients" className="border-border">
                 <AccordionTrigger className="text-sm font-medium uppercase tracking-widest hover:no-underline">
-                  {isArabic ? "المكونات الرئيسية" : "Key Ingredients"}
+                  {isArabic ? "المكونات الطبيعية" : "Natural Ingredients"}
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {isArabic
-                      ? "مكونات طبيعية فاخرة تعمل على ترطيب البشرة وتجديدها. تحتوي على فيتامين سي وحمض الهيالورونيك والنياسيناميد."
-                      : "Premium natural ingredients that hydrate and rejuvenate. Contains Vitamin C, Hyaluronic Acid, and Niacinamide."}
-                  </p>
+                  <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {isArabic
+                        ? "مكونات طبيعية فاخرة مستخلصة من الطبيعة لبشرة مشرقة وصحية. تركيبتنا العضوية تحتوي على:"
+                        : "Premium natural ingredients sourced from nature for radiant, healthy skin. Our organic formulation features:"}
+                    </p>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <Sparkles className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        <span>
+                          {isArabic
+                            ? "فيتامين سي - لتفتيح البشرة وتوحيد لونها"
+                            : "Vitamin C - For skin brightening and even tone"}
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Droplets className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        <span>
+                          {isArabic
+                            ? "حمض الهيالورونيك - للترطيب العميق"
+                            : "Hyaluronic Acid - For deep hydration"}
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <Sparkles className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                        <span>
+                          {isArabic
+                            ? "النياسيناميد - لتحسين ملمس البشرة"
+                            : "Niacinamide - For improved skin texture"}
+                        </span>
+                      </li>
+                    </ul>
+                    <p className="text-xs text-muted-foreground italic pt-2">
+                      {isArabic
+                        ? "* خالٍ من البارابين، نباتي، غير مختبر على الحيوانات"
+                        : "* Paraben-free, Vegan, Cruelty-free"}
+                    </p>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
 

@@ -1,12 +1,14 @@
-# Asper Beauty Shop
+# Asper Beauty Shop - Radiant Beauty
 
-A luxury e-commerce storefront for premium skincare and beauty products, built
-with modern web technologies.
+A modern e-commerce platform for premium organic skincare and natural beauty products, designed with a clean, minimalist aesthetic featuring soft, earthy tones.
 
 🔗 **Live Site**: [asperbeauty.lovable.app](https://asperbeautyshop.lovable.app)
 
 ## ✨ Features
 
+- **Radiant Beauty Theme** - Clean, minimalist design with soft, earthy tones (creams, sage greens)
+- **Organic Skincare Focus** - SEO-optimized product listings for organic skincare keywords
+- **Natural Ingredients Section** - Detailed natural ingredient information on every product
 - **Product Catalog** - Browse products by brand, category, and skin concerns
 - **Shopping Cart** - Add products with real-time cart updates
 - **Wishlist** - Save favorite products for later
@@ -14,35 +16,35 @@ with modern web technologies.
 - **Search** - Find products by name, brand, or category
 - **Responsive Design** - Optimized for desktop, tablet, and mobile
 - **RTL Support** - Full Arabic language support with right-to-left layout
-- **Shopify Integration** - Connected to Shopify for product management and
-  checkout
+- **Supabase Integration** - Full authentication and database integration
 
 ## 🛠️ Tech Stack
 
 - **Framework**: React 18 with TypeScript
 - **Build Tool**: Vite
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS with custom Radiant Beauty theme
 - **UI Components**: shadcn/ui (Radix UI primitives)
 - **State Management**: Zustand
 - **Routing**: React Router v6
 - **Data Fetching**: TanStack Query
-- **E-commerce**: Shopify Storefront API
+- **Authentication**: Supabase Auth
+- **Database**: Supabase
 - **Animations**: CSS animations with Tailwind
 
-## 🎨 Design System
+## 🎨 Design System - Radiant Beauty
 
-The project uses a custom design system with:
+The project uses a custom "Radiant Beauty" design system with soft, earthy tones:
 
-| Token             | Color     | Usage               |
-| ----------------- | --------- | ------------------- |
-| `--maroon`        | `#800020` | Primary brand color |
-| `--soft-ivory`    | `#F8F8FF` | Background          |
-| `--shiny-gold`    | `#C5A028` | Accent color        |
-| `--dark-charcoal` | `#333333` | Text color          |
+| Token           | Color     | Usage                      |
+| --------------- | --------- | -------------------------- |
+| `--sage`        | `#A8B5A5` | Primary accent color       |
+| `--cream`       | `#F5F1ED` | Background                 |
+| `--beige`       | `#D4C5B9` | Secondary accent           |
+| `--earth-brown` | `#6B5D56` | Text & headers             |
 
 Typography:
 
-- **Display**: Playfair Display (headings)
+- **Display**: Cormorant Garamond (headings)
 - **Body**: Montserrat (body text)
 - **RTL**: Tajawal (Arabic text)
 
