@@ -4,7 +4,12 @@ import { supabase } from "../integrations/supabase/client.ts";
 import { useAuth } from "../hooks/useAuth.ts";
 import { Button } from "../components/ui/button.tsx";
 import { Input } from "../components/ui/input.tsx";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card.tsx";
 import {
   Table,
   TableBody,

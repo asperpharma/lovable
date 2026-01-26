@@ -5,7 +5,12 @@ import { Footer } from "../components/Footer.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Input } from "../components/ui/input.tsx";
 import { Label } from "../components/ui/label.tsx";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card.tsx";
 import { Badge } from "../components/ui/badge.tsx";
 import { Separator } from "../components/ui/separator.tsx";
 import { supabase } from "../integrations/supabase/client.ts";

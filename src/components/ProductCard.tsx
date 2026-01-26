@@ -8,7 +8,10 @@ import { toast } from "sonner";
 import { Eye, Heart, Info, ShoppingBag, Sparkles, Star } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { QuickViewModal } from "./QuickViewModal.tsx";
-import { getLocalizedDescription, translateTitle } from "../lib/productUtils.ts";
+import {
+  getLocalizedDescription,
+  translateTitle,
+} from "../lib/productUtils.ts";
 import { OptimizedImage } from "./OptimizedImage.tsx";
 
 interface ProductCardProps {
@@ -149,10 +152,11 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           {/* Wishlist Button - Always visible on mobile */}
           <button
             onClick={handleWishlistToggle}
-            className={`absolute top-2 md:top-3 right-2 md:right-3 z-20 w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center transition-all duration-400 ${isWishlisted
+            className={`absolute top-2 md:top-3 right-2 md:right-3 z-20 w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center transition-all duration-400 ${
+              isWishlisted
                 ? "bg-gold text-burgundy"
                 : "bg-white/80 text-muted-foreground md:opacity-0 md:group-hover:opacity-100 hover:bg-gold hover:text-burgundy"
-              }`}
+            }`}
           >
             <Heart
               className={`w-4 h-4 ${isWishlisted ? "fill-current" : ""}`}
@@ -214,8 +218,9 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               </p>
             )}
             <p
-              className={`font-display text-base md:text-lg font-semibold ${isOnSale ? "text-burgundy" : "text-burgundy"
-                }`}
+              className={`font-display text-base md:text-lg font-semibold ${
+                isOnSale ? "text-burgundy" : "text-burgundy"
+              }`}
             >
               {price.currencyCode} {currentPrice.toFixed(2)}
             </p>

@@ -19,7 +19,10 @@ import {
 } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { Link } from "react-router-dom";
-import { getLocalizedDescription, translateTitle } from "../lib/productUtils.ts";
+import {
+  getLocalizedDescription,
+  translateTitle,
+} from "../lib/productUtils.ts";
 
 interface QuickViewModalProps {
   product: ShopifyProduct;

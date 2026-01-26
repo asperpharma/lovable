@@ -66,7 +66,8 @@ export const Hero = () => {
       if (overlayRef.current) {
         const overlayOpacity = Math.min(0.8, 0.4 + scrolled / 1000);
         overlayRef.current.style.background =
-          `linear-gradient(to right, rgba(103, 32, 46, ${overlayOpacity}), rgba(103, 32, 46, ${overlayOpacity * 0.6
+          `linear-gradient(to right, rgba(103, 32, 46, ${overlayOpacity}), rgba(103, 32, 46, ${
+            overlayOpacity * 0.6
           }), transparent)`;
       }
     };
@@ -117,8 +118,9 @@ export const Hero = () => {
                     alt={isArabic
                       ? "مجموعة الجمال الفاخرة"
                       : "Luxury Beauty Collection"}
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${index === currentSlide ? "opacity-100" : "opacity-0"
-                      }`}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                      index === currentSlide ? "opacity-100" : "opacity-0"
+                    }`}
                     fetchPriority={index === 0 ? "high" : "low"}
                     width={1920}
                     height={1080}
@@ -187,8 +189,9 @@ export const Hero = () => {
         style={{ transform: "translateY(0)", opacity: 1 }}
       >
         <div
-          className={`max-w-xl ${isArabic ? "text-right mr-auto" : "text-left"
-            }`}
+          className={`max-w-xl ${
+            isArabic ? "text-right mr-auto" : "text-left"
+          }`}
         >
           {/* Animated Trust Badge Component */}
           <div
@@ -323,10 +326,11 @@ export const Hero = () => {
           className={`absolute bottom-8 right-8 z-20 w-12 h-12 rounded-full 
             flex items-center justify-center transition-all duration-300
             backdrop-blur-sm border border-cream/30
-            ${isMuted
+            ${
+            isMuted
               ? "bg-cream/10 hover:bg-cream/20"
               : "bg-gold/80 hover:bg-gold"
-            }
+          }
             group shadow-lg hover:shadow-xl hover:scale-110`}
           aria-label={isMuted ? "Unmute video" : "Mute video"}
         >
