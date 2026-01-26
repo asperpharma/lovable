@@ -316,8 +316,8 @@ serve(async (req) => {
 
     // Shopify Admin API configuration
     const SHOPIFY_ACCESS_TOKEN = Deno.env.get("SHOPIFY_ACCESS_TOKEN");
-    const SHOPIFY_STORE_DOMAIN = Deno.env.get("SHOPIFY_STORE_DOMAIN") || "lovable-project-milns.myshopify.com";
-    const SHOPIFY_API_VERSION = Deno.env.get("SHOPIFY_API_VERSION") || "2025-01";
+    const SHOPIFY_STORE_DOMAIN = "lovable-project-milns.myshopify.com";
+    const SHOPIFY_API_VERSION = "2025-01";
 
     if (action === "categorize") {
       // Categorize and prepare products from Excel data
@@ -455,7 +455,7 @@ serve(async (req) => {
     }
 
     if (action === "create-shopify-product") {
-      // Create a product in Shopify using Admin API
+      // Create a product in Shopify using Admin GraphQL API
       const { product } = requestData;
 
       if (!SHOPIFY_ACCESS_TOKEN) {
@@ -464,122 +464,122 @@ serve(async (req) => {
 
       console.log(`Creating Shopify product: ${product.title}`);
 
-      // Helper function to download image and convert to base64 for Shopify
-      async function prepareImageForShopify(imageUrl: string): Promise<string | null> {
-        try {
-          // If it's already a data URL, return it
-          if (imageUrl.startsWith("data:")) {
-            return imageUrl;
-          }
-
-          // Download the image
-          const imageResponse = await fetch(imageUrl);
-          if (!imageResponse.ok) {
-            console.warn(`Failed to download image from ${imageUrl}`);
-            return null;
-          }
-
-          const imageBlob = await imageResponse.blob();
-          const arrayBuffer = await imageBlob.arrayBuffer();
-          const base64 = btoa(
-            String.fromCharCode(...new Uint8Array(arrayBuffer))
-          );
-          const mimeType = imageBlob.type || "image/png";
-          
-          return `data:${mimeType};base64,${base64}`;
-        } catch (error) {
-          console.error(`Error preparing image: ${error}`);
-          return null;
-        }
-      }
-
-      // Prepare images array
-      const images: Array<{ src: string; alt?: string }> = [];
-      if (product.imageUrl) {
-        const preparedImage = await prepareImageForShopify(product.imageUrl);
-        if (preparedImage) {
-          images.push({
-            src: preparedImage,
-            alt: product.title || "Product image",
-          });
-        }
-      }
-
       // Generate SEO-friendly handle from title
-      function generateHandle(title: string): string {
+      const generateHandle = (title: string): string => {
         return title
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-+|-+$/g, "")
           .slice(0, 255);
-      }
-
-      // Create rich description
-      const description = product.description || 
-        (product.body ? `<p>${product.body}</p>` : "") ||
-        `<p>Premium ${product.product_type || "product"} from ${product.vendor || "Asper Beauty Box"}. High-quality beauty and personal care product.</p>`;
-
-      // Prepare the product data for Shopify Admin API with all best practices
-      const shopifyProduct = {
-        product: {
-          title: product.title,
-          body_html: description,
-          vendor: product.vendor || "Asper Beauty Box",
-          product_type: product.product_type || "General",
-          tags: product.tags ? product.tags.split(",").map((t: string) => t.trim()).join(",") : `${product.product_type || "General"}, ${product.vendor || "Asper"}, bulk-upload`,
-          status: "active",
-          published: true,
-          published_scope: "web",
-          handle: product.handle || generateHandle(product.title),
-          variants: [
-            {
-              price: product.price,
-              sku: product.sku || undefined,
-              barcode: product.barcode || undefined,
-              inventory_management: product.inventory_quantity !== undefined ? "shopify" : null,
-              inventory_policy: "continue",
-              inventory_quantity: product.inventory_quantity || null,
-              weight: product.weight || null,
-              weight_unit: product.weight_unit || "kg",
-              requires_shipping: true,
-              taxable: true,
-            },
-          ],
-          images: images,
-          // SEO fields
-          metafields_global_title_tag: product.seo_title || product.title,
-          metafields_global_description_tag: product.seo_description || 
-            `${product.title} - ${product.vendor || "Asper Beauty Box"}. ${product.product_type || "Premium beauty product"}.`,
-        },
       };
 
-      // Remove null/undefined fields to avoid API errors
-      function cleanObject(obj: any): any {
-        if (Array.isArray(obj)) {
-          return obj.map(cleanObject).filter(item => item !== null && item !== undefined);
-        } else if (obj !== null && typeof obj === "object") {
-          const cleaned: any = {};
-          for (const [key, value] of Object.entries(obj)) {
-            if (value !== null && value !== undefined) {
-              cleaned[key] = cleanObject(value);
-            }
-          }
-          return cleaned;
+      // Generate meta description if not provided
+      const metaDescription = product.meta_description || 
+        (product.description 
+          ? product.description.replace(/<[^>]*>/g, "").slice(0, 160)
+          : `Shop ${product.title}${product.brand ? ` by ${product.brand}` : ""} - ${product.category || "Premium Quality"}`);
+
+      // Generate meta title if not provided
+      const metaTitle = product.meta_title || 
+        `${product.title}${product.brand ? ` by ${product.brand}` : ""} | ${product.category || "Shop"}`;
+
+      // Build description HTML with all product details
+      let descriptionHtml = "";
+      if (product.description) {
+        descriptionHtml = `<p>${product.description}</p>`;
+      } else {
+        descriptionHtml = `<p><strong>${product.title}</strong></p>`;
+        if (product.brand) {
+          descriptionHtml += `<p><strong>Brand:</strong> ${product.brand}</p>`;
         }
-        return obj;
+        if (product.category) {
+          descriptionHtml += `<p><strong>Category:</strong> ${product.category}</p>`;
+        }
+        if (product.volume_ml) {
+          descriptionHtml += `<p><strong>Size:</strong> ${product.volume_ml}</p>`;
+        }
       }
 
-      const cleanedProduct = cleanObject(shopifyProduct);
+      // Build tags array
+      const tags: string[] = [];
+      if (product.category) tags.push(product.category);
+      if (product.brand) tags.push(product.brand);
+      if (product.subcategory) tags.push(product.subcategory);
+      if (product.tags && Array.isArray(product.tags)) {
+        tags.push(...product.tags);
+      } else if (product.tags && typeof product.tags === "string") {
+        tags.push(...product.tags.split(",").map(t => t.trim()));
+      }
+      tags.push("bulk-upload");
+
+      // Prepare variant price and compare_at_price
+      const price = parseFloat(product.price) || 0;
+      const compareAtPrice = product.original_price && product.is_on_sale
+        ? parseFloat(product.original_price.toString())
+        : null;
+
+      // GraphQL mutation for creating product (new product model - no variants field)
+      const mutation = `
+        mutation productCreate($product: ProductCreateInput!, $media: [CreateMediaInput!]) {
+          productCreate(product: $product, media: $media) {
+            product {
+              id
+              title
+              handle
+              status
+              descriptionHtml
+              vendor
+              productType
+              tags
+              seo {
+                title
+                description
+              }
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      `;
+
+      // Prepare media input if image exists
+      const mediaInput = product.imageUrl ? [{
+        originalSource: product.imageUrl,
+        alt: product.title || product.imageUrl,
+      }] : [];
+
+      const variables = {
+        product: {
+          title: product.title,
+          descriptionHtml: descriptionHtml,
+          vendor: product.brand || "Asper",
+          productType: product.category || "General",
+          tags: tags,
+          status: "ACTIVE",
+          seo: {
+            title: metaTitle,
+            description: metaDescription,
+          },
+          // Add handle if provided, otherwise let Shopify generate
+          handle: product.handle || generateHandle(product.title),
+        },
+        media: mediaInput,
+      };
 
       const shopifyResponse = await fetch(
-        `https://${SHOPIFY_STORE_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/products.json`,
+        `https://${SHOPIFY_STORE_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`,
         {
           method: "POST",
           headers: {
             "X-Shopify-Access-Token": SHOPIFY_ACCESS_TOKEN,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(cleanedProduct),
+          body: JSON.stringify({
+            query: mutation,
+            variables: variables,
+          }),
         },
       );
 
@@ -587,23 +587,11 @@ serve(async (req) => {
         const errorData = await shopifyResponse.text();
         console.error("Shopify API error:", shopifyResponse.status, errorData);
 
-        // Try to parse error for better messaging
-        let errorMessage = `Shopify API error: ${shopifyResponse.status}`;
-        try {
-          const errorJson = JSON.parse(errorData);
-          if (errorJson.errors) {
-            errorMessage = `Shopify error: ${JSON.stringify(errorJson.errors)}`;
-          }
-        } catch {
-          errorMessage = `${errorMessage} - ${errorData.slice(0, 200)}`;
-        }
-
         if (shopifyResponse.status === 429) {
-          const retryAfter = shopifyResponse.headers.get("Retry-After") || "60";
           return new Response(
             JSON.stringify({
               error: "Rate limited by Shopify. Please wait.",
-              retryAfter: parseInt(retryAfter),
+              retryAfter: 60,
             }),
             {
               status: 429,
@@ -612,38 +600,283 @@ serve(async (req) => {
           );
         }
 
-        if (shopifyResponse.status === 422) {
-          // Validation error - product might already exist or have invalid data
-          return new Response(
-            JSON.stringify({
-              error: errorMessage,
-              details: errorData,
-            }),
-            {
-              status: 422,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            },
-          );
-        }
-
-        throw new Error(errorMessage);
+        throw new Error(
+          `Shopify API error: ${shopifyResponse.status} - ${errorData}`,
+        );
       }
 
       const shopifyData = await shopifyResponse.json();
 
-      if (!shopifyData.product) {
-        throw new Error("No product data returned from Shopify");
+      if (shopifyData.errors) {
+        console.error("GraphQL errors:", shopifyData.errors);
+        throw new Error(
+          `GraphQL errors: ${shopifyData.errors.map((e: { message: string }) => e.message).join(", ")}`,
+        );
       }
 
-      console.log(`Successfully created product: ${shopifyData.product.id} (${shopifyData.product.handle})`);
+      const productCreate = shopifyData.data?.productCreate;
+      
+      if (productCreate?.userErrors && productCreate.userErrors.length > 0) {
+        const errors = productCreate.userErrors.map((e: { message: string }) => e.message).join(", ");
+        console.error("User errors:", productCreate.userErrors);
+        throw new Error(`Shopify user errors: ${errors}`);
+      }
+
+      if (!productCreate?.product) {
+        throw new Error("No product returned from Shopify");
+      }
+
+      const createdProduct = productCreate.product;
+
+      if (!createdProduct) {
+        throw new Error("Product creation failed - no product returned");
+      }
+
+      console.log(`Successfully created product: ${createdProduct.id}`);
+
+      // Now create the variant with proper SKU, price, and inventory
+      const variantMutation = `
+        mutation productVariantsBulkCreate($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
+          productVariantsBulkCreate(productId: $productId, variants: $variants) {
+            productVariants {
+              id
+              sku
+              price
+              compareAtPrice
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      `;
+
+      const variantInput = {
+        price: price.toString(),
+        compareAtPrice: compareAtPrice ? compareAtPrice.toString() : null,
+        sku: product.sku || undefined,
+        inventoryPolicy: "CONTINUE",
+        inventoryQuantities: product.inventory_quantity ? [
+          {
+            availableQuantity: product.inventory_quantity,
+            locationId: product.location_id || null,
+          }
+        ] : [],
+      };
+
+      try {
+        const variantResponse = await fetch(
+          `https://${SHOPIFY_STORE_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`,
+          {
+            method: "POST",
+            headers: {
+              "X-Shopify-Access-Token": SHOPIFY_ACCESS_TOKEN,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query: variantMutation,
+              variables: {
+                productId: createdProduct.id,
+                variants: [variantInput],
+              },
+            }),
+          },
+        );
+
+        const variantData = await variantResponse.json();
+        
+        if (variantData.errors || variantData.data?.productVariantsBulkCreate?.userErrors?.length > 0) {
+          console.warn("Product created but variant creation had issues:", 
+            variantData.errors || variantData.data?.productVariantsBulkCreate?.userErrors);
+        } else {
+          console.log("Variant created successfully");
+        }
+      } catch (variantError) {
+        console.warn("Variant creation failed (product still created):", variantError);
+      }
+
+      // Publish the product to online store (products are created unpublished by default)
+      const productGid = createdProduct.id;
+      
+      // First, get the online store publication ID
+      const getPublicationsQuery = `
+        query {
+          publications(first: 10) {
+            edges {
+              node {
+                id
+                name
+              }
+            }
+          }
+        }
+      `;
+
+      try {
+        const publicationsResponse = await fetch(
+          `https://${SHOPIFY_STORE_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`,
+          {
+            method: "POST",
+            headers: {
+              "X-Shopify-Access-Token": SHOPIFY_ACCESS_TOKEN,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query: getPublicationsQuery }),
+          },
+        );
+
+        const publicationsData = await publicationsResponse.json();
+        const onlineStorePublication = publicationsData.data?.publications?.edges?.find(
+          (edge: { node: { name: string } }) => edge.node.name === "Online Store"
+        );
+
+        if (onlineStorePublication) {
+          const publishMutation = `
+            mutation publishablePublish($id: ID!, $input: [PublicationInput!]!) {
+              publishablePublish(id: $id, input: $input) {
+                publishable {
+                  ... on Product {
+                    id
+                    title
+                    status
+                  }
+                }
+                userErrors {
+                  field
+                  message
+                }
+              }
+            }
+          `;
+
+          const publishResponse = await fetch(
+            `https://${SHOPIFY_STORE_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`,
+            {
+              method: "POST",
+              headers: {
+                "X-Shopify-Access-Token": SHOPIFY_ACCESS_TOKEN,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                query: publishMutation,
+                variables: {
+                  id: productGid,
+                  input: [{
+                    publicationId: onlineStorePublication.node.id,
+                  }],
+                },
+              }),
+            },
+          );
+
+          const publishData = await publishResponse.json();
+          
+          if (publishData.errors || publishData.data?.publishablePublish?.userErrors?.length > 0) {
+            console.warn("Product created but publishing failed:", 
+              publishData.errors || publishData.data?.publishablePublish?.userErrors);
+          } else {
+            console.log(`Product published successfully: ${productGid}`);
+          }
+        } else {
+          console.warn("Online Store publication not found - product created but not published");
+        }
+      } catch (publishError) {
+        // Log but don't fail - product is still created
+        console.warn("Publishing failed (product still created):", publishError);
+      }
+
+      // Create metafields if provided
+      if (product.volume_ml || product.scent || product.texture || product.skin_concerns) {
+        const metafieldsMutation = `
+          mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
+            metafieldsSet(metafields: $metafields) {
+              metafields {
+                id
+                key
+                value
+              }
+              userErrors {
+                field
+                message
+              }
+            }
+          }
+        `;
+
+        const metafieldsInput: Array<{
+          ownerId: string;
+          namespace: string;
+          key: string;
+          value: string;
+          type: string;
+        }> = [];
+        if (product.volume_ml) {
+          metafieldsInput.push({
+            ownerId: productGid,
+            namespace: "custom",
+            key: "volume_ml",
+            value: product.volume_ml.toString(),
+            type: "single_line_text_field",
+          });
+        }
+        if (product.scent) {
+          metafieldsInput.push({
+            ownerId: productGid,
+            namespace: "custom",
+            key: "scent",
+            value: product.scent,
+            type: "single_line_text_field",
+          });
+        }
+        if (product.texture) {
+          metafieldsInput.push({
+            ownerId: productGid,
+            namespace: "custom",
+            key: "texture",
+            value: product.texture,
+            type: "single_line_text_field",
+          });
+        }
+        if (product.skin_concerns && Array.isArray(product.skin_concerns)) {
+          metafieldsInput.push({
+            ownerId: productGid,
+            namespace: "custom",
+            key: "skin_concerns",
+            value: JSON.stringify(product.skin_concerns),
+            type: "list.single_line_text_field",
+          });
+        }
+
+        if (metafieldsInput.length > 0) {
+          try {
+            await fetch(
+              `https://${SHOPIFY_STORE_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`,
+              {
+                method: "POST",
+                headers: {
+                  "X-Shopify-Access-Token": SHOPIFY_ACCESS_TOKEN,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  query: metafieldsMutation,
+                  variables: { metafields: metafieldsInput },
+                }),
+              },
+            );
+            console.log("Metafields created successfully");
+          } catch (metafieldError) {
+            console.warn("Metafields creation failed:", metafieldError);
+          }
+        }
+      }
 
       return new Response(
         JSON.stringify({
           success: true,
-          productId: shopifyData.product.id,
-          handle: shopifyData.product.handle,
-          title: shopifyData.product.title,
-          status: shopifyData.product.status,
+          productId: createdProduct.id,
+          handle: createdProduct.handle,
+          title: createdProduct.title,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );

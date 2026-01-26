@@ -534,7 +534,7 @@ export default function BulkUpload() {
         }));
 
         try {
-          // Call edge function to create Shopify product with complete data
+          // Call edge function to create Shopify product with all data
           const { data, error } = await supabase.functions.invoke(
             "bulk-product-upload",
             {
@@ -545,22 +545,25 @@ export default function BulkUpload() {
                 action: "create-shopify-product",
                 product: {
                   title: product.name,
-                  body: product.description || `${product.brand} - ${product.category}. Premium quality product from Asper Beauty Box.`,
-                  description: product.description || `${product.brand} - ${product.category}. Premium quality product from Asper Beauty Box.`,
-                  vendor: product.brand || "Asper Beauty Box",
-                  product_type: product.category || "General",
-                  tags: [
-                    product.category,
-                    product.brand,
-                    "bulk-upload",
-                    "asper-beauty-box",
-                  ].filter(Boolean).join(", "),
-                  price: parseFloat(product.price.toFixed(2)),
+                  description: `${product.brand ? `<p><strong>Brand:</strong> ${product.brand}</p>` : ""}<p><strong>Category:</strong> ${product.category}</p>`,
+                  brand: product.brand || "Asper",
+                  category: product.category || "General",
+                  subcategory: null, // Can be added if available
+                  tags: [product.category, product.brand, "bulk-upload"].filter(Boolean),
+                  price: product.price.toFixed(2),
+                  original_price: product.costPrice > 0 ? product.costPrice.toFixed(2) : null,
+                  is_on_sale: product.costPrice > 0 && product.costPrice < product.price,
                   sku: product.sku,
                   imageUrl: product.imageUrl,
-                  // SEO fields
-                  seo_title: `${product.name} | ${product.brand || "Asper Beauty Box"}`,
-                  seo_description: `${product.name} - ${product.category} from ${product.brand || "Asper Beauty Box"}. Premium quality beauty and personal care products.`,
+                  volume_ml: null, // Can be extracted from product name if needed
+                  scent: null, // Can be added if available
+                  texture: null, // Can be added if available
+                  skin_concerns: null, // Can be added if available
+                  handle: product.name
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-")
+                    .replace(/^-+|-+$/g, "")
+                    .slice(0, 255) + `-${product.sku}`,
                 },
               },
             },
@@ -1395,33 +1398,7 @@ export default function BulkUpload() {
                               {shopifyProgress.failed > 0 &&
                                 `, ${shopifyProgress.failed} failed`}
                             </p>
-                            {shopifyProgress.succeeded > 0 && (
-                              <p className="text-xs text-taupe mt-2">
-                                Products are now live in your Shopify store
-                              </p>
-                            )}
                           </div>
-                        </CardContent>
-                      </Card>
-                    )}
-
-                    {/* Shopify Configuration Warning */}
-                    {shopifyErrors.length > 0 && 
-                     shopifyErrors.some(e => e.error?.includes("SHOPIFY_ACCESS_TOKEN") || e.error?.includes("not configured")) && (
-                      <Card className="border-amber-200 bg-amber-50/50">
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-sm text-amber-800 flex items-center gap-2">
-                            <AlertCircle className="w-4 h-4" />
-                            Shopify Not Configured
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-sm text-amber-700 mb-3">
-                            Please configure your Shopify Admin API access token to upload products.
-                          </p>
-                          <p className="text-xs text-amber-600">
-                            See <code className="bg-amber-100 px-1 rounded">SHOPIFY_SETUP.md</code> for setup instructions.
-                          </p>
                         </CardContent>
                       </Card>
                     )}
