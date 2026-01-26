@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Clock, Flame, ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Flame } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -13,8 +13,8 @@ const DealProductCard = ({ product }: { product: any }) => {
   const [imageError, setImageError] = useState(false);
   const productImage = getProductImage(
     product.image_url,
-    product.category || '',
-    product.title
+    product.category || "",
+    product.title,
   );
 
   return (
@@ -26,7 +26,9 @@ const DealProductCard = ({ product }: { product: any }) => {
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-muted/30">
         <img
-          src={imageError ? getProductImage(null, product.category || '', product.title) : productImage}
+          src={imageError
+            ? getProductImage(null, product.category || "", product.title)
+            : productImage}
           onError={() => setImageError(true)}
           alt={product.title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -66,7 +68,7 @@ const DealProductCard = ({ product }: { product: any }) => {
 export const DealOfTheDay = () => {
   const { language, isRTL } = useLanguage();
   const isAr = language === "ar";
-  
+
   // Countdown Timer State
   const [timeLeft, setTimeLeft] = useState({
     hours: 23,
@@ -116,7 +118,11 @@ export const DealOfTheDay = () => {
     <section className="bg-background py-12 md:py-16">
       <div className="container mx-auto max-w-7xl px-4">
         {/* Header with Timer */}
-        <div className={`mb-8 flex flex-col items-center justify-between gap-4 md:flex-row ${isRTL ? 'md:flex-row-reverse' : ''}`}>
+        <div
+          className={`mb-8 flex flex-col items-center justify-between gap-4 md:flex-row ${
+            isRTL ? "md:flex-row-reverse" : ""
+          }`}
+        >
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/10">
               <Flame className="h-5 w-5 text-destructive" />
@@ -132,46 +138,68 @@ export const DealOfTheDay = () => {
           <div className="flex items-center gap-3">
             <Clock className="h-5 w-5 text-muted-foreground" />
             <div className="flex items-center gap-1 font-mono text-lg font-bold tracking-wider text-foreground">
-              <span className="rounded bg-muted px-2 py-1">{formatTime(timeLeft.hours)}</span>
+              <span className="rounded bg-muted px-2 py-1">
+                {formatTime(timeLeft.hours)}
+              </span>
               <span>:</span>
-              <span className="rounded bg-muted px-2 py-1">{formatTime(timeLeft.minutes)}</span>
+              <span className="rounded bg-muted px-2 py-1">
+                {formatTime(timeLeft.minutes)}
+              </span>
               <span>:</span>
-              <span className="rounded bg-muted px-2 py-1">{formatTime(timeLeft.seconds)}</span>
+              <span className="rounded bg-muted px-2 py-1">
+                {formatTime(timeLeft.seconds)}
+              </span>
             </div>
-            <Link to="/offers" className={`${isRTL ? 'mr-4' : 'ml-4'} flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80`}>
+            <Link
+              to="/offers"
+              className={`${
+                isRTL ? "mr-4" : "ml-4"
+              } flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80`}
+            >
               {isAr ? "عرض الكل" : "View All"}
-              {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+              {isRTL
+                ? <ArrowLeft className="h-4 w-4" />
+                : <ArrowRight className="h-4 w-4" />}
             </Link>
           </div>
         </div>
 
         {/* Deals Grid */}
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-          {isLoading ? (
-            Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="overflow-hidden rounded-lg border border-muted bg-card">
-                <Skeleton className="aspect-square w-full" />
-                <div className="p-4">
-                  <Skeleton className="mb-2 h-3 w-16" />
-                  <Skeleton className="mb-3 h-4 w-full" />
-                  <Skeleton className="h-5 w-24" />
+          {isLoading
+            ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="overflow-hidden rounded-lg border border-muted bg-card"
+                >
+                  <Skeleton className="aspect-square w-full" />
+                  <div className="p-4">
+                    <Skeleton className="mb-2 h-3 w-16" />
+                    <Skeleton className="mb-3 h-4 w-full" />
+                    <Skeleton className="h-5 w-24" />
+                  </div>
                 </div>
+              ))
+            )
+            : deals && deals.length > 0
+            ? (
+              deals.map((product) => (
+                <DealProductCard key={product.id} product={product} />
+              ))
+            )
+            : (
+              <div className="col-span-full py-12 text-center">
+                <p className="text-muted-foreground">
+                  {isAr ? "لا توجد عروض حالياً" : "No deals available right now"}
+                </p>
+                <Button asChild variant="outline" className="mt-4">
+                  <Link to="/shop">
+                    {isAr ? "تصفح المنتجات" : "Browse Products"}
+                  </Link>
+                </Button>
               </div>
-            ))
-          ) : deals && deals.length > 0 ? (
-            deals.map((product) => (
-              <DealProductCard key={product.id} product={product} />
-            ))
-          ) : (
-            <div className="col-span-full py-12 text-center">
-              <p className="text-muted-foreground">
-                {isAr ? "لا توجد عروض حالياً" : "No deals available right now"}
-              </p>
-              <Button asChild variant="outline" className="mt-4">
-                <Link to="/shop">{isAr ? "تصفح المنتجات" : "Browse Products"}</Link>
-              </Button>
-            </div>
-          )}
+            )}
         </div>
       </div>
     </section>
