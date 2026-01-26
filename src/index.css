@@ -63,7 +63,9 @@
 
     --radius: 0.5rem;
 
-    /* Legacy token mappings for compatibility - updated to natural tones */
+    /* Legacy token mappings for compatibility with existing components */
+    /* These maintain old color names but now use sage/beige values */
+    /* TODO: Consider updating component references to use new semantic names */
     --maroon: 108 13% 58%;
     --maroon-light: 108 13% 68%;
     --maroon-dark: 108 13% 48%;
@@ -110,29 +112,33 @@
     --popover: 22 11% 22%;
     --popover-foreground: 30 25% 95%;
 
-    --primary: 25 47% 91%;
-    --primary-foreground: 348 68% 10%;
+    /* Sage green for primary in dark mode */
+    --primary: 108 13% 68%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 348 58% 18%;
-    --secondary-foreground: 25 47% 91%;
+    /* Earthy tones for secondary */
+    --secondary: 22 11% 28%;
+    --secondary-foreground: 30 25% 95%;
 
-    --muted: 348 50% 20%;
-    --muted-foreground: 25 30% 70%;
+    --muted: 22 11% 25%;
+    --muted-foreground: 30 20% 70%;
 
-    --accent: 46 66% 52%;
-    --accent-foreground: 348 68% 10%;
+    /* Beige accent */
+    --accent: 27 24% 78%;
+    --accent-foreground: 22 11% 18%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 25 47% 91%;
+    --destructive-foreground: 30 25% 95%;
 
-    --border: 348 50% 22%;
-    --input: 348 50% 22%;
-    --ring: 46 66% 52%;
+    --border: 22 11% 28%;
+    --input: 22 11% 28%;
+    --ring: 108 13% 68%;
 
-    --burgundy: 348 68% 10%;
-    --burgundy-light: 348 58% 18%;
-    --cream: 25 47% 91%;
-    --gold: 46 66% 52%;
+    /* Dark mode legacy mappings */
+    --burgundy: 22 11% 18%;
+    --burgundy-light: 22 11% 28%;
+    --cream: 30 25% 95%;
+    --gold: 27 24% 78%;
     --gold-light: 46 66% 62%;
 
     --sidebar-background: 348 68% 10%;
