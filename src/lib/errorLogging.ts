@@ -18,15 +18,11 @@ interface ErrorContext {
  */
 export const logError = (error: Error, errorInfo?: { componentStack?: string }) => {
   const context: ErrorContext = {
-    error: {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-    } as Error,
+    error,
     errorInfo,
     timestamp: new Date().toISOString(),
-    userAgent: navigator?.userAgent,
-    url: window?.location?.href,
+    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+    url: typeof window !== 'undefined' ? window.location.href : undefined,
   };
 
   // Log to console with structured data
