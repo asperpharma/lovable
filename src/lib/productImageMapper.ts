@@ -4,7 +4,11 @@
  */
 
 // Import all product images from assets
-const productImages = import.meta.glob('@/assets/products/*.(jpg|jpeg|png|webp)', { eager: true, as: 'url' });
+const productImages = import.meta.glob('@/assets/products/*.(jpg|jpeg|png|webp)', { 
+  eager: true, 
+  query: '?url',
+  import: 'default'
+});
 
 // Create a normalized mapping of image names to URLs
 const imageMap = new Map<string, string>();
@@ -25,6 +29,7 @@ function normalizeProductName(name: string): string {
   return name
     .toLowerCase()
     .replace(/[-_]/g, ' ') // Replace hyphens and underscores with spaces
+    .replace(/\./g, '') // Remove dots (for matching no.3 with no3)
     .replace(/\s+/g, ' ') // Normalize spaces
     .replace(/\.(jpg|jpeg|png|webp)$/i, '') // Remove extensions
     .replace(/\s+(gen|new|gold)$/i, '') // Remove common suffixes

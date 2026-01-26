@@ -44,6 +44,7 @@ interface Product {
   description: string | null;
   category: string;
   image_url: string | null;
+  sku: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -658,7 +659,7 @@ const ManageProducts = () => {
                       <TableCell>
                         <div className="w-12 h-12 rounded-lg overflow-hidden bg-cream">
                           <img
-                            src={getProductImage(product.image_url, product.category, product.title)}
+                            src={getProductImage(product.image_url, product.category, product.title, product.sku || undefined)}
                             alt={product.title}
                             className="w-full h-full object-cover"
                           />

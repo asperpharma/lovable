@@ -21,6 +21,7 @@ interface Product {
   category: string;
   subcategory: string | null;
   image_url: string | null;
+  sku: string | null;
   brand: string | null;
   volume_ml: string | null;
   is_on_sale: boolean | null;
@@ -45,7 +46,7 @@ const ShopProductCard = ({
   const { language } = useLanguage();
   const addItem = useCartStore((state) => state.addItem);
   const setCartOpen = useCartStore((state) => state.setOpen);
-  const imageUrl = getProductImage(product.image_url, product.category, product.title);
+  const imageUrl = getProductImage(product.image_url, product.category, product.title, product.sku || undefined);
   
   const isOnSale = product.is_on_sale && product.original_price && product.original_price > product.price;
   const discountPercent = product.discount_percent || 
