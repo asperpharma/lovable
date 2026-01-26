@@ -140,10 +140,10 @@ const ManageProducts = () => {
 
         if (error) throw error;
         setProducts(data || []);
-        
+
         // Count products without images
         const withoutImages = (data || []).filter(
-          (p) => !p.image_url || p.image_url.trim() === ""
+          (p) => !p.image_url || p.image_url.trim() === "",
         ).length;
         setProductsWithoutImages(withoutImages);
       } catch (err: any) {
@@ -260,7 +260,7 @@ const ManageProducts = () => {
           );
           // Update count of products without images
           const withoutImages = updated.filter(
-            (p) => !p.image_url || p.image_url.trim() === ""
+            (p) => !p.image_url || p.image_url.trim() === "",
           ).length;
           setProductsWithoutImages(withoutImages);
           return updated;
@@ -279,12 +279,13 @@ const ManageProducts = () => {
         if (!productData.image_url && data) {
           toast.info("Generating product image...", { duration: 3000 });
           try {
-            const { data: imageData, error: imageError } = await supabase.functions.invoke(
-              "generate-product-images",
-              {
-                body: { productIds: [data.id] },
-              },
-            );
+            const { data: imageData, error: imageError } = await supabase
+              .functions.invoke(
+                "generate-product-images",
+                {
+                  body: { productIds: [data.id] },
+                },
+              );
 
             if (!imageError && imageData?.results?.[0]?.status === "success") {
               // Refresh the product list to get the updated image
@@ -296,12 +297,16 @@ const ManageProducts = () => {
               toast.success("Product created with AI-generated image!");
             } else {
               setProducts((prev) => [data, ...prev]);
-              toast.warning("Product created, but image generation failed. You can generate it manually.");
+              toast.warning(
+                "Product created, but image generation failed. You can generate it manually.",
+              );
             }
           } catch (imgError) {
             console.error("Image generation error:", imgError);
             setProducts((prev) => [data, ...prev]);
-            toast.warning("Product created, but image generation failed. You can generate it manually.");
+            toast.warning(
+              "Product created, but image generation failed. You can generate it manually.",
+            );
           }
         } else {
           setProducts((prev) => [data, ...prev]);
@@ -334,7 +339,7 @@ const ManageProducts = () => {
         const updated = prev.filter((p) => p.id !== id);
         // Update count of products without images
         const withoutImages = updated.filter(
-          (p) => !p.image_url || p.image_url.trim() === ""
+          (p) => !p.image_url || p.image_url.trim() === "",
         ).length;
         setProductsWithoutImages(withoutImages);
         return updated;
@@ -373,7 +378,7 @@ const ManageProducts = () => {
         if (refreshedProducts) {
           setProducts(refreshedProducts);
           const withoutImages = refreshedProducts.filter(
-            (p) => !p.image_url || p.image_url.trim() === ""
+            (p) => !p.image_url || p.image_url.trim() === "",
           ).length;
           setProductsWithoutImages(withoutImages);
         }
@@ -395,7 +400,7 @@ const ManageProducts = () => {
 
       // Get all product IDs without images
       const productsNeedingImages = products.filter(
-        (p) => !p.image_url || p.image_url.trim() === ""
+        (p) => !p.image_url || p.image_url.trim() === "",
       );
 
       if (productsNeedingImages.length === 0) {
@@ -405,7 +410,7 @@ const ManageProducts = () => {
 
       toast.info(
         `Generating AI images for ${productsNeedingImages.length} products...`,
-        { duration: 3000 }
+        { duration: 3000 },
       );
 
       // Process in batches to avoid rate limits
@@ -431,7 +436,7 @@ const ManageProducts = () => {
                 id: p.id,
                 title: p.title,
                 status: "error",
-              }))
+              })),
             );
             continue;
           }
@@ -451,7 +456,7 @@ const ManageProducts = () => {
               id: p.id,
               title: p.title,
               status: "error",
-            }))
+            })),
           );
         }
       }
@@ -472,7 +477,7 @@ const ManageProducts = () => {
         if (refreshedProducts) {
           setProducts(refreshedProducts);
           const withoutImages = refreshedProducts.filter(
-            (p) => !p.image_url || p.image_url.trim() === ""
+            (p) => !p.image_url || p.image_url.trim() === "",
           ).length;
           setProductsWithoutImages(withoutImages);
         }
@@ -521,7 +526,7 @@ const ManageProducts = () => {
         if (refreshedProducts) {
           setProducts(refreshedProducts);
           const withoutImages = refreshedProducts.filter(
-            (p) => !p.image_url || p.image_url.trim() === ""
+            (p) => !p.image_url || p.image_url.trim() === "",
           ).length;
           setProductsWithoutImages(withoutImages);
         }
@@ -572,7 +577,8 @@ const ManageProducts = () => {
             <div className="flex items-center gap-3">
               <Button
                 onClick={handleGenerateAIImages}
-                disabled={isGeneratingAI || isEnriching || productsWithoutImages === 0}
+                disabled={isGeneratingAI || isEnriching ||
+                  productsWithoutImages === 0}
                 variant="outline"
                 className="border-primary/30 text-primary hover:bg-primary/10"
               >
@@ -581,7 +587,11 @@ const ManageProducts = () => {
                   : <Sparkles className="w-4 h-4 me-2" />}
                 {isGeneratingAI
                   ? "Generating..."
-                  : `Generate AI Images${productsWithoutImages > 0 ? ` (${productsWithoutImages})` : ""}`}
+                  : `Generate AI Images${
+                    productsWithoutImages > 0
+                      ? ` (${productsWithoutImages})`
+                      : ""
+                  }`}
               </Button>
 
               <Button
@@ -736,11 +746,10 @@ const ManageProducts = () => {
 
                         <Input
                           value={formData.image_url}
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              image_url: e.target.value,
-                            }))}
+                          onChange={(e) => setFormData((prev) => ({
+                            ...prev,
+                            image_url: e.target.value,
+                          }))}
                           placeholder="Or paste image URL..."
                           className="text-sm"
                         />

@@ -545,14 +545,23 @@ export default function BulkUpload() {
                 action: "create-shopify-product",
                 product: {
                   title: product.name,
-                  description: `${product.brand ? `<p><strong>Brand:</strong> ${product.brand}</p>` : ""}<p><strong>Category:</strong> ${product.category}</p>`,
+                  description: `${
+                    product.brand
+                      ? `<p><strong>Brand:</strong> ${product.brand}</p>`
+                      : ""
+                  }<p><strong>Category:</strong> ${product.category}</p>`,
                   brand: product.brand || "Asper",
                   category: product.category || "General",
                   subcategory: null, // Can be added if available
-                  tags: [product.category, product.brand, "bulk-upload"].filter(Boolean),
+                  tags: [product.category, product.brand, "bulk-upload"].filter(
+                    Boolean,
+                  ),
                   price: product.price.toFixed(2),
-                  original_price: product.costPrice > 0 ? product.costPrice.toFixed(2) : null,
-                  is_on_sale: product.costPrice > 0 && product.costPrice < product.price,
+                  original_price: product.costPrice > 0
+                    ? product.costPrice.toFixed(2)
+                    : null,
+                  is_on_sale: product.costPrice > 0 &&
+                    product.costPrice < product.price,
                   sku: product.sku,
                   imageUrl: product.imageUrl,
                   volume_ml: null, // Can be extracted from product name if needed

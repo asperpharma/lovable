@@ -474,14 +474,18 @@ serve(async (req) => {
       };
 
       // Generate meta description if not provided
-      const metaDescription = product.meta_description || 
-        (product.description 
+      const metaDescription = product.meta_description ||
+        (product.description
           ? product.description.replace(/<[^>]*>/g, "").slice(0, 160)
-          : `Shop ${product.title}${product.brand ? ` by ${product.brand}` : ""} - ${product.category || "Premium Quality"}`);
+          : `Shop ${product.title}${
+            product.brand ? ` by ${product.brand}` : ""
+          } - ${product.category || "Premium Quality"}`);
 
       // Generate meta title if not provided
-      const metaTitle = product.meta_title || 
-        `${product.title}${product.brand ? ` by ${product.brand}` : ""} | ${product.category || "Shop"}`;
+      const metaTitle = product.meta_title ||
+        `${product.title}${product.brand ? ` by ${product.brand}` : ""} | ${
+          product.category || "Shop"
+        }`;
 
       // Build description HTML with all product details
       let descriptionHtml = "";
@@ -493,10 +497,12 @@ serve(async (req) => {
           descriptionHtml += `<p><strong>Brand:</strong> ${product.brand}</p>`;
         }
         if (product.category) {
-          descriptionHtml += `<p><strong>Category:</strong> ${product.category}</p>`;
+          descriptionHtml +=
+            `<p><strong>Category:</strong> ${product.category}</p>`;
         }
         if (product.volume_ml) {
-          descriptionHtml += `<p><strong>Size:</strong> ${product.volume_ml}</p>`;
+          descriptionHtml +=
+            `<p><strong>Size:</strong> ${product.volume_ml}</p>`;
         }
       }
 
@@ -508,7 +514,7 @@ serve(async (req) => {
       if (product.tags && Array.isArray(product.tags)) {
         tags.push(...product.tags);
       } else if (product.tags && typeof product.tags === "string") {
-        tags.push(...product.tags.split(",").map(t => t.trim()));
+        tags.push(...product.tags.split(",").map((t) => t.trim()));
       }
       tags.push("bulk-upload");
 
@@ -518,7 +524,7 @@ serve(async (req) => {
         ? parseFloat(product.original_price.toString())
         : null;
 
-      // GraphQL mutation for creating product (new product model - no variants field)
+      w; // GraphQL mutation for creating product (new product model - no variants field)
       const mutation = `
         mutation productCreate($product: ProductCreateInput!, $media: [CreateMediaInput!]) {
           productCreate(product: $product, media: $media) {
@@ -545,10 +551,12 @@ serve(async (req) => {
       `;
 
       // Prepare media input if image exists
-      const mediaInput = product.imageUrl ? [{
-        originalSource: product.imageUrl,
-        alt: product.title || product.imageUrl,
-      }] : [];
+      const mediaInput = product.imageUrl
+        ? [{
+          originalSource: product.imageUrl,
+          alt: product.title || product.imageUrl,
+        }]
+        : [];
 
       const variables = {
         product: {
@@ -610,14 +618,20 @@ serve(async (req) => {
       if (shopifyData.errors) {
         console.error("GraphQL errors:", shopifyData.errors);
         throw new Error(
-          `GraphQL errors: ${shopifyData.errors.map((e: { message: string }) => e.message).join(", ")}`,
+          `GraphQL errors: ${
+            shopifyData.errors.map((e: { message: string }) => e.message).join(
+              ", ",
+            )
+          }`,
         );
       }
 
       const productCreate = shopifyData.data?.productCreate;
-      
+
       if (productCreate?.userErrors && productCreate.userErrors.length > 0) {
-        const errors = productCreate.userErrors.map((e: { message: string }) => e.message).join(", ");
+        const errors = productCreate.userErrors.map((e: { message: string }) =>
+          e.message
+        ).join(", ");
         console.error("User errors:", productCreate.userErrors);
         throw new Error(`Shopify user errors: ${errors}`);
       }
@@ -657,12 +671,14 @@ serve(async (req) => {
         compareAtPrice: compareAtPrice ? compareAtPrice.toString() : null,
         sku: product.sku || undefined,
         inventoryPolicy: "CONTINUE",
-        inventoryQuantities: product.inventory_quantity ? [
-          {
-            availableQuantity: product.inventory_quantity,
-            locationId: product.location_id || null,
-          }
-        ] : [],
+        inventoryQuantities: product.inventory_quantity
+          ? [
+            {
+              availableQuantity: product.inventory_quantity,
+              locationId: product.location_id || null,
+            },
+          ]
+          : [],
       };
 
       try {
@@ -685,20 +701,29 @@ serve(async (req) => {
         );
 
         const variantData = await variantResponse.json();
-        
-        if (variantData.errors || variantData.data?.productVariantsBulkCreate?.userErrors?.length > 0) {
-          console.warn("Product created but variant creation had issues:", 
-            variantData.errors || variantData.data?.productVariantsBulkCreate?.userErrors);
+
+        if (
+          variantData.errors ||
+          variantData.data?.productVariantsBulkCreate?.userErrors?.length > 0
+        ) {
+          console.warn(
+            "Product created but variant creation had issues:",
+            variantData.errors ||
+              variantData.data?.productVariantsBulkCreate?.userErrors,
+          );
         } else {
           console.log("Variant created successfully");
         }
       } catch (variantError) {
-        console.warn("Variant creation failed (product still created):", variantError);
+        console.warn(
+          "Variant creation failed (product still created):",
+          variantError,
+        );
       }
 
       // Publish the product to online store (products are created unpublished by default)
       const productGid = createdProduct.id;
-      
+
       // First, get the online store publication ID
       const getPublicationsQuery = `
         query {
@@ -727,9 +752,11 @@ serve(async (req) => {
         );
 
         const publicationsData = await publicationsResponse.json();
-        const onlineStorePublication = publicationsData.data?.publications?.edges?.find(
-          (edge: { node: { name: string } }) => edge.node.name === "Online Store"
-        );
+        const onlineStorePublication = publicationsData.data?.publications
+          ?.edges?.find(
+            (edge: { node: { name: string } }) =>
+              edge.node.name === "Online Store",
+          );
 
         if (onlineStorePublication) {
           const publishMutation = `
@@ -771,23 +798,37 @@ serve(async (req) => {
           );
 
           const publishData = await publishResponse.json();
-          
-          if (publishData.errors || publishData.data?.publishablePublish?.userErrors?.length > 0) {
-            console.warn("Product created but publishing failed:", 
-              publishData.errors || publishData.data?.publishablePublish?.userErrors);
+
+          if (
+            publishData.errors ||
+            publishData.data?.publishablePublish?.userErrors?.length > 0
+          ) {
+            console.warn(
+              "Product created but publishing failed:",
+              publishData.errors ||
+                publishData.data?.publishablePublish?.userErrors,
+            );
           } else {
             console.log(`Product published successfully: ${productGid}`);
           }
         } else {
-          console.warn("Online Store publication not found - product created but not published");
+          console.warn(
+            "Online Store publication not found - product created but not published",
+          );
         }
       } catch (publishError) {
         // Log but don't fail - product is still created
-        console.warn("Publishing failed (product still created):", publishError);
+        console.warn(
+          "Publishing failed (product still created):",
+          publishError,
+        );
       }
 
       // Create metafields if provided
-      if (product.volume_ml || product.scent || product.texture || product.skin_concerns) {
+      if (
+        product.volume_ml || product.scent || product.texture ||
+        product.skin_concerns
+      ) {
         const metafieldsMutation = `
           mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
             metafieldsSet(metafields: $metafields) {

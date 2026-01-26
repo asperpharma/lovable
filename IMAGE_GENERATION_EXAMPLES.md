@@ -1,13 +1,16 @@
 # Image Generation Examples
 
 ## 🎯 Overview
-This document shows examples of how the automatic product image generation works in your system.
+
+This document shows examples of how the automatic product image generation works
+in your system.
 
 ---
 
 ## Example 1: Creating a New Product Without Image
 
 ### User Action:
+
 1. Admin goes to `/admin/products`
 2. Clicks "Add Product" button
 3. Fills in form:
@@ -25,7 +28,7 @@ const productData = {
   title: "Luxury Hyaluronic Acid Serum",
   price: 45.00,
   category: "Skin Care",
-  image_url: null  // ← No image provided
+  image_url: null, // ← No image provided
 };
 
 // 2. System detects missing image and auto-generates
@@ -34,13 +37,14 @@ if (!productData.image_url && data) {
   const { data: imageData } = await supabase.functions.invoke(
     "generate-product-images",
     {
-      body: { productIds: [data.id] }
-    }
+      body: { productIds: [data.id] },
+    },
   );
 }
 ```
 
 ### AI Prompt Generated:
+
 ```
 professional skincare product photography, luxury cosmetic bottle or tube, 
 minimalist white background, soft studio lighting, premium beauty product, 
@@ -50,7 +54,9 @@ no text or labels, photorealistic.
 ```
 
 ### Result:
+
 ✅ Product created with AI-generated image automatically
+
 - Image saved to: `product-images/ai-generated/{product-id}.png`
 - Image URL stored in database
 - User sees: "Product created with AI-generated image!" toast
@@ -60,6 +66,7 @@ no text or labels, photorealistic.
 ## Example 2: Bulk Generating Images for Existing Products
 
 ### User Action:
+
 1. Admin sees "Generate AI Images (12)" button
 2. Clicks the button
 3. System processes all 12 products without images
@@ -69,7 +76,7 @@ no text or labels, photorealistic.
 ```typescript
 // 1. Find all products without images
 const productsNeedingImages = products.filter(
-  (p) => !p.image_url || p.image_url.trim() === ""
+  (p) => !p.image_url || p.image_url.trim() === "",
 );
 // Result: 12 products found
 
@@ -77,28 +84,29 @@ const productsNeedingImages = products.filter(
 for (let i = 0; i < productsNeedingImages.length; i += 5) {
   const batch = productsNeedingImages.slice(i, i + 5);
   const productIds = batch.map((p) => p.id);
-  
+
   // Generate images for this batch
   await supabase.functions.invoke("generate-product-images", {
-    body: { productIds }
+    body: { productIds },
   });
-  
+
   // Wait 2 seconds between batches (rate limiting)
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 }
 ```
 
 ### Example Products Processed:
 
-| Product Title | Category | Generated Prompt Style |
-|--------------|----------|----------------------|
-| "Vitamin C Brightening Cream" | Skin Care | Professional skincare product photography... |
-| "Rose Gold Eye Palette" | Makeup | Professional makeup product photography... |
-| "Nourishing Hair Oil" | Hair Care | Professional hair care product photography... |
-| "Signature Eau de Parfum" | Fragrances | Luxury perfume bottle photography... |
-| "Retinol Night Treatment" | Skin Care | Professional skincare product photography... |
+| Product Title                 | Category   | Generated Prompt Style                        |
+| ----------------------------- | ---------- | --------------------------------------------- |
+| "Vitamin C Brightening Cream" | Skin Care  | Professional skincare product photography...  |
+| "Rose Gold Eye Palette"       | Makeup     | Professional makeup product photography...    |
+| "Nourishing Hair Oil"         | Hair Care  | Professional hair care product photography... |
+| "Signature Eau de Parfum"     | Fragrances | Luxury perfume bottle photography...          |
+| "Retinol Night Treatment"     | Skin Care  | Professional skincare product photography...  |
 
 ### Progress Updates:
+
 ```
 🖼️ Generating image for: Vitamin C Brightening Cream...
    ✅ Success! Image saved: https://...supabase.co/storage/v1/object/public/product-images/ai-generated/abc123.png
@@ -110,7 +118,9 @@ for (let i = 0; i < productsNeedingImages.length; i += 5) {
 ```
 
 ### Final Result:
+
 ✅ 12/12 images generated successfully
+
 - All products now have images
 - Button shows: "Generate AI Images (0)" (disabled)
 - Toast notification: "Generated 12 AI product images"
@@ -122,29 +132,36 @@ for (let i = 0; i < productsNeedingImages.length; i += 5) {
 The system generates different prompts based on product category:
 
 ### Skin Care Products:
+
 ```typescript
-const prompt = `professional skincare product photography, luxury cosmetic bottle or tube, 
+const prompt =
+  `professional skincare product photography, luxury cosmetic bottle or tube, 
 minimalist white background, soft studio lighting, premium beauty product, 
 high-end dermatological. Product: ${product.title}. 
 Ultra high resolution, professional e-commerce product shot...`;
 ```
 
 **Example**: "Hyaluronic Acid Serum"
+
 - **Result**: Clean, professional skincare bottle image
 - **Style**: Minimalist, medical-grade aesthetic
 
 ### Makeup Products:
+
 ```typescript
-const prompt = `professional makeup product photography, elegant cosmetic packaging, 
+const prompt =
+  `professional makeup product photography, elegant cosmetic packaging, 
 beauty product, studio lighting, white background, luxury makeup brand. 
 Product: ${product.title}...`;
 ```
 
 **Example**: "Rose Gold Eye Palette"
+
 - **Result**: Glamorous makeup product with rich colors
 - **Style**: Luxury beauty brand aesthetic
 
 ### Fragrances:
+
 ```typescript
 const prompt = `luxury perfume bottle photography, elegant fragrance packaging, 
 premium glass bottle, studio lighting, sophisticated beauty product. 
@@ -152,6 +169,7 @@ Product: ${product.title}...`;
 ```
 
 **Example**: "Signature Eau de Parfum"
+
 - **Result**: Elegant perfume bottle with artistic lighting
 - **Style**: High-end perfumery aesthetic
 
@@ -160,6 +178,7 @@ Product: ${product.title}...`;
 ## Example 4: API Request/Response Flow
 
 ### Request to Generate Image:
+
 ```json
 POST /functions/v1/generate-product-images
 Headers: {
@@ -172,6 +191,7 @@ Body: {
 ```
 
 ### AI API Call:
+
 ```json
 POST https://ai.gateway.lovable.dev/v1/chat/completions
 Headers: {
@@ -189,6 +209,7 @@ Body: {
 ```
 
 ### Response:
+
 ```json
 {
   "choices": [{
@@ -204,17 +225,18 @@ Body: {
 ```
 
 ### Storage Upload:
+
 ```typescript
 // Convert base64 to binary
 const base64Data = imageUrl.replace(/^data:image\/\w+;base64,/, "");
-const bytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+const bytes = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
 
 // Upload to Supabase Storage
 await supabase.storage
   .from("product-images")
   .upload(`ai-generated/${product.id}.png`, bytes, {
     contentType: "image/png",
-    upsert: true
+    upsert: true,
   });
 
 // Get public URL
@@ -225,6 +247,7 @@ const { data: publicUrl } = supabase.storage
 ```
 
 ### Database Update:
+
 ```sql
 UPDATE products 
 SET image_url = 'https://...supabase.co/.../ai-generated/550e8400-e29b-41d4-a716-446655440000.png'
@@ -236,36 +259,39 @@ WHERE id = '550e8400-e29b-41d4-a716-446655440000';
 ## Example 5: Error Handling
 
 ### Scenario: Rate Limit Exceeded
+
 ```typescript
 // If too many requests
 if (response.status === 429) {
   return {
     error: "Rate limited. Please wait before generating more images.",
-    retryAfter: 60
+    retryAfter: 60,
   };
 }
 ```
 
 ### Scenario: AI API Failure
+
 ```typescript
 // If AI generation fails
 results.push({
   id: product.id,
   title: product.title,
-  status: "ai_error"
+  status: "ai_error",
 });
 // Product still created, but without image
 // User can retry manually
 ```
 
 ### Scenario: Storage Upload Failure
+
 ```typescript
 // If storage upload fails
 if (uploadError) {
   results.push({
     id: product.id,
     title: product.title,
-    status: "upload_error"
+    status: "upload_error",
   });
   // Logs error but continues with next product
 }
@@ -276,6 +302,7 @@ if (uploadError) {
 ## Example 6: UI Flow
 
 ### Before Image Generation:
+
 ```
 ┌─────────────────────────────────────────┐
 │  Manage Products                       │
@@ -291,6 +318,7 @@ if (uploadError) {
 ```
 
 ### During Image Generation:
+
 ```
 ┌─────────────────────────────────────────┐
 │  Manage Products                       │
@@ -303,6 +331,7 @@ if (uploadError) {
 ```
 
 ### After Image Generation:
+
 ```
 ┌─────────────────────────────────────────┐
 │  Manage Products                       │
@@ -353,10 +382,10 @@ if (uploadError) {
 
 ## Summary
 
-✅ **Automatic**: New products get images automatically  
-✅ **Bulk Processing**: Generate images for all missing products at once  
-✅ **Category-Aware**: Different styles for different product types  
-✅ **Error Handling**: Graceful failures with retry options  
-✅ **User-Friendly**: Clear progress indicators and notifications  
+✅ **Automatic**: New products get images automatically\
+✅ **Bulk Processing**: Generate images for all missing products at once\
+✅ **Category-Aware**: Different styles for different product types\
+✅ **Error Handling**: Graceful failures with retry options\
+✅ **User-Friendly**: Clear progress indicators and notifications
 
 The system ensures every product has a professional image! 🎨

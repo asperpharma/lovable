@@ -33,7 +33,8 @@ serve(async (req) => {
     console.log("🎨 Starting AI Product Image Generation...");
 
     // Get request body for optional filters
-    let body: { productId?: string; productIds?: string[]; limit?: number } = {};
+    let body: { productId?: string; productIds?: string[]; limit?: number } =
+      {};
     try {
       body = await req.json();
     } catch {
@@ -46,7 +47,10 @@ serve(async (req) => {
       .select("id, title, brand, category")
       .is("image_url", null);
 
-    if (body.productIds && Array.isArray(body.productIds) && body.productIds.length > 0) {
+    if (
+      body.productIds && Array.isArray(body.productIds) &&
+      body.productIds.length > 0
+    ) {
       // Filter by array of product IDs
       query = query.in("id", body.productIds);
     } else if (body.productId) {
