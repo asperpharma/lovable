@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export const LuxuryHero = () => {
   const [bgImageError, setBgImageError] = useState(false);
+  const [bgImageUrl, setBgImageUrl] = useState<string | null>(null);
+  const [isLoadingImage, setIsLoadingImage] = useState(true);
   const { language, isRTL } = useLanguage();
   const isAr = language === "ar";
 
@@ -17,16 +20,47 @@ export const LuxuryHero = () => {
     });
   };
 
-  // Preload background image
+  // Fetch hero background image from database
   useEffect(() => {
-    const img = new Image();
-    img.src = "/luxury-beauty-background.jpg";
-    img.onerror = () => setBgImageError(true);
+    const fetchHeroImage = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "hero_background_image")
+          .maybeSingle();
+
+        if (error) {
+          console.error("Error fetching hero image:", error);
+          // Fallback to default
+          setBgImageUrl("/luxury-beauty-background.jpg");
+        } else {
+          setBgImageUrl(data?.value || "/luxury-beauty-background.jpg");
+        }
+      } catch (err) {
+        console.error("Error fetching hero image:", err);
+        setBgImageUrl("/luxury-beauty-background.jpg");
+      } finally {
+        setIsLoadingImage(false);
+      }
+    };
+
+    fetchHeroImage();
   }, []);
 
-  const backgroundImage = bgImageError
+  // Preload background image
+  useEffect(() => {
+    if (!bgImageUrl || isLoadingImage) return;
+
+    const img = new Image();
+    img.src = bgImageUrl;
+    img.onerror = () => setBgImageError(true);
+    img.onload = () => setBgImageError(false);
+  }, [bgImageUrl, isLoadingImage]);
+
+  const backgroundImage = bgImageError || !bgImageUrl
     ? "linear-gradient(135deg, #800020 0%, #4a0e19 100%)"
-    : `url('/luxury-beauty-background.jpg')`;
+    : `url('${bgImageUrl}')`;
 
   const translations = {
     en: {
