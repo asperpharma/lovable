@@ -161,11 +161,10 @@ Your Asper Beauty Shop project is **100% ready** for:
 
 ## 📚 Documentation
 
-- **Quick Start**: `QUICK_START.md`
-- **Deployment**: `DEPLOYMENT_GUIDE.md`
-- **Production Checklist**: `PRODUCTION_CHECKLIST.md`
-- **Monitoring**: `MONITORING_GUIDE.md`
-- **Complete Setup Summary**: `COMPLETE_SETUP_SUMMARY.md`
+- Refer to the main `README.md` for project overview and quick start instructions.
+- See in-file comments and module-level docs for implementation details.
+- Check your deployment platform’s documentation for environment-specific deployment and monitoring setup.
+- Maintain your own production checklist based on your team’s operational requirements.
 
 ---
 
