@@ -150,7 +150,9 @@ export const Footer = () => {
             </h4>
             <div className="space-y-2">
               <p className="font-body text-sm text-cream">
-                {isArabic ? "شارع الدلال، عمّان، الأردن" : "The Boulevard, Amman, Jordan"}
+                {isArabic
+                  ? "شارع الدلال، عمّان، الأردن"
+                  : "The Boulevard, Amman, Jordan"}
               </p>
               <a
                 href="tel:+962790656666"
@@ -177,7 +179,9 @@ export const Footer = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder={isArabic ? "عنوان بريدك الموقر" : "Your distinguished email"}
+                placeholder={isArabic
+                  ? "عنوان بريدك الموقر"
+                  : "Your distinguished email"}
                 className="w-full px-4 py-3 bg-transparent border border-white text-white font-body text-sm placeholder:text-white/50 focus:outline-none focus:border-gold transition-colors duration-400 rounded"
               />
               <button
@@ -200,8 +204,9 @@ export const Footer = () => {
               : "Authenticity Guaranteed: Every item at Asper is meticulously curated and 100% genuine."}
           </p>
           <p className="font-body text-xs text-cream/50 text-center">
-            © 2026 Asper Beauty Shop.{" "}
-            {isArabic ? "الجمال يكمن في التفاصيل." : "Beauty resides in the details."}
+            © 2026 Asper Beauty Shop. {isArabic
+              ? "الجمال يكمن في التفاصيل."
+              : "Beauty resides in the details."}
           </p>
         </div>
       </div>
