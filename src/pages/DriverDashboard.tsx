@@ -4,7 +4,12 @@ import { supabase } from "../integrations/supabase/client.ts";
 import { useAuth } from "../hooks/useAuth.ts";
 import { useDriverAuditLog } from "../hooks/useDriverAuditLog.ts";
 import { Button } from "../components/ui/button.tsx";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card.tsx";
 import { Badge } from "../components/ui/badge.tsx";
 import { Textarea } from "../components/ui/textarea.tsx";
 import { toast } from "sonner";
@@ -271,7 +276,10 @@ export default function DriverDashboard() {
       const address = encodeURIComponent(
         `${order.delivery_address}, ${order.city}, Jordan`,
       );
-      globalThis.open(`https://waze.com/ul?q=${address}&navigate=yes`, "_blank");
+      globalThis.open(
+        `https://waze.com/ul?q=${address}&navigate=yes`,
+        "_blank",
+      );
     }
   };
 
@@ -288,7 +296,10 @@ export default function DriverDashboard() {
       `مرحباً، أنا سائق التوصيل من Asper Beauty. طلبك رقم ${order.order_number} في الطريق إليك.`,
     );
     const formattedPhone = phone.replace(/\D/g, "");
-    globalThis.open(`https://wa.me/${formattedPhone}?text=${message}`, "_blank");
+    globalThis.open(
+      `https://wa.me/${formattedPhone}?text=${message}`,
+      "_blank",
+    );
   };
 
   const handleOrderSelect = (order: DriverOrder) => {

@@ -1,11 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button.tsx";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "./ui/sheet.tsx";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet.tsx";
 import { Heart, ShoppingBag, Trash2, X } from "lucide-react";
 import { useWishlistStore } from "../stores/wishlistStore.ts";
 import { useCartStore } from "../stores/cartStore.ts";

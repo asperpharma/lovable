@@ -4,7 +4,12 @@ import { Header } from "../components/Header.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Badge } from "../components/ui/badge.tsx";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card.tsx";
 import { Input } from "../components/ui/input.tsx";
 import {
   Select,
@@ -29,7 +34,12 @@ import {
 } from "../components/ui/dialog.tsx";
 import { ScrollArea } from "../components/ui/scroll-area.tsx";
 import { Skeleton } from "../components/ui/skeleton.tsx";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs.tsx";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs.tsx";
 import {
   AlertCircle,
   Calendar,

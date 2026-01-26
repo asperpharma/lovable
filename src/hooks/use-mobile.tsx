@@ -8,7 +8,9 @@ export function useIsMobile() {
   );
 
   React.useEffect(() => {
-    const mql = globalThis.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const mql = globalThis.matchMedia(
+      `(max-width: ${MOBILE_BREAKPOINT - 1}px)`,
+    );
     const onChange = () => {
       // Use mql.matches instead of window.innerWidth to avoid forced reflow
       setIsMobile(mql.matches);

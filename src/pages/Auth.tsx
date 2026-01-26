@@ -20,7 +20,12 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card.tsx";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs.tsx";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs.tsx";
 import { toast } from "sonner";
 import {
   AlertTriangle,

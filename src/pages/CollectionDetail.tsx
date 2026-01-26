@@ -2,7 +2,10 @@ import { useParams } from "react-router-dom";
 import { Header } from "../components/Header.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { ProductGrid } from "../components/ProductGrid.tsx";
-import { getCategoryInfo, normalizeCategorySlug } from "../lib/categoryMapping.ts";
+import {
+  getCategoryInfo,
+  normalizeCategorySlug,
+} from "../lib/categoryMapping.ts";
 import { useLanguage } from "../contexts/LanguageContext.tsx";
 import defaultCampaignHeader from "@/assets/campaign/hero-3.jpg";
 
@@ -58,7 +61,9 @@ export default function CollectionDetail() {
             <div
               className="absolute inset-0 bg-cover bg-center transition-all duration-700 hover:scale-105"
               style={{
-                backgroundImage: `url(${category.bannerImage || defaultCampaignHeader})`,
+                backgroundImage: `url(${
+                  category.bannerImage || defaultCampaignHeader
+                })`,
               }}
             />
             <div className="absolute inset-0 bg-luxury-black/60 shadow-[inset_0_0_100px_rgba(0,0,0,0.5)]" />
