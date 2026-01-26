@@ -6,7 +6,7 @@
 set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-PROJECT_REF="rgehleqcubtmcwyipyvi"
+PROJECT_REF="unjgpqdcdcatbrinitfu"
 DEFAULT_SITE_URL="https://asperbeautyshop.lovable.app"
 
 cd "$PROJECT_ROOT"

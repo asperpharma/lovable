@@ -59,7 +59,7 @@ See [Lovable Security & API keys](https://docs.lovable.dev/features/security) fo
 
 #### Method 1: Supabase Dashboard (recommended)
 
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard) → project **rgehleqcubtmcwyipyvi**
+1. Go to [Supabase Dashboard](https://supabase.com/dashboard) → project **unjgpqdcdcatbrinitfu**
 2. **Project Settings** → **Edge Functions** → **Secrets**
 3. **Add new secret** for each:
    - **Name**: `LOVABLE_API_KEY` → **Value**: `[your-lovable-api-key]`
@@ -83,7 +83,7 @@ chmod +x scripts/apply-domain-setup.sh
 
 Each script will:
 
-- Link the Supabase project `rgehleqcubtmcwyipyvi`
+- Link the Supabase project `unjgpqdcdcatbrinitfu`
 - Prompt for **LOVABLE_API_KEY** and **SITE_URL** (default: `https://asperbeautyshop.lovable.app`)
 - Run `supabase secrets set` for both
 
@@ -95,7 +95,7 @@ After setting the secrets, test a function:
 
 ```bash
 # Replace YOUR_ANON_KEY with VITE_SUPABASE_PUBLISHABLE_KEY from .env
-curl -X POST https://rgehleqcubtmcwyipyvi.supabase.co/functions/v1/beauty-assistant \
+curl -X POST https://unjgpqdcdcatbrinitfu.supabase.co/functions/v1/beauty-assistant \
   -H "Authorization: Bearer YOUR_ANON_KEY" \
   -H "Content-Type: application/json" \
   -d '{"messages": [{"role": "user", "content": "Hello"}]}'
@@ -187,7 +187,7 @@ The `lovable-tagger` plugin automatically:
 ### LOVABLE_API_KEY errors in Supabase Functions
 - Verify **LOVABLE_API_KEY** is set in Supabase Dashboard → Project Settings → Edge Functions → Secrets
 - Ensure the name is exactly `LOVABLE_API_KEY` (case-sensitive)
-- Project ref: `rgehleqcubtmcwyipyvi`
+- Project ref: `unjgpqdcdcatbrinitfu`
 - Wait a few minutes after setting secrets for them to propagate
 - Use `scripts/apply-domain-setup.ps1` or `apply-domain-setup.sh` to set via CLI if needed
 
