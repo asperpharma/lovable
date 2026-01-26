@@ -10,6 +10,7 @@
 ### Lovable Integration
 - **Lovable Tagger**: ✅ Installed (`lovable-tagger` in `vite.config.ts`)
 - **Live Site**: https://asperbeautyshop.lovable.app
+- **Lovable Project**: https://lovable.dev/projects/77495a61-2517-4bbc-b7c9-0c86fefea9be
 - **Auto-sync**: ✅ Enabled (changes sync between Lovable ↔ GitHub)
 
 ---
@@ -27,10 +28,10 @@
 3. Select the **`asperpharma/lovable`** repository
 4. Lovable will automatically sync your code
 
-### Finding Your Project URL
-Your Lovable project URL typically follows this pattern:
-- `https://lovable.dev/project/[project-slug]`
-- Or check your Lovable dashboard after signing in
+### Your Lovable Project URL
+- **Direct link**: [https://lovable.dev/projects/77495a61-2517-4bbc-b7c9-0c86fefea9be](https://lovable.dev/projects/77495a61-2517-4bbc-b7c9-0c86fefea9be)
+
+**Note:** If you received a link with a `?magic_link=...` parameter, that’s a one-time sign-in token. Use it to log in, but don’t share it—treat it like a password.
 
 ---
 
