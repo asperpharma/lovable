@@ -175,17 +175,3 @@ export const formatJOD = (amount: number): string => {
     minimumFractionDigits: 3, // BeautyBox uses 3 decimals (16.000 JD)
   }).format(amount).replace("JOD", "").trim() + " JD";
 };
-
-/**
- * Format price in JOD like BeautyBox (e.g., "16.000 JD") or iHerb (e.g., "JOD 2.434")
- * @deprecated Use formatJOD instead for BeautyBox style
- */
-export const formatPriceJOD = (
-  price: number,
-  style: "beautybox" | "iherb" = "beautybox",
-): string => {
-  if (style === "beautybox") {
-    return formatJOD(price);
-  }
-  return `JOD ${price.toFixed(3)}`;
-};
