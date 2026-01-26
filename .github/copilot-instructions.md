@@ -2,9 +2,13 @@
 
 ## Project Overview
 
-Asper Beauty Shop is a luxury e-commerce storefront for premium skincare and beauty products. The platform features a responsive, bilingual (English/Arabic) interface with full RTL support, integrated with Shopify for product management and checkout.
+Asper Beauty Shop is a luxury e-commerce storefront for premium skincare and
+beauty products. The platform features a responsive, bilingual (English/Arabic)
+interface with full RTL support, integrated with Shopify for product management
+and checkout.
 
-**Live Site**: [asperbeautyshop.lovable.app](https://asperbeautyshop.lovable.app)
+**Live Site**:
+[asperbeautyshop.lovable.app](https://asperbeautyshop.lovable.app)
 
 ## Tech Stack
 
@@ -134,17 +138,17 @@ npm run preview
 
 ## Routes and Pages
 
-| Route                  | Description                         | File Location       |
-| ---------------------- | ----------------------------------- | ------------------- |
-| `/`                    | Home page                           | `/src/pages/`       |
-| `/brands`              | Browse all brands                   | `/src/pages/`       |
-| `/brands/:brand`       | Individual brand showcase           | `/src/pages/`       |
-| `/collections/:handle` | Product collections                 | `/src/pages/`       |
-| `/products/:handle`    | Product detail page                 | `/src/pages/`       |
-| `/skin-concerns`       | Shop by skin concern                | `/src/pages/`       |
-| `/offers`              | Special offers and promotions       | `/src/pages/`       |
-| `/best-sellers`        | Best selling products               | `/src/pages/`       |
-| `/contact`             | Contact information                 | `/src/pages/`       |
+| Route                  | Description                   | File Location |
+| ---------------------- | ----------------------------- | ------------- |
+| `/`                    | Home page                     | `/src/pages/` |
+| `/brands`              | Browse all brands             | `/src/pages/` |
+| `/brands/:brand`       | Individual brand showcase     | `/src/pages/` |
+| `/collections/:handle` | Product collections           | `/src/pages/` |
+| `/products/:handle`    | Product detail page           | `/src/pages/` |
+| `/skin-concerns`       | Shop by skin concern          | `/src/pages/` |
+| `/offers`              | Special offers and promotions | `/src/pages/` |
+| `/best-sellers`        | Best selling products         | `/src/pages/` |
+| `/contact`             | Contact information           | `/src/pages/` |
 
 ## Best Practices
 
@@ -221,7 +225,8 @@ npm run preview
 
 ## Notes
 
-- This project is built with [Lovable](https://lovable.dev) and syncs automatically
+- This project is built with [Lovable](https://lovable.dev) and syncs
+  automatically
 - Changes can be made locally, in GitHub, or through Lovable
 - The project uses Vite for fast development and optimized builds
 - Shopify integration handles product data and checkout
