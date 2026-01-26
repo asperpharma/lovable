@@ -209,11 +209,33 @@ serve(async (req) => {
 
     if (action === "categorize") {
       // Categorize and prepare products from Excel data
-      const { products } = requestData;
+      const { products, productImageMap } = requestData;
       const processedProducts: ProcessedProduct[] = products.map((product: ProductData) => {
         const category = categorizeProduct(product.name);
         const brand = extractBrand(product.name);
         const imagePrompt = generateImagePrompt(product.name, category);
+        
+        // Check if we have an existing image for this product
+        let imageUrl: string | undefined;
+        let status: "pending" | "completed" = "pending";
+        
+        // Try to match by SKU or product name in the provided image map
+        if (productImageMap && typeof productImageMap === 'object') {
+          // productImageMap is expected to be { normalizedName: imageUrl }
+          const normalizedName = product.name.toLowerCase()
+            .replace(/[-_]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+          
+          // Check exact match or partial match
+          for (const [imgName, imgUrl] of Object.entries(productImageMap)) {
+            if (normalizedName.includes(imgName) || imgName.includes(normalizedName)) {
+              imageUrl = imgUrl as string;
+              status = "completed";
+              break;
+            }
+          }
+        }
         
         return {
           sku: product.sku,
@@ -223,7 +245,8 @@ serve(async (req) => {
           price: product.sellingPrice,
           costPrice: product.costPrice,
           imagePrompt,
-          status: "pending" as const,
+          imageUrl,
+          status,
         };
       });
 

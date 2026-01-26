@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ExcelJS from "exceljs";
 import { useImageQueue, QueueItem } from "@/lib/imageGenerationQueue";
+import { getAllProductImages } from "@/lib/productImageMapper";
 
 interface ProcessedProduct {
   sku: string;
@@ -320,11 +321,24 @@ export default function BulkUpload() {
         return;
       }
 
+      // Get all available product images from assets
+      const imageMap = getAllProductImages();
+      const productImageMap: Record<string, string> = {};
+      imageMap.forEach((url, name) => {
+        productImageMap[name] = url;
+      });
+
+      console.log(`Found ${imageMap.size} product images in assets`);
+
       const { data, error } = await supabase.functions.invoke("bulk-product-upload", {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
-        body: { action: "categorize", products: rawData },
+        body: { 
+          action: "categorize", 
+          products: rawData,
+          productImageMap // Pass the image map to the edge function
+        },
       });
 
       if (error) throw error;
@@ -332,7 +346,14 @@ export default function BulkUpload() {
 
       setProducts(data.products);
       setSummary(data.summary);
-      toast.success(`Categorized ${data.products.length} products into ${Object.keys(data.summary.categories).length} categories`);
+      
+      // Count how many products already have images
+      const productsWithImages = data.products.filter((p: ProcessedProduct) => p.imageUrl).length;
+      
+      toast.success(
+        `Categorized ${data.products.length} products into ${Object.keys(data.summary.categories).length} categories. ` +
+        `${productsWithImages} products matched with existing images.`
+      );
       setStep("images");
     } catch (error: any) {
       console.error(error);

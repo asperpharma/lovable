@@ -93,10 +93,23 @@ export const getPlaceholderImage = (category: string, title: string): string => 
 export const getProductImage = (
   imageUrl: string | null | undefined,
   category: string,
-  title: string
+  title: string,
+  sku?: string
 ): string => {
   if (imageUrl && imageUrl.trim() !== '') {
     return imageUrl;
+  }
+  
+  // Try to find existing image from assets
+  try {
+    const { findProductImage } = require('./productImageMapper');
+    const existingImage = findProductImage(title, sku);
+    if (existingImage) {
+      return existingImage;
+    }
+  } catch (error) {
+    // productImageMapper might not be available in all contexts
+    console.debug('Product image mapper not available:', error);
   }
   
   return getPlaceholderImage(category, title);
