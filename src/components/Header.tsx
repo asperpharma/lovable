@@ -304,14 +304,6 @@ export const Header = () => {
                         <ClipboardList className="w-4 h-4" />
                         {language === "ar" ? "الطلبات" : "Orders"}
                       </Link>
-                      <Link
-                        to="/admin/settings"
-                        onClick={() => setAdminMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-charcoal hover:bg-cream hover:text-burgundy transition-colors"
-                      >
-                        <Settings className="w-4 h-4" />
-                        {language === "ar" ? "الإعدادات" : "Settings"}
-                      </Link>
                     </div>
                   )}
                 </div>
