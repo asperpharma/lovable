@@ -74,8 +74,6 @@ npm run lint
 | `npm run build:dev` | Build in development mode |
 | `npm run preview` | Preview production build |
 | `npm run lint` | Run ESLint |
-| `npm run import:products` | Import products from script |
-| `npm run import:shopify` | Import from Shopify |
 
 ---
 
