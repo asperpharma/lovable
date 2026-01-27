@@ -94,6 +94,13 @@ If you use beauty-assistant, bulk-product-upload, generate-product-images, remov
 
 See [LOVABLE_SETUP_GUIDE.md](./LOVABLE_SETUP_GUIDE.md) for details.
 
+### 3. `user_roles` explicit deny anon + index (PostgREST)
+
+If PostgREST recommends explicit deny-anon or indexing `user_id`:
+
+- **Migrations:** `supabase db push` applies `20260126140000_user_roles_deny_anon_and_index.sql`.
+- **Manual:** Run **`USER_ROLES_DENY_ANON_AND_INDEX.sql`** in the [SQL Editor](https://supabase.com/dashboard/project/unjgpqdcdcatbrinitfu/sql/new). It adds deny-anon SELECT/INSERT/UPDATE/DELETE and `idx_user_roles_user_id`.
+
 ---
 
 ## SQL syntax check
