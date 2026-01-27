@@ -71,6 +71,31 @@ Use **one** of the methods below. Project: `unjgpqdcdcatbrinitfu`.
 
 ---
 
+## After setup
+
+### 1. Harden `has_role` (recommended)
+
+Run **once** in [SQL Editor](https://supabase.com/dashboard/project/unjgpqdcdcatbrinitfu/sql/new):
+
+```sql
+REVOKE EXECUTE ON FUNCTION public.has_role(uuid, public.app_role) FROM anon;
+```
+
+- **Only** revoke from `anon`. Do **not** revoke from `authenticated` or `service_role` (RLS needs them).
+
+### 2. LOVABLE secrets (Edge Functions)
+
+If you use beauty-assistant, bulk-product-upload, generate-product-images, remove-background, or create-cod-order:
+
+1. [Supabase Dashboard](https://supabase.com/dashboard/project/unjgpqdcdcatbrinitfu) → **Project Settings** → **Edge Functions** → **Secrets**.
+2. **Add** `LOVABLE_API_KEY` = your Lovable API key → **Save**.
+3. **Add** `SITE_URL` = `https://asperbeautyshop.lovable.app` (or your live URL) → **Save**.
+4. Redeploy or restart affected Edge Functions so they pick up the new secrets.
+
+See [LOVABLE_SETUP_GUIDE.md](./LOVABLE_SETUP_GUIDE.md) for details.
+
+---
+
 ## SQL syntax check
 
 The statements in `DRIVER_ACCESS_LOGS_FULL_SETUP.sql` are valid PostgreSQL (DO block, `CREATE OR REPLACE`, `IF NOT EXISTS`, `DROP POLICY IF EXISTS`). If you hit errors, they’re usually due to:
