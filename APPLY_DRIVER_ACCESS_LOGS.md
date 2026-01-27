@@ -106,6 +106,28 @@ Nobody can run SQL in your Supabase project from here. **You** must run it and p
 - Provide exact, **non-destructive** SQL for recommended RLS policies and safe helper stubs (`has_role`, `handle_new_user`).
 - Ask for **explicit confirmation** before proposing any **destructive** changes.
 
+**Two safe options (verify SQL is read-only)**
+
+The assistant cannot run the verify SQL in your project without **organization data-sharing** (e.g. Bedrock) enabled in Supabase. You have two choices:
+
+| Option | What to do | What happens next |
+|--------|------------|-------------------|
+| **A — Assistant runs it** | Enable **organization data-sharing consent** in Supabase settings, then tell the assistant. | They run `list_tables` / `list_extensions` first, then the verify SQL. They validate results in 1–2 lines and summarize. |
+| **B — You run it** | Copy **`DRIVER_ACCESS_LOGS_VERIFY.sql`** into the SQL Editor, run it, then **paste the four result sets here** (labeled Result set 1–4). | We interpret them, **point out missing pieces**, and provide **exact SQL** for RLS policies and helper functions (**non-destructive**). We ask for **explicit confirmation** before any **destructive** changes. |
+
+**If you run it yourself (Option B):** Result set 1 = table exists/missing; 2 = RLS yes/no; 3 = policies on `driver_access_logs`; 4 = `has_role` / `handle_new_user`. Empty policy list → add policies; missing functions → create them (see setup scripts).
+
+**Pick one (next steps)**
+
+| Reply | What happens |
+|-------|----------------|
+| **"ENABLE DONE"** | You enable org data-sharing (Bedrock) in Supabase, then reply. We run `list_tables` + `list_extensions`, then **`DRIVER_ACCESS_LOGS_VERIFY.sql`**. We validate in 1–2 lines, summarize missing pieces, and provide exact non-destructive SQL. |
+| **Run verify yourself** | You run **`DRIVER_ACCESS_LOGS_VERIFY.sql`** in the SQL Editor, paste Result sets 1–4 here. We interpret, flag gaps, provide non-destructive SQL, and ask before any destructive changes. |
+| **"PRE_CHECK"** | We paste **`DRIVER_ACCESS_LOGS_PRE_CHECK.sql`** for you to run (see what exists / is missing). |
+| **"FULL_DEFENSIVE"** | We paste **`DRIVER_ACCESS_LOGS_FULL_SETUP_DEFENSIVE.sql`** (safe; use when unsure about extensions / referenced tables). |
+| **"FULL"** | We paste **`DRIVER_ACCESS_LOGS_FULL_SETUP.sql`** (assumes `app_role`, `user_roles`, `cod_orders` exist). |
+| **"VERIFY"** | We paste **`DRIVER_ACCESS_LOGS_VERIFY.sql`** for you to run, then paste Result sets 1–4 back. |
+
 **Run it yourself or have an assistant run it**
 
 - **Your run:** Copy `DRIVER_ACCESS_LOGS_VERIFY.sql` into the SQL Editor, run it, then **paste the four result sets here**. We’ll interpret them, **point out missing pieces** and any **security/performance concerns**, and provide **exact SQL** for recommended RLS policies and safe helper function stubs (**non-destructive**). If any **destructive** changes are needed, we'll ask for **explicit confirmation** before producing those.
