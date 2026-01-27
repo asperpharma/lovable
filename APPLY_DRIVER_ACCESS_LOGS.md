@@ -4,12 +4,20 @@ Use **one** of the methods below. Project: `unjgpqdcdcatbrinitfu`.
 
 ---
 
+## Optional: Pre-check (see what exists / is missing)
+
+Run **`DRIVER_ACCESS_LOGS_PRE_CHECK.sql`** in the [SQL Editor](https://supabase.com/dashboard/project/unjgpqdcdcatbrinitfu/sql/new) first. It returns a table of objects (`pgcrypto`, `app_role`, `user_roles`, `cod_orders`, `driver_access_logs`, `has_role`, `driver_access_logs_order_id_fkey`) with `present` or `missing`. Use it to decide whether to run the **original** or **defensive** setup.
+
+---
+
 ## Option 1: Supabase SQL Editor (simplest)
 
 1. Open **[SQL Editor](https://supabase.com/dashboard/project/unjgpqdcdcatbrinitfu/sql/new)**.
 2. Open **`DRIVER_ACCESS_LOGS_FULL_SETUP.sql`** in your editor, select all (Ctrl+A), copy.
 3. Paste into the SQL Editor and click **Run**.
 4. Confirm you see “Success. No rows returned” (or similar). Done.
+
+**If you hit** `app_role` / `gen_random_uuid` / `cod_orders` **errors:** use **`DRIVER_ACCESS_LOGS_FULL_SETUP_DEFENSIVE.sql`** instead. It ensures `pgcrypto`, creates `app_role` if missing, and defers the `cod_orders` FK until that table exists. **`user_roles` must still exist** (from base migrations).
 
 ---
 
@@ -68,6 +76,7 @@ Use **one** of the methods below. Project: `unjgpqdcdcatbrinitfu`.
 - **Table:** Supabase Dashboard → **Table Editor** → `driver_access_logs` exists.
 - **RLS:** **Authentication** → **Policies** → `driver_access_logs` has the expected policies.
 - **App:** Driver app logs actions; Admin → **Audit Logs** shows entries.
+- **Catalog check:** Run **`DRIVER_ACCESS_LOGS_VERIFY.sql`** in the [SQL Editor](https://supabase.com/dashboard/project/unjgpqdcdcatbrinitfu/sql/new). It confirms the table exists, RLS is enabled, lists policies on `driver_access_logs`, and shows `has_role` (and related) function signatures.
 
 ---
 
@@ -100,6 +109,34 @@ If PostgREST recommends explicit deny-anon or indexing `user_id`:
 
 - **Migrations:** `supabase db push` applies `20260126140000_user_roles_deny_anon_and_index.sql`.
 - **Manual:** Run **`USER_ROLES_DENY_ANON_AND_INDEX.sql`** in the [SQL Editor](https://supabase.com/dashboard/project/unjgpqdcdcatbrinitfu/sql/new). It adds deny-anon SELECT/INSERT/UPDATE/DELETE and `idx_user_roles_user_id`.
+
+---
+
+## Defensive script: FK-only-when-`cod_orders`-exists snippet
+
+The defensive script adds the `cod_orders` FK only when the table exists and the constraint is missing. Exact logic:
+
+```sql
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'cod_orders')
+     AND NOT EXISTS (
+       SELECT 1 FROM pg_constraint c
+       JOIN pg_class t ON t.oid = c.conrelid
+       JOIN pg_namespace n ON n.oid = t.relnamespace
+       WHERE n.nspname = 'public' AND t.relname = 'driver_access_logs'
+         AND c.conname = 'driver_access_logs_order_id_fkey'
+     ) THEN
+    ALTER TABLE public.driver_access_logs
+      ADD CONSTRAINT driver_access_logs_order_id_fkey
+      FOREIGN KEY (order_id) REFERENCES public.cod_orders(id) ON DELETE SET NULL;
+  END IF;
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END$$;
+```
+
+`driver_access_logs` is created with `order_id UUID` (no FK). This block runs after; it adds the FK only if `cod_orders` exists and the constraint does not. `duplicate_object` is ignored (e.g. constraint already added).
 
 ---
 
