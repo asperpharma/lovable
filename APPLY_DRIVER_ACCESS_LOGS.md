@@ -89,6 +89,23 @@ The script returns **4 result sets** (one per `SELECT`), not 4 rows in a single 
 | **3** | Policies on `driver_access_logs` | Rows = policies (`policyname`, `cmd`, `roles`). Expect SELECT/INSERT/UPDATE/DELETE for `authenticated` and/or `service_role`. Empty → add policies (see setup scripts). |
 | **4** | Helper functions `has_role`, `handle_new_user` | Rows = functions (`schema`, `name`, `args`). Missing → app may fail; create them (see setup scripts). |
 
+**Run verify & paste results (quick steps)**
+
+Nobody can run SQL in your Supabase project from here. **You** must run it and paste the results.
+
+1. **Copy** the exact SQL from **`DRIVER_ACCESS_LOGS_VERIFY.sql`** (or the block in the "Defensive script" section below).
+2. **Go to** [Supabase Dashboard](https://supabase.com/dashboard) → sign in → select project **unjgpqdcdcatbrinitfu**.
+3. **Database** → **SQL Editor** → **New query**.
+4. **Paste** the SQL and click **Run**.
+5. You’ll get **4 result sets**. Copy each (or screenshot), then **paste them here** labeled **Result set 1**, **Result set 2**, **Result set 3**, **Result set 4** (in order).
+
+**Once you paste the four result sets here**, we will:
+
+- Interpret each (table exists, RLS enabled, policies, functions).
+- Flag missing pieces and any security or performance concerns.
+- Provide exact, **non-destructive** SQL for recommended RLS policies and safe helper stubs (`has_role`, `handle_new_user`).
+- Ask for **explicit confirmation** before proposing any **destructive** changes.
+
 **Run it yourself or have an assistant run it**
 
 - **Your run:** Copy `DRIVER_ACCESS_LOGS_VERIFY.sql` into the SQL Editor, run it, then **paste the four result sets here**. We’ll interpret them, **point out missing pieces** and any **security/performance concerns**, and provide **exact SQL** for recommended RLS policies and safe helper function stubs (**non-destructive**). If any **destructive** changes are needed, we'll ask for **explicit confirmation** before producing those.
