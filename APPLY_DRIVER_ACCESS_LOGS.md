@@ -108,14 +108,27 @@ Nobody can run SQL in your Supabase project from here. **You** must run it and p
 
 **Two safe options (verify SQL is read-only)**
 
-The assistant cannot run the verify SQL in your project without **organization data-sharing** (e.g. Bedrock) enabled in Supabase. You have two choices:
+The assistant cannot run the verify SQL in your project from here unless **organization data-sharing** (e.g. Bedrock) is enabled in your Supabase settings. You have two choices:
 
-| Option | What to do | What happens next |
-|--------|------------|-------------------|
-| **A — Assistant runs it** | Enable **organization data-sharing consent** in Supabase settings, then tell the assistant. | They run `list_tables` / `list_extensions` first, then the verify SQL. They validate results in 1–2 lines and summarize. |
-| **B — You run it** | Copy **`DRIVER_ACCESS_LOGS_VERIFY.sql`** into the SQL Editor, run it, then **paste the four result sets here** (labeled Result set 1–4). | We interpret them, **point out missing pieces**, and provide **exact SQL** for RLS policies and helper functions (**non-destructive**). We ask for **explicit confirmation** before any **destructive** changes. |
+**Option A — Assistant runs it for you**
 
-**If you run it yourself (Option B):** Result set 1 = table exists/missing; 2 = RLS yes/no; 3 = policies on `driver_access_logs`; 4 = `has_role` / `handle_new_user`. Empty policy list → add policies; missing functions → create them (see setup scripts).
+- Enable **organization data-sharing** in your Supabase settings and tell the assistant.
+- The assistant will run non-destructive checks (they begin with `list_tables` / `list_extensions`, then the verify SQL), validate results, and summarize in 1–2 lines.
+
+**Option B — You run it and paste results**
+
+- Open the SQL editor and run **`DRIVER_ACCESS_LOGS_VERIFY.sql`**.
+- Paste the four result sets here labeled **Result set 1**, **Result set 2**, **Result set 3**, **Result set 4**.
+- The assistant will interpret them, point out missing pieces, and provide exact **non-destructive** SQL to add RLS policies or helper functions. Any **destructive** changes will only be proposed after you explicitly confirm.
+
+**Result set interpretation (rows 1–4):**
+
+- **Table existence** — indicates whether `driver_access_logs` exists.
+- **RLS status** — whether Row-Level Security is enabled on `driver_access_logs`.
+- **Policies** — current policies defined on `driver_access_logs` (empty → need policies).
+- **Helper functions/roles** — presence of `has_role`, `handle_new_user` (missing → create them per setup scripts).
+
+Either path is fine — choose **A** to have the assistant run read-only checks (requires org consent), or **B** to run the verify script yourself and paste the results.
 
 **Pick one (next steps)**
 
@@ -128,10 +141,80 @@ The assistant cannot run the verify SQL in your project without **organization d
 | **"FULL"** | We paste **`DRIVER_ACCESS_LOGS_FULL_SETUP.sql`** (assumes `app_role`, `user_roles`, `cod_orders` exist). |
 | **"VERIFY"** | We paste **`DRIVER_ACCESS_LOGS_VERIFY.sql`** for you to run, then paste Result sets 1–4 back. |
 
-**Run it yourself or have an assistant run it**
-
-- **Your run:** Copy `DRIVER_ACCESS_LOGS_VERIFY.sql` into the SQL Editor, run it, then **paste the four result sets here**. We’ll interpret them, **point out missing pieces** and any **security/performance concerns**, and provide **exact SQL** for recommended RLS policies and safe helper function stubs (**non-destructive**). If any **destructive** changes are needed, we'll ask for **explicit confirmation** before producing those.
+ We’ll interpret them, **point out missing pieces** and any **security/performance concerns**, and provide **exact SQL** for recommended RLS policies and safe helper function stubs (**non-destructive**). If any **destructive** changes are needed, we'll ask for **explicit confirmation** before producing those.
 - **Assistant run:** Enable organization data-sharing in Supabase settings, tell the assistant, and they’ll run `list_tables` / `list_extensions` plus the verify SQL, then summarize in 1–2 lines.
+
+---
+
+## Exact SQL (copy-paste ready)
+
+### Verify SQL: `DRIVER_ACCESS_LOGS_VERIFY.sql`
+
+Copy this into the SQL Editor and run it:
+
+```sql
+-- Verification: driver_access_logs table, RLS policies, and has_role
+-- Run in SQL Editor after setup. Read-only.
+
+-- 1) Table exists?
+SELECT 'driver_access_logs' AS check_type, 'table' AS obj,
+  CASE WHEN EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'driver_access_logs')
+    THEN 'exists' ELSE 'missing' END AS result;
+
+-- 2) RLS enabled on driver_access_logs?
+SELECT 'driver_access_logs' AS check_type, 'rls_enabled' AS obj,
+  CASE WHEN EXISTS (
+    SELECT 1 FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relname = 'driver_access_logs' AND c.relrowsecurity
+  ) THEN 'yes' ELSE 'no' END AS result;
+
+-- 3) Policies on driver_access_logs (name, cmd, roles)
+SELECT schemaname, tablename, policyname, cmd, roles
+FROM pg_policies
+WHERE schemaname = 'public' AND tablename = 'driver_access_logs'
+ORDER BY policyname;
+
+-- 4) has_role and other relevant functions (name, args)
+SELECT n.nspname AS schema, p.proname AS name, pg_get_function_identity_arguments(p.oid) AS args
+FROM pg_proc p
+JOIN pg_namespace n ON n.oid = p.pronamespace
+WHERE n.nspname = 'public' AND p.proname IN ('has_role', 'handle_new_user')
+ORDER BY p.proname;
+```
+
+### Non-destructive SQL snippets (run after verifying)
+
+If verification shows missing pieces, use these **non-destructive** snippets (safe to run multiple times):
+
+**Enable RLS (if missing):**
+
+```sql
+ALTER TABLE public.driver_access_logs ENABLE ROW LEVEL SECURITY;
+```
+
+**Add RLS policies (if empty policy list):**
+
+See **`DRIVER_ACCESS_LOGS_FULL_SETUP.sql`** or **`DRIVER_ACCESS_LOGS_FULL_SETUP_DEFENSIVE.sql`** for the complete policy set (admins SELECT, drivers INSERT own, deny anon, no UPDATE/DELETE).
+
+**Create `has_role` function (if missing):**
+
+```sql
+CREATE OR REPLACE FUNCTION public.has_role(_user_id UUID, _role public.app_role)
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.user_roles
+    WHERE user_id = _user_id AND role = _role
+  )
+$$;
+```
+
+**Note:** `handle_new_user` is typically created by your base migrations (user signup trigger). If it's missing, check your migration history or see the initial `user_roles` setup migration.
 
 ---
 
