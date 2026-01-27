@@ -91,7 +91,7 @@ The script returns **4 result sets** (one per `SELECT`), not 4 rows in a single 
 
 **Run it yourself or have an assistant run it**
 
-- **Your run:** Copy `DRIVER_ACCESS_LOGS_VERIFY.sql` into the SQL Editor, run it, then paste the four result sets here. We’ll interpret them, flag missing pieces, and give exact SQL for policies/functions (non-destructive by default).
+- **Your run:** Copy `DRIVER_ACCESS_LOGS_VERIFY.sql` into the SQL Editor, run it, then **paste the four result sets here**. We’ll interpret them, **point out missing pieces** and any **security/performance concerns**, and provide **exact SQL** for recommended RLS policies and safe helper function stubs (**non-destructive**). If any **destructive** changes are needed, we'll ask for **explicit confirmation** before producing those.
 - **Assistant run:** Enable organization data-sharing in Supabase settings, tell the assistant, and they’ll run `list_tables` / `list_extensions` plus the verify SQL, then summarize in 1–2 lines.
 
 ---
