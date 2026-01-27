@@ -1,5 +1,5 @@
--- Run this in Supabase Dashboard → SQL Editor (project unjgpqdcdcatbrinitfu)
--- RLS policies for driver_access_logs
+-- RLS-only for driver_access_logs (project unjgpqdcdcatbrinitfu).
+-- Table must exist first. Prefer: run migrations (20260126115900 + 20260126120000) or DRIVER_ACCESS_LOGS_FULL_SETUP.sql.
 
 ALTER TABLE public.driver_access_logs ENABLE ROW LEVEL SECURITY;
 

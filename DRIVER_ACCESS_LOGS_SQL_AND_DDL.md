@@ -141,6 +141,25 @@ USING (false);
 
 ---
 
+## Apply in Supabase (project `unjgpqdcdcatbrinitfu`)
+
+**Preferred — use migrations:**
+
+1. Ensure [Supabase CLI](https://supabase.com/docs/guides/cli) is installed and the project is linked.
+2. Run:
+
+   ```bash
+   supabase db push
+   ```
+
+   This applies `supabase/migrations/20260126115900_driver_access_logs_table.sql` (table + indexes) then `20260126120000_driver_access_logs_rls.sql` (RLS).
+
+**Fallback — SQL Editor:**
+
+- Open [SQL Editor](https://supabase.com/dashboard/project/unjgpqdcdcatbrinitfu/sql/new) for project `unjgpqdcdcatbrinitfu`, paste the contents of **`DRIVER_ACCESS_LOGS_FULL_SETUP.sql`**, and run it. This creates the table, `has_role`, and RLS in one go.
+
+---
+
 ## Options checklist (for Lovable / Supabase tooling)
 
 **Choose:**
