@@ -4,6 +4,7 @@
 ALTER TABLE public.driver_access_logs ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Admins can view all audit logs" ON public.driver_access_logs;
+DROP POLICY IF EXISTS "Service role can read audit logs" ON public.driver_access_logs;
 DROP POLICY IF EXISTS "Deny anonymous access to audit logs" ON public.driver_access_logs;
 DROP POLICY IF EXISTS "Deny anonymous insert on audit logs" ON public.driver_access_logs;
 DROP POLICY IF EXISTS "Drivers can insert their own access logs" ON public.driver_access_logs;
@@ -16,6 +17,10 @@ DROP POLICY IF EXISTS "No deletes allowed on audit logs" ON public.driver_access
 CREATE POLICY "Admins can view all audit logs"
 ON public.driver_access_logs FOR SELECT TO authenticated
 USING (public.has_role(auth.uid(), 'admin'::app_role));
+
+CREATE POLICY "Service role can read audit logs"
+ON public.driver_access_logs FOR SELECT TO service_role
+USING (true);
 
 CREATE POLICY "Deny anonymous access to audit logs"
 ON public.driver_access_logs FOR SELECT TO anon
