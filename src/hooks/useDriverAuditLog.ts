@@ -55,9 +55,8 @@ export function useDriverAuditLog() {
         user_agent: navigator.userAgent,
       };
 
-      // Use rpc or raw insert - the table may not be in types yet
       const { error } = await supabase
-        .from("driver_access_logs" as "cod_orders") // Type assertion workaround until types regenerate
+        .from("driver_access_logs" as never)
         .insert(logEntry as never);
 
       if (error) {
