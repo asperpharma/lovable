@@ -143,6 +143,8 @@ USING (false);
 
 ## Apply in Supabase (project `unjgpqdcdcatbrinitfu`)
 
+**→ See [APPLY_DRIVER_ACCESS_LOGS.md](./APPLY_DRIVER_ACCESS_LOGS.md)** for step-by-step: SQL Editor, `psql`, or Supabase CLI.
+
 **Preferred — use migrations:**
 
 1. Ensure [Supabase CLI](https://supabase.com/docs/guides/cli) is installed and the project is linked.
