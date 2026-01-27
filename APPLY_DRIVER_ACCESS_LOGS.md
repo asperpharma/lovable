@@ -78,6 +78,22 @@ Run **`DRIVER_ACCESS_LOGS_PRE_CHECK.sql`** in the [SQL Editor](https://supabase.
 - **App:** Driver app logs actions; Admin → **Audit Logs** shows entries.
 - **Catalog check:** Run **`DRIVER_ACCESS_LOGS_VERIFY.sql`** in the [SQL Editor](https://supabase.com/dashboard/project/unjgpqdcdcatbrinitfu/sql/new). It confirms the table exists, RLS is enabled, lists policies on `driver_access_logs`, and shows `has_role` (and related) function signatures.
 
+**Verify script: expected results & interpretation**
+
+The script returns **4 result sets** (one per `SELECT`), not 4 rows in a single table.
+
+| Result set | What it checks | How to interpret |
+|------------|----------------|------------------|
+| **1** | Table `driver_access_logs` exists | `result = 'exists'` → table present; `'missing'` → create it or check schema. |
+| **2** | RLS enabled on `driver_access_logs` | `result = 'yes'` → RLS on; `'no'` → run `ALTER TABLE public.driver_access_logs ENABLE ROW LEVEL SECURITY;` if you use policies. |
+| **3** | Policies on `driver_access_logs` | Rows = policies (`policyname`, `cmd`, `roles`). Expect SELECT/INSERT/UPDATE/DELETE for `authenticated` and/or `service_role`. Empty → add policies (see setup scripts). |
+| **4** | Helper functions `has_role`, `handle_new_user` | Rows = functions (`schema`, `name`, `args`). Missing → app may fail; create them (see setup scripts). |
+
+**Run it yourself or have an assistant run it**
+
+- **Your run:** Copy `DRIVER_ACCESS_LOGS_VERIFY.sql` into the SQL Editor, run it, then paste the four result sets here. We’ll interpret them, flag missing pieces, and give exact SQL for policies/functions (non-destructive by default).
+- **Assistant run:** Enable organization data-sharing in Supabase settings, tell the assistant, and they’ll run `list_tables` / `list_extensions` plus the verify SQL, then summarize in 1–2 lines.
+
 ---
 
 ## After setup
