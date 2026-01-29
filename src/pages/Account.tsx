@@ -15,6 +15,7 @@ import { Separator } from "../components/ui/separator.tsx";
 import { toast } from "sonner";
 import {
   AlertTriangle,
+  Key,
   Loader2,
   LogOut,
   QrCode,
@@ -73,11 +74,62 @@ export default function Account() {
   const [deleteEmail, setDeleteEmail] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // API keys (cloud-stored, e.g. Firecrawl for scraping)
+  const [firecrawlKeyInput, setFirecrawlKeyInput] = useState("");
+  const [hasFirecrawlKey, setHasFirecrawlKey] = useState(false);
+  const [loadingApiKey, setLoadingApiKey] = useState(true);
+  const [savingApiKey, setSavingApiKey] = useState(false);
+
   useEffect(() => {
     if (!loading && !user) {
       navigate("/auth");
     }
   }, [user, loading, navigate]);
+
+  // Check if user has Firecrawl API key stored (we don't fetch the value for security)
+  useEffect(() => {
+    if (!user) {
+      setLoadingApiKey(false);
+      return;
+    }
+    const check = async () => {
+      const { data } = await supabase
+        .from("user_api_keys")
+        .select("id")
+        .eq("provider", "firecrawl")
+        .maybeSingle();
+      setHasFirecrawlKey(!!data);
+      setLoadingApiKey(false);
+    };
+    check();
+  }, [user]);
+
+  const handleSaveFirecrawlKey = async () => {
+    if (!user) return;
+    const key = firecrawlKeyInput.trim();
+    if (!key) {
+      toast.error("Enter an API key to save");
+      return;
+    }
+    setSavingApiKey(true);
+    const { error } = await supabase.from("user_api_keys").upsert(
+      {
+        user_id: user.id,
+        provider: "firecrawl",
+        key_value: key,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,provider" }
+    );
+    setSavingApiKey(false);
+    if (error) {
+      toast.error("Failed to save API key");
+      return;
+    }
+    setFirecrawlKeyInput("");
+    setHasFirecrawlKey(true);
+    toast.success("Firecrawl API key saved securely");
+  };
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -228,6 +280,54 @@ export default function Account() {
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 Sign Out
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* API Keys - store keys in the cloud for scraping etc. */}
+          <Card className="border-gold/30">
+            <CardHeader>
+              <CardTitle className="font-display text-2xl flex items-center gap-2">
+                <Key className="h-5 w-5" />
+                API Keys
+              </CardTitle>
+              <CardDescription>
+                Store API keys securely in your account. Used for features like
+                URL scraping (Firecrawl).
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="firecrawl-key">Firecrawl API key</Label>
+                <Input
+                  id="firecrawl-key"
+                  type="password"
+                  placeholder={
+                    hasFirecrawlKey ? "•••••••• (enter new key to update)" : "Enter your Firecrawl API key"
+                  }
+                  value={firecrawlKeyInput}
+                  onChange={(e) => setFirecrawlKeyInput(e.target.value)}
+                  disabled={loadingApiKey}
+                  className="font-mono"
+                />
+                <p className="text-xs text-muted-foreground">
+                  {hasFirecrawlKey
+                    ? "A key is already saved. Enter a new key and Save to replace it."
+                    : "Used when scraping product URLs. Get a key at firecrawl.dev"}
+                </p>
+              </div>
+              <Button
+                onClick={handleSaveFirecrawlKey}
+                disabled={!firecrawlKeyInput.trim() || savingApiKey}
+              >
+                {savingApiKey ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save key"
+                )}
               </Button>
             </CardContent>
           </Card>

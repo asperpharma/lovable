@@ -250,6 +250,63 @@ export type Database = {
         };
         Relationships: [];
       };
+      bulk_upload_runs: {
+        Row: {
+          id: string;
+          user_id: string;
+          created_at: string;
+          name: string | null;
+          file_name: string | null;
+          product_count: number;
+          products: Json;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          created_at?: string;
+          name?: string | null;
+          file_name?: string | null;
+          product_count?: number;
+          products?: Json;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          created_at?: string;
+          name?: string | null;
+          file_name?: string | null;
+          product_count?: number;
+          products?: Json;
+        };
+        Relationships: [];
+      };
+      user_api_keys: {
+        Row: {
+          id: string;
+          user_id: string;
+          provider: string;
+          key_value: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          provider: string;
+          key_value: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          provider?: string;
+          key_value?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

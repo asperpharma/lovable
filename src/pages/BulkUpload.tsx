@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Header } from "../components/Header.tsx";
 import { Footer } from "../components/Footer.tsx";
 import { Button } from "../components/ui/button.tsx";
+import { Input } from "../components/ui/input.tsx";
 import { Progress } from "../components/ui/progress.tsx";
 import { Badge } from "../components/ui/badge.tsx";
 import {
@@ -11,6 +12,13 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card.tsx";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select.tsx";
 import {
   Tabs,
   TabsContent,
@@ -25,12 +33,15 @@ import {
   Clock,
   Download,
   FileSpreadsheet,
+  FileText,
+  History,
   Image,
   Loader2,
   Pause,
   Play,
   RefreshCw,
   RotateCcw,
+  Search,
   Settings,
   ShoppingBag,
   Sparkles,
@@ -40,6 +51,7 @@ import {
   Zap,
 } from "lucide-react";
 import { supabase } from "../integrations/supabase/client.ts";
+import type { Json, Tables } from "../integrations/supabase/types.ts";
 import { toast } from "sonner";
 import ExcelJS from "exceljs";
 import { QueueItem, useImageQueue } from "../lib/imageGenerationQueue.ts";
@@ -104,6 +116,225 @@ export default function BulkUpload() {
   const [parseError, setParseError] = useState<string>("");
   const [previewData, setPreviewData] = useState<RawProduct[]>([]);
   const [showSettings, setShowSettings] = useState(false);
+  // Search & filter
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [filterBrand, setFilterBrand] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  // Save history
+  const [savedRuns, setSavedRuns] = useState<Tables<"bulk_upload_runs">[]>([]);
+  const [loadingRuns, setLoadingRuns] = useState(false);
+  const [savingRun, setSavingRun] = useState(false);
+
+  // Filtered products for search & filter
+  const filteredProducts = products.filter((p) => {
+    const matchesSearch =
+      !searchQuery ||
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.category.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      filterCategory === "all" || p.category === filterCategory;
+    const matchesBrand = filterBrand === "all" || p.brand === filterBrand;
+    const matchesStatus = filterStatus === "all" || p.status === filterStatus;
+    return matchesSearch && matchesCategory && matchesBrand && matchesStatus;
+  });
+
+  const filteredRawData =
+    searchQuery.trim() === ""
+      ? rawData
+      : rawData.filter(
+          (r) =>
+            r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            r.sku.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+  const filteredPreviewData = filteredRawData.slice(0, 10);
+
+  const uniqueCategories = useMemo(
+    () => [...new Set(products.map((p) => p.category))].sort(),
+    [products]
+  );
+  const uniqueBrands = useMemo(
+    () => [...new Set(products.map((p) => p.brand))].sort(),
+    [products]
+  );
+
+  // Export CSV
+  const exportToCSV = useCallback((items: ProcessedProduct[]) => {
+    const headers = [
+      "SKU",
+      "Name",
+      "Category",
+      "Brand",
+      "Price",
+      "Cost Price",
+      "Status",
+      "Image URL",
+    ];
+    const escape = (v: string | number) => {
+      const s = String(v ?? "");
+      return s.includes(",") || s.includes('"') || s.includes("\n")
+        ? `"${s.replace(/"/g, '""')}"`
+        : s;
+    };
+    const rows = items.map((p) =>
+      [
+        p.sku,
+        p.name,
+        p.category,
+        p.brand,
+        p.price,
+        p.costPrice,
+        p.status,
+        p.imageUrl ?? "",
+      ].map(escape).join(",")
+    );
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `products-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported ${items.length} products to CSV`);
+  }, []);
+
+  // Export Excel
+  const exportToExcel = useCallback(async (items: ProcessedProduct[]) => {
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Products", {
+      headerRow: true,
+      columns: [
+        { width: 14 },
+        { width: 40 },
+        { width: 18 },
+        { width: 18 },
+        { width: 12 },
+        { width: 12 },
+        { width: 12 },
+        { width: 12 },
+        { width: 50 },
+      ],
+    });
+    sheet.addRow([
+      "SKU",
+      "Name",
+      "Category",
+      "Brand",
+      "Price",
+      "Cost Price",
+      "Status",
+      "Image URL",
+    ]);
+    sheet.getRow(1).font = { bold: true };
+    items.forEach((p) => {
+      sheet.addRow([
+        p.sku,
+        p.name,
+        p.category,
+        p.brand,
+        p.price,
+        p.costPrice,
+        p.status,
+        p.imageUrl ?? "",
+      ]);
+    });
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `products-export-${new Date().toISOString().slice(0, 10)}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported ${items.length} products to Excel`);
+  }, []);
+
+  // Fetch saved runs (history)
+  const fetchRuns = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      setSavedRuns([]);
+      return;
+    }
+    setLoadingRuns(true);
+    const { data, error } = await supabase
+      .from("bulk_upload_runs")
+      .select("*")
+      .eq("user_id", session.user.id)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    setLoadingRuns(false);
+    if (error) {
+      console.error("Failed to fetch runs:", error);
+      toast.error("Failed to load history");
+      return;
+    }
+    setSavedRuns(data ?? []);
+  }, []);
+
+  useEffect(() => {
+    fetchRuns();
+  }, [fetchRuns]);
+
+  // Save current run to history
+  const saveCurrentRun = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      toast.error("Please log in to save runs");
+      return;
+    }
+    if (products.length === 0) {
+      toast.error("No products to save");
+      return;
+    }
+    setSavingRun(true);
+    const name =
+      prompt("Name this run (optional):")?.trim() ||
+      `Run ${new Date().toLocaleDateString()} ${products.length} products`;
+    const { error } = await supabase.from("bulk_upload_runs").insert({
+      user_id: session.user.id,
+      name: name || null,
+      file_name: fileName || null,
+      product_count: products.length,
+      products: products as unknown as Json,
+    });
+    setSavingRun(false);
+    if (error) {
+      console.error("Failed to save run:", error);
+      toast.error("Failed to save run");
+      return;
+    }
+    toast.success("Run saved to history");
+    fetchRuns();
+  }, [products, fileName, fetchRuns]);
+
+  // Load a saved run
+  const loadRun = useCallback(
+    (run: Tables<"bulk_upload_runs">) => {
+      const loaded = (run.products as unknown) as ProcessedProduct[];
+      if (!Array.isArray(loaded) || loaded.length === 0) {
+        toast.error("No products in this run");
+        return;
+      }
+      setProducts(loaded);
+      setFileName(run.file_name ?? "");
+      setStep("review");
+      const categories: Record<string, number> = {};
+      const brands: Record<string, number> = {};
+      loaded.forEach((p) => {
+        categories[p.category] = (categories[p.category] ?? 0) + 1;
+        brands[p.brand] = (brands[p.brand] ?? 0) + 1;
+      });
+      setSummary({ total: loaded.length, categories, brands });
+      toast.success(`Loaded ${loaded.length} products from "${run.name ?? "saved run"}"`);
+    },
+    []
+  );
 
   // Use the queue system for image generation
   const {
@@ -696,6 +927,75 @@ export default function BulkUpload() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {/* Previous runs (history) */}
+                {savedRuns.length > 0 && (
+                  <div className="mb-6 rounded-lg border border-taupe/20 bg-taupe/5 p-4">
+                    <h3 className="mb-3 flex items-center gap-2 font-medium text-charcoal">
+                      <History className="w-4 h-4" />
+                      Previous runs
+                    </h3>
+                    {loadingRuns ? (
+                      <div className="flex items-center gap-2 text-sm text-taupe">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Loading...
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {savedRuns.map((run) => (
+                          <div
+                            key={run.id}
+                            className="flex items-center gap-2 rounded-lg border border-taupe/20 bg-white px-3 py-2 text-sm"
+                          >
+                            <div>
+                              <p className="font-medium text-charcoal">
+                                {run.name ?? "Unnamed run"}
+                              </p>
+                              <p className="text-xs text-taupe">
+                                {run.product_count} products ·{" "}
+                                {new Date(run.created_at).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <div className="flex gap-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => loadRun(run)}
+                              >
+                                Load
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => {
+                                  const items = (run.products as unknown) as ProcessedProduct[];
+                                  if (Array.isArray(items) && items.length > 0) {
+                                    exportToCSV(items);
+                                  }
+                                }}
+                                title="Export this run as CSV"
+                              >
+                                CSV
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => {
+                                  const items = (run.products as unknown) as ProcessedProduct[];
+                                  if (Array.isArray(items) && items.length > 0) {
+                                    exportToExcel(items);
+                                  }
+                                }}
+                                title="Export this run as Excel"
+                              >
+                                Excel
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
                 {/* Upload Step */}
                 {step === "upload" && (
                   <div className="space-y-8">
@@ -855,11 +1155,32 @@ export default function BulkUpload() {
                 {/* Categorize Step */}
                 {step === "categorize" && (
                   <div className="space-y-6">
+                    {/* Search */}
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-taupe" />
+                      <Input
+                        placeholder="Search by name or SKU..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9"
+                      />
+                      {searchQuery && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-taupe">
+                          {filteredRawData.length} of {rawData.length}
+                        </span>
+                      )}
+                    </div>
                     <div className="bg-taupe/5 rounded-lg p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
                           <h3 className="font-medium text-charcoal">
                             Products Loaded: {rawData.length}
+                            {searchQuery && (
+                              <span className="text-taupe font-normal">
+                                {" "}
+                                (showing {filteredRawData.length})
+                              </span>
+                            )}
                           </h3>
                           {fileName && (
                             <p className="text-sm text-taupe">
@@ -894,7 +1215,7 @@ export default function BulkUpload() {
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-taupe/10">
-                              {previewData.map((product, i) => (
+                              {filteredPreviewData.map((product, i) => (
                                 <tr
                                   key={product.sku + i}
                                   className="hover:bg-taupe/5"
@@ -916,9 +1237,9 @@ export default function BulkUpload() {
                             </tbody>
                           </table>
                         </div>
-                        {rawData.length > 10 && (
+                        {filteredRawData.length > 10 && (
                           <div className="px-4 py-2 bg-taupe/5 text-center text-sm text-taupe">
-                            Showing 10 of {rawData.length} products
+                            Showing 10 of {filteredRawData.length} products
                           </div>
                         )}
                       </div>
@@ -1165,10 +1486,25 @@ export default function BulkUpload() {
                       )}
                     </div>
 
+                    {/* Search in images step */}
+                    <div className="relative max-w-sm">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-taupe" />
+                      <Input
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9"
+                      />
+                      {searchQuery && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-taupe">
+                          {filteredProducts.length} of {products.length}
+                        </span>
+                      )}
+                    </div>
                     {/* Product Preview Grid */}
                     <ScrollArea className="h-[400px] rounded-lg border">
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
-                        {products.slice(0, 40).map((product) => (
+                        {filteredProducts.slice(0, 40).map((product) => (
                           <div
                             key={product.sku}
                             className="bg-white rounded-lg p-3 border"
@@ -1221,18 +1557,76 @@ export default function BulkUpload() {
                 {/* Review Step */}
                 {step === "review" && (
                   <div className="space-y-6">
+                    {/* Search & filter */}
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="relative flex-1 min-w-[200px]">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-taupe" />
+                        <Input
+                          placeholder="Search products..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-9"
+                        />
+                      </div>
+                      <Select
+                        value={filterCategory}
+                        onValueChange={setFilterCategory}
+                      >
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue placeholder="Category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All categories</SelectItem>
+                          {uniqueCategories.map((c) => (
+                            <SelectItem key={c} value={c}>
+                              {c}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select value={filterBrand} onValueChange={setFilterBrand}>
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue placeholder="Brand" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All brands</SelectItem>
+                          {uniqueBrands.map((b) => (
+                            <SelectItem key={b} value={b}>
+                              {b}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select value={filterStatus} onValueChange={setFilterStatus}>
+                        <SelectTrigger className="w-[120px]">
+                          <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All statuses</SelectItem>
+                          <SelectItem value="completed">Ready</SelectItem>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="processing">Processing</SelectItem>
+                          <SelectItem value="failed">Failed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {(searchQuery || filterCategory !== "all" || filterBrand !== "all" || filterStatus !== "all") && (
+                        <span className="text-sm text-taupe">
+                          Showing {filteredProducts.length} of {products.length}
+                        </span>
+                      )}
+                    </div>
                     <Tabs defaultValue="all">
                       <TabsList>
                         <TabsTrigger value="all">
-                          All ({products.length})
+                          All ({filteredProducts.length})
                         </TabsTrigger>
                         <TabsTrigger value="completed">
-                          Ready ({products.filter((p) =>
+                          Ready ({filteredProducts.filter((p) =>
                             p.status === "completed"
                           ).length})
                         </TabsTrigger>
                         <TabsTrigger value="failed">
-                          Failed ({products.filter((p) => p.status === "failed")
+                          Failed ({filteredProducts.filter((p) => p.status === "failed")
                             .length})
                         </TabsTrigger>
                       </TabsList>
@@ -1240,7 +1634,7 @@ export default function BulkUpload() {
                       <TabsContent value="all">
                         <ScrollArea className="h-[500px]">
                           <div className="space-y-2">
-                            {products.map((product) => (
+                            {filteredProducts.map((product) => (
                               <div
                                 key={product.sku}
                                 className="flex items-center gap-4 p-4 bg-white rounded-lg border"
@@ -1290,15 +1684,142 @@ export default function BulkUpload() {
                           </div>
                         </ScrollArea>
                       </TabsContent>
+                      <TabsContent value="completed">
+                        <ScrollArea className="h-[500px]">
+                          <div className="space-y-2">
+                            {filteredProducts
+                              .filter((p) => p.status === "completed")
+                              .map((product) => (
+                                <div
+                                  key={product.sku}
+                                  className="flex items-center gap-4 p-4 bg-white rounded-lg border"
+                                >
+                                  <div className="w-16 h-16 bg-taupe/10 rounded-lg overflow-hidden flex-shrink-0">
+                                    {product.imageUrl ? (
+                                      <img
+                                        src={product.imageUrl}
+                                        alt={product.name}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center">
+                                        <Image className="w-6 h-6 text-taupe" />
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium text-charcoal truncate">
+                                      {product.name}
+                                    </p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <Badge variant="outline" className="text-xs">
+                                        {product.brand}
+                                      </Badge>
+                                      <Badge variant="secondary" className="text-xs">
+                                        {product.category}
+                                      </Badge>
+                                      <span className="text-sm text-gold font-medium">
+                                        ${product.price.toFixed(2)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="flex-shrink-0">
+                                    {getStatusIcon(product.status)}
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        </ScrollArea>
+                      </TabsContent>
+                      <TabsContent value="failed">
+                        <ScrollArea className="h-[500px]">
+                          <div className="space-y-2">
+                            {filteredProducts
+                              .filter((p) => p.status === "failed")
+                              .map((product) => (
+                                <div
+                                  key={product.sku}
+                                  className="flex items-center gap-4 p-4 bg-white rounded-lg border"
+                                >
+                                  <div className="w-16 h-16 bg-taupe/10 rounded-lg overflow-hidden flex-shrink-0">
+                                    {product.imageUrl ? (
+                                      <img
+                                        src={product.imageUrl}
+                                        alt={product.name}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center">
+                                        <Image className="w-6 h-6 text-taupe" />
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium text-charcoal truncate">
+                                      {product.name}
+                                    </p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <Badge variant="outline" className="text-xs">
+                                        {product.brand}
+                                      </Badge>
+                                      <Badge variant="secondary" className="text-xs">
+                                        {product.category}
+                                      </Badge>
+                                      {product.error && (
+                                        <span className="text-xs text-red-600 truncate block">
+                                          {product.error}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="flex-shrink-0">
+                                    {getStatusIcon(product.status)}
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        </ScrollArea>
+                      </TabsContent>
                     </Tabs>
 
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap items-center gap-4">
                       <Button
                         variant="outline"
                         onClick={() => setStep("images")}
                       >
                         <RefreshCw className="w-4 h-4 mr-2" />
                         Regenerate Failed Images
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={saveCurrentRun}
+                        disabled={products.length === 0 || savingRun}
+                        title="Save this run to history"
+                      >
+                        {savingRun ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <History className="w-4 h-4 mr-2" />
+                        )}
+                        Save run
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => exportToCSV(filteredProducts)}
+                        disabled={filteredProducts.length === 0}
+                        title="Download visible products as CSV"
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        Export CSV
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => exportToExcel(filteredProducts)}
+                        disabled={filteredProducts.length === 0}
+                        title="Download visible products as Excel"
+                      >
+                        <FileSpreadsheet className="w-4 h-4 mr-2" />
+                        Export Excel
                       </Button>
                       <Button
                         onClick={() => setStep("shopify")}

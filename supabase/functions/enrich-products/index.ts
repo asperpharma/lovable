@@ -13,7 +13,29 @@ serve(async (req) => {
   }
 
   try {
-    const firecrawlApiKey = Deno.env.get("FIRECRAWL_API_KEY");
+    let firecrawlApiKey = Deno.env.get("FIRECRAWL_API_KEY");
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+      const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: { user } } = await authClient.auth.getUser();
+      if (user) {
+        const adminClient = createClient(
+          supabaseUrl,
+          Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+        );
+        const { data: keyRow } = await adminClient
+          .from("user_api_keys")
+          .select("key_value")
+          .eq("user_id", user.id)
+          .eq("provider", "firecrawl")
+          .maybeSingle();
+        if (keyRow?.key_value) firecrawlApiKey = keyRow.key_value;
+      }
+    }
     if (!firecrawlApiKey) {
       throw new Error("Firecrawl API key not configured");
     }
