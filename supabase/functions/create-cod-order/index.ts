@@ -721,7 +721,8 @@ serve(async (req) => {
     console.log("Order created successfully:", order.order_number);
 
     // ========== SEND CONFIRMATION EMAIL ==========
-    const siteUrl = "https://asperbeautyshop.lovable.app";
+    const siteUrl =
+      Deno.env.get("SITE_URL") ?? "https://asperbeautyshop.lovable.app";
 
     if (data.customerEmail) {
       await sendOrderConfirmationEmail(

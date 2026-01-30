@@ -3,6 +3,7 @@ import { useLanguage } from "../contexts/LanguageContext.tsx";
 import { Facebook, Instagram, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import asperLogo from "@/assets/asper-logo.jpg";
+import { DOMAIN } from "@/lib/domain";
 
 // TikTok icon component
 const TikTokIcon = ({
@@ -161,10 +162,10 @@ export const Footer = () => {
                 +962 79 065 6666
               </a>
               <a
-                href="mailto:concierge@asperbeautyshop.com"
+                href={`mailto:${DOMAIN.CONTACT_EMAIL}`}
                 className="font-body text-sm text-cream hover:text-gold transition-colors duration-400 block"
               >
-                concierge@asperbeautyshop.com
+                {DOMAIN.CONTACT_EMAIL}
               </a>
             </div>
           </div>
