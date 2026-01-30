@@ -80,6 +80,7 @@ const ManageProducts = () => {
     { id: string; title: string; status: string; image_url?: string }[] | null
   >(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -181,18 +182,27 @@ const ManageProducts = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file");
+    await uploadImage(file);
+  };
+
+  const uploadImage = async (file: File) => {
+    // Validate file type
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Please upload a valid image file (PNG, JPG, WEBP, or GIF)");
       return;
     }
 
+    // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image must be less than 5MB");
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      toast.error(`Image is too large (${sizeMB}MB). Maximum size is 5MB.`);
       return;
     }
 
     try {
       setUploadingImage(true);
+      toast.info("Uploading image...");
 
       const fileExt = file.name.split(".").pop();
       const fileName = `${Date.now()}-${
@@ -204,19 +214,51 @@ const ManageProducts = () => {
         .from("product-images")
         .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        if (uploadError.message.includes("already exists")) {
+          toast.error("An image with this name already exists. Please try again.");
+        } else {
+          toast.error(`Upload failed: ${uploadError.message}`);
+        }
+        return;
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from("product-images")
         .getPublicUrl(filePath);
 
       setFormData((prev) => ({ ...prev, image_url: publicUrl }));
-      toast.success("Image uploaded successfully");
+      toast.success("✓ Image uploaded successfully!");
     } catch (error: any) {
       console.error("Upload error:", error);
-      toast.error("Failed to upload image");
+      toast.error(`Failed to upload image: ${error.message || 'Unknown error'}`);
     } finally {
       setUploadingImage(false);
+    }
+  };
+
+  // Handle drag and drop
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      await uploadImage(files[0]);
     }
   };
 
@@ -575,54 +617,122 @@ const ManageProducts = () => {
                     <div>
                       <Label>Product Image</Label>
                       <div className="mt-2 space-y-3">
+                        {/* Image Preview */}
                         {formData.image_url && (
-                          <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-gold/20">
-                            <img
-                              src={formData.image_url}
-                              alt="Preview"
-                              className="w-full h-full object-cover"
-                            />
+                          <div className="relative w-full max-w-xs">
+                            <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-gold/30 bg-cream/20">
+                              <img
+                                src={formData.image_url}
+                                alt="Preview"
+                                className="w-full h-full object-contain"
+                              />
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                className="absolute top-2 right-2"
+                                onClick={() =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    image_url: "",
+                                  }))}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-2">
+                              ✓ Image ready to be saved with product
+                            </p>
                           </div>
                         )}
 
-                        <div className="flex items-center gap-3">
+                        {/* Drag and Drop Upload Area */}
+                        <div
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDrop}
+                          className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-all ${
+                            isDragging
+                              ? "border-gold bg-gold/10 scale-105"
+                              : "border-gold/30 hover:border-gold/50 hover:bg-gold/5"
+                          }`}
+                        >
                           <input
                             ref={fileInputRef}
                             type="file"
-                            accept="image/*"
+                            accept="image/png,image/jpeg,image/jpg,image/webp,image/gif"
                             onChange={handleImageUpload}
                             className="hidden"
                           />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={uploadingImage}
-                            className="border-gold/30"
-                          >
-                            {uploadingImage
-                              ? (
-                                <Loader2 className="w-4 h-4 me-2 animate-spin" />
-                              )
-                              : <Upload className="w-4 h-4 me-2" />}
-                            Upload Image
-                          </Button>
+                          
+                          <div className="space-y-3">
+                            <div className="flex justify-center">
+                              {uploadingImage ? (
+                                <Loader2 className="w-10 h-10 text-gold animate-spin" />
+                              ) : (
+                                <ImageIcon className="w-10 h-10 text-gold/60" />
+                              )}
+                            </div>
 
-                          <span className="text-xs text-muted-foreground">
-                            or leave empty for auto-placeholder
-                          </span>
+                            <div className="space-y-1">
+                              <p className="text-sm font-medium text-charcoal">
+                                {uploadingImage
+                                  ? "Uploading..."
+                                  : isDragging
+                                  ? "Drop your image here"
+                                  : "Drag & drop your image here"}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                or click the button below to browse
+                              </p>
+                            </div>
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => fileInputRef.current?.click()}
+                              disabled={uploadingImage}
+                              className="border-gold/30 hover:bg-gold/10"
+                            >
+                              {uploadingImage ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 me-2 animate-spin" />
+                                  Uploading...
+                                </>
+                              ) : (
+                                <>
+                                  <Upload className="w-4 h-4 me-2" />
+                                  Choose Image
+                                </>
+                              )}
+                            </Button>
+
+                            <div className="text-xs text-muted-foreground space-y-1">
+                              <p>Supported: PNG, JPG, WEBP, GIF</p>
+                              <p>Maximum size: 5MB</p>
+                            </div>
+                          </div>
                         </div>
 
-                        <Input
-                          value={formData.image_url}
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              image_url: e.target.value,
-                            }))}
-                          placeholder="Or paste image URL..."
-                          className="text-sm"
-                        />
+                        {/* URL Input Option */}
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-px bg-gold/20" />
+                            <span className="text-xs text-muted-foreground">OR</span>
+                            <div className="flex-1 h-px bg-gold/20" />
+                          </div>
+                          <Input
+                            value={formData.image_url}
+                            onChange={(e) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                image_url: e.target.value,
+                              }))}
+                            placeholder="Paste image URL directly..."
+                            className="text-sm"
+                            disabled={uploadingImage}
+                          />
+                        </div>
                       </div>
                     </div>
 
