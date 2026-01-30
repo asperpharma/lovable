@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "../contexts/LanguageContext.tsx";
 
 // Category images - WebP for better compression
 import skinCareImg from "@/assets/categories/skin-care.webp";

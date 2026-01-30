@@ -1,11 +1,19 @@
 import { ReactNode, useRef } from "react";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { cn } from "@/lib/utils";
+import { useScrollAnimation } from "../hooks/useScrollAnimation.ts";
+import { cn } from "../lib/utils.ts";
 
 interface AnimatedSectionProps {
   children: ReactNode;
   className?: string;
-  animation?: "fade-up" | "fade-left" | "fade-right" | "scale" | "fade" | "zoom" | "blur" | "slide-up";
+  animation?:
+    | "fade-up"
+    | "fade-left"
+    | "fade-right"
+    | "scale"
+    | "fade"
+    | "zoom"
+    | "blur"
+    | "slide-up";
   delay?: number;
   duration?: number;
   threshold?: number;
@@ -37,7 +45,8 @@ export const AnimatedSection = ({
     "slide-up": "translate-y-20 opacity-0 scale-95",
   };
 
-  const visibleClasses = "translate-y-0 translate-x-0 scale-100 opacity-100 blur-0";
+  const visibleClasses =
+    "translate-y-0 translate-x-0 scale-100 opacity-100 blur-0";
 
   return (
     <div
@@ -45,9 +54,9 @@ export const AnimatedSection = ({
       className={cn(
         "transition-all ease-out will-change-transform",
         isVisible ? visibleClasses : animationClasses[animation],
-        className
+        className,
       )}
-      style={{ 
+      style={{
         transitionDelay: `${delay}ms`,
         transitionDuration: `${duration}ms`,
       }}
