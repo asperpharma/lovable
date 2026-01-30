@@ -212,8 +212,19 @@ const ManageProducts = () => {
       setUploadingImage(true);
       toast.info("Uploading image...");
 
-      // Get file extension with fallback
-      const fileExt = file.name.split(".").pop() || 'jpg';
+      // Get file extension with fallback based on MIME type
+      let fileExt = file.name.split(".").pop();
+      if (!fileExt || fileExt === file.name) {
+        // No extension found, derive from MIME type
+        const mimeMap: Record<string, string> = {
+          'image/png': 'png',
+          'image/jpeg': 'jpg',
+          'image/jpg': 'jpg',
+          'image/webp': 'webp',
+          'image/gif': 'gif'
+        };
+        fileExt = mimeMap[file.type] || 'jpg';
+      }
       const fileName = `${Date.now()}-${
         Math.random().toString(36).substring(7)
       }.${fileExt}`;
@@ -688,16 +699,7 @@ const ManageProducts = () => {
                           onDragEnter={handleDragEnter}
                           onDragLeave={handleDragLeave}
                           onDrop={handleDrop}
-                          role="button"
-                          tabIndex={0}
-                          aria-label="Upload product image by dragging and dropping or clicking to browse"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault();
-                              fileInputRef.current?.click();
-                            }
-                          }}
-                          className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer ${
+                          className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-all ${
                             isDragging
                               ? "border-gold bg-gold/10 scale-105"
                               : "border-gold/30 hover:border-gold/50 hover:bg-gold/5"
@@ -736,9 +738,13 @@ const ManageProducts = () => {
                             <Button
                               type="button"
                               variant="outline"
-                              onClick={() => fileInputRef.current?.click()}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                fileInputRef.current?.click();
+                              }}
                               disabled={uploadingImage}
                               className="border-gold/30 hover:bg-gold/10"
+                              aria-label="Choose image file from your computer"
                             >
                               {uploadingImage ? (
                                 <>
