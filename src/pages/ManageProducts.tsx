@@ -30,10 +30,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../components/ui/dialog.tsx";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../components/ui/tooltip.tsx";
 import { supabase } from "../integrations/supabase/client.ts";
 import { toast } from "sonner";
 import {
   Eraser,
+  HelpCircle,
   Image as ImageIcon,
   Loader2,
   Pencil,
@@ -615,7 +622,22 @@ const ManageProducts = () => {
                     </div>
 
                     <div>
-                      <Label>Product Image</Label>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Label>Product Image</Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p className="text-sm">
+                                Drag & drop an image, click to browse, or paste a URL. 
+                                Supports PNG, JPG, WEBP, GIF up to 5MB.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <div className="mt-2 space-y-3">
                         {/* Image Preview */}
                         {formData.image_url && (

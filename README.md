@@ -109,6 +109,13 @@ npm run preview
 | `/offers`              | Special offers and promotions                          |
 | `/best-sellers`        | Best selling products                                  |
 | `/contact`             | Contact information                                    |
+| `/admin/products`      | Admin: Manage products and upload images               |
+| `/admin/bulk-upload`   | Admin: Bulk product upload with AI image generation    |
+| `/admin/orders`        | Admin: Order management                                |
+
+## 📚 Documentation
+
+- [Product Publishing Guide](./PRODUCT_PUBLISHING_GUIDE.md) - How to publish products with image upload
 
 ## 🌐 Internationalization
 
