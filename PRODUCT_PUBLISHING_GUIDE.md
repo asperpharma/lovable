@@ -94,7 +94,8 @@ For images already hosted online:
 
 ### Preview Before Saving
 - After upload, a preview appears showing your image
-- Preview is 192x192 pixels (actual product display will scale appropriately)
+- Preview displays in a container up to 320px wide and 192px tall
+- Image is contained within the preview area while maintaining aspect ratio
 - Image is not saved until you click "Create Product"
 
 ### Removing an Image
@@ -198,9 +199,11 @@ For additional help:
 ## Security Note
 
 - Only authenticated admin users can upload images
-- All uploads are logged for security
-- Images are scanned for malicious content
-- Publicly accessible but stored securely
+- Images are validated for file type and size before upload
+- Publicly accessible but stored securely in cloud storage
+- Each upload gets a unique filename to prevent conflicts
+
+**Note**: Client-side validation is in place, but server-side validation by Supabase Storage ensures additional security.
 
 ---
 

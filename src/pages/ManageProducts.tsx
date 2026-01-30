@@ -88,6 +88,7 @@ const ManageProducts = () => {
   >(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const dragCounter = useRef(0);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -211,7 +212,8 @@ const ManageProducts = () => {
       setUploadingImage(true);
       toast.info("Uploading image...");
 
-      const fileExt = file.name.split(".").pop();
+      // Get file extension with fallback
+      const fileExt = file.name.split(".").pop() || 'jpg';
       const fileName = `${Date.now()}-${
         Math.random().toString(36).substring(7)
       }.${fileExt}`;
@@ -245,23 +247,35 @@ const ManageProducts = () => {
     }
   };
 
-  // Handle drag and drop
+  // Handle drag and drop with counter to prevent flickering
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(true);
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current++;
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDragging(true);
+    }
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(false);
+    dragCounter.current--;
+    if (dragCounter.current === 0) {
+      setIsDragging(false);
+    }
   };
 
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
+    dragCounter.current = 0;
 
     const files = e.dataTransfer.files;
     if (files.length > 0) {
@@ -671,9 +685,19 @@ const ManageProducts = () => {
                         {/* Drag and Drop Upload Area */}
                         <div
                           onDragOver={handleDragOver}
+                          onDragEnter={handleDragEnter}
                           onDragLeave={handleDragLeave}
                           onDrop={handleDrop}
-                          className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-all ${
+                          role="button"
+                          tabIndex={0}
+                          aria-label="Upload product image by dragging and dropping or clicking to browse"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              fileInputRef.current?.click();
+                            }
+                          }}
+                          className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-all cursor-pointer ${
                             isDragging
                               ? "border-gold bg-gold/10 scale-105"
                               : "border-gold/30 hover:border-gold/50 hover:bg-gold/5"
