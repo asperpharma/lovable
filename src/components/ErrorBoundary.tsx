@@ -1,6 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { AlertTriangle, RefreshCcw } from "lucide-react";
 import { Button } from "./ui/button.tsx";
+import { logError } from "../lib/errorLogging.ts";
 
 interface Props {
   children: ReactNode;
@@ -22,8 +23,8 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("Uncaught error:", error, errorInfo);
-    // TODO: Send this to your logging service (e.g., Supabase / Sentry)
+    // Log error with structured context for monitoring and debugging
+    logError(error, errorInfo);
   }
 
   public render() {
