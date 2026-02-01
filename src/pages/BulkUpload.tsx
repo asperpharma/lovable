@@ -365,7 +365,7 @@ export default function BulkUpload() {
                 ? "pending"
                 : queueItem.status === "retrying"
                 ? "processing"
-                : queueItem.status as any,
+                : queueItem.status as ProcessedProduct["status"],
               imageUrl: queueItem.imageUrl,
               error: queueItem.error,
             };
@@ -496,7 +496,7 @@ export default function BulkUpload() {
           `Successfully loaded ${parsedProducts.length} products from ${file.name}`,
         );
         setStep("categorize");
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Parse error:", error);
         setParseError(error.message || "Failed to parse file");
         toast.error(`Failed to parse file: ${error.message}`);
@@ -604,7 +604,7 @@ export default function BulkUpload() {
       setPreviewData(parsedProducts.slice(0, 10));
       toast.success(`Successfully loaded ${parsedProducts.length} products`);
       setStep("categorize");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Load error:", error);
       setParseError(error.message || "Failed to load file");
       toast.error(`Failed to load file: ${error.message}`);
@@ -653,7 +653,7 @@ export default function BulkUpload() {
         } categories`,
       );
       setStep("images");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       if (
         error.message?.includes("401") ||
@@ -804,7 +804,7 @@ export default function BulkUpload() {
 
           // Add small delay between requests to avoid rate limiting
           await new Promise((resolve) => setTimeout(resolve, 300));
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error(`Failed to create ${product.name}:`, error);
 
           // Check for auth errors and stop if unauthorized

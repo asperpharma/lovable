@@ -50,7 +50,7 @@ type QueueEventType =
   | "paused"
   | "resumed";
 type QueueEventCallback = (data: any) => void;
-
+type QueueEventCallback = (data: unknown) => void;
 class ImageGenerationQueue {
   private queue: Map<string, QueueItem> = new Map();
   private config: QueueConfig;
@@ -81,7 +81,7 @@ class ImageGenerationQueue {
     }
   }
 
-  private emit(event: QueueEventType, data: any) {
+  private emit(event: QueueEventType, data: unknown) {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       listeners.forEach((callback) => callback(data));
@@ -311,7 +311,7 @@ class ImageGenerationQueue {
       }
 
       return { success: false, error: "No image URL returned" };
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(`Exception processing ${item.name}:`, err);
       const isRateLimited = err.message?.includes("429") ||
         err.message?.includes("rate");
